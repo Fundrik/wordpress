@@ -1,0 +1,56 @@
+{
+	"name": "fundrik/wordpress",
+	"description": "WordPress integration for the Fundrik fundraising solution",
+	"keywords": [
+		"wordpress",
+		"fundraising",
+		"crowdfunding",
+		"donations",
+		"nonprofit",
+		"charity",
+		"payment"
+	],
+	"homepage": "https://fundrik.ru",
+	"type": "wordpress-plugin",
+	"license": "GPL-3.0-or-later",
+	"authors": [
+		{
+			"name": "Denis Yanchevskiy",
+			"email": "denis@denisco.pro"
+		}
+	],
+	"support": {
+		"email": "denis@denisco.pro",
+		"issues": "https://github.com/Fundrik/wordpress/issues",
+		"source": "https://github.com/Fundrik/wordpress"
+	},
+	"require": {
+		"php": "^8.2",
+		"fundrik/core": "dev-main"
+	},
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+		"wp-coding-standards/wpcs": "^3.1",
+		"phpcompatibility/php-compatibility": "^9.3",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"phpunit/phpunit": "^11.5",
+		"brain/monkey": "^2.6"
+	},
+	"autoload": {
+		"psr-4": {
+			"Fundrik\\WordPress\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Fundrik\\WordPress\\Tests\\": "tests/"
+		}
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true
+}
