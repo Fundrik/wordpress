@@ -57,6 +57,7 @@ class CampaignPostToCampaignDtoMapperTest extends FundrikTestCase {
 		$this->assertEquals( 1, $result->id );
 		$this->assertEquals( 'Test Campaign', $result->title );
 		$this->assertEquals( 'test-campaign', $result->slug );
+		$this->assertTrue( $result->is_enabled ); // TODO.
 		$this->assertFalse( $result->is_open );
 		$this->assertTrue( $result->has_target );
 		$this->assertEquals( 1000, $result->target_amount );

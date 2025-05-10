@@ -48,10 +48,11 @@ final readonly class CampaignPostToCampaignDtoMapper {
 			'id'               => $post->ID,
 			'title'            => $post->post_title,
 			'slug'             => $post->post_name,
-			'is_open'          => $this->get_bool_meta( $post->ID, 'is_open' ),
-			'has_target'       => $this->get_bool_meta( $post->ID, 'has_target' ),
-			'target_amount'    => $this->get_int_meta( $post->ID, 'target_amount' ),
-			'collected_amount' => $this->get_int_meta( $post->ID, 'collected_amount' ),
+			'is_enabled'       => true, // TODO.
+			'is_open'          => $this->get_bool_meta( $post->ID, CampaignPostType::META_IS_OPEN ),
+			'has_target'       => $this->get_bool_meta( $post->ID, CampaignPostType::META_HAS_TARGET ),
+			'target_amount'    => $this->get_int_meta( $post->ID, CampaignPostType::META_TARGET_AMOUNT ),
+			'collected_amount' => $this->get_int_meta( $post->ID, CampaignPostType::META_COLLECTED_AMOUNT ),
 		];
 
 		return $this->dto_factory->from_array( $data );

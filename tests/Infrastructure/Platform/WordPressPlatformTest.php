@@ -8,6 +8,7 @@ use Brain\Monkey\Functions;
 use Fundrik\Core\Domain\Campaigns\Interfaces\QueryExecutorInterface;
 use Fundrik\Core\Infrastructure\Internal\ContainerManager;
 use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbQueryExecutor;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignPostType;
 use Fundrik\WordPress\Infrastructure\Platform\WordpressPlatform;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
@@ -17,6 +18,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass( WordpressPlatform::class )]
 #[UsesClass( WpdbQueryExecutor::class )]
+#[UsesClass( CampaignPostType::class )]
 class WordpressPlatformTest extends FundrikTestCase {
 
 	private WordpressPlatform $platform;
@@ -75,7 +77,7 @@ class WordpressPlatformTest extends FundrikTestCase {
 					static function ( $args ): bool {
 						return is_array( $args )
 						&& isset( $args['labels']['name'] )
-						&& 'Campaigns' === $args['labels']['name'];
+						&& CampaignPostType::get_labels()['name'] === $args['labels']['name'];
 					}
 				)
 			);
