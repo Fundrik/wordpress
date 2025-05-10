@@ -11,7 +11,7 @@ namespace Fundrik\WordPress\Infrastructure\Platform;
 
 use Fundrik\Core\Domain\Campaigns\Interfaces\QueryExecutorInterface;
 use Fundrik\Core\Infrastructure\Platform\Interfaces\PlatformInterface;
-use Fundrik\WordPress\Infrastructure\Persistence\WpdbQueryExecutor;
+use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbQueryExecutor;
 
 /**
  * Represents the WordPress platform integration for Fundrik.

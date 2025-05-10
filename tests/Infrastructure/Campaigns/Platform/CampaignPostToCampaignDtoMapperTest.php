@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Fundrik\WordPress\Tests\Infrastructure;
+namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Platform;
 
 use Brain\Monkey\Functions;
 use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
 use Fundrik\Core\Domain\Campaigns\CampaignDto;
-use Fundrik\WordPress\Infrastructure\CampaignPostToCampaignDtoMapper;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignPostToCampaignDtoMapper;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
 use PHPUnit\Framework\Attributes\CoversClass;

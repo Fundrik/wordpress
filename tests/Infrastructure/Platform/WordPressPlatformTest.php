@@ -7,7 +7,7 @@ namespace Fundrik\WordPress\Tests\Infrastructure\Platform;
 use Brain\Monkey\Functions;
 use Fundrik\Core\Domain\Campaigns\Interfaces\QueryExecutorInterface;
 use Fundrik\Core\Infrastructure\Internal\ContainerManager;
-use Fundrik\WordPress\Infrastructure\Persistence\WpdbQueryExecutor;
+use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbQueryExecutor;
 use Fundrik\WordPress\Infrastructure\Platform\WordpressPlatform;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;

@@ -5,7 +5,7 @@
  * @since 1.0.0
  */
 
-namespace Fundrik\WordPress\Infrastructure;
+namespace Fundrik\WordPress\Infrastructure\Campaigns\Platform;
 
 use WP_Post;
 use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
