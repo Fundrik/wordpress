@@ -48,7 +48,7 @@ final readonly class CampaignPostToCampaignDtoMapper {
 			'id'               => $post->ID,
 			'title'            => $post->post_title,
 			'slug'             => $post->post_name,
-			'is_enabled'       => true, // TODO.
+			'is_enabled'       => 'publish' === $post->post_status,
 			'is_open'          => $this->get_bool_meta( $post->ID, CampaignPostType::META_IS_OPEN ),
 			'has_target'       => $this->get_bool_meta( $post->ID, CampaignPostType::META_HAS_TARGET ),
 			'target_amount'    => $this->get_int_meta( $post->ID, CampaignPostType::META_TARGET_AMOUNT ),

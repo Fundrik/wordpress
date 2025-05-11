@@ -33,9 +33,10 @@ class CampaignPostToCampaignDtoMapperTest extends FundrikTestCase {
 
 		$wp_post = Mockery::mock( 'WP_Post' );
 
-		$wp_post->ID         = 1;
-		$wp_post->post_title = 'Test Campaign';
-		$wp_post->post_name  = 'test-campaign';
+		$wp_post->ID          = 1;
+		$wp_post->post_title  = 'Test Campaign';
+		$wp_post->post_name   = 'test-campaign';
+		$wp_post->post_status = 'publish';
 
 		Functions\when( 'get_post_meta' )->alias(
 			function ( $post_id, $key ) {
@@ -57,7 +58,7 @@ class CampaignPostToCampaignDtoMapperTest extends FundrikTestCase {
 		$this->assertEquals( 1, $result->id );
 		$this->assertEquals( 'Test Campaign', $result->title );
 		$this->assertEquals( 'test-campaign', $result->slug );
-		$this->assertTrue( $result->is_enabled ); // TODO.
+		$this->assertTrue( $result->is_enabled );
 		$this->assertFalse( $result->is_open );
 		$this->assertTrue( $result->has_target );
 		$this->assertEquals( 1000, $result->target_amount );
