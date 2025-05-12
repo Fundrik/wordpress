@@ -14,7 +14,7 @@ namespace Fundrik\WordPress\Infrastructure\Campaigns\Platform;
  *
  * @since 1.0.0
  */
-final class CampaignPostType {
+final readonly class CampaignPostType {
 
 	public const TYPE = 'fundrik_campaign';
 
