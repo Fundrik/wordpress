@@ -12,7 +12,7 @@ namespace Fundrik\WordPress\Infrastructure\Campaigns\Platform;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
 
 /**
- * Provides constants and configuration for the custom post type.
+ * Provides constants and configuration for the campaign post type.
  *
  * @since 1.0.0
  */
