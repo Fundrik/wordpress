@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Platform;
 
-use Fundrik\Core\Domain\Campaigns\Interfaces\QueryExecutorInterface;
 use Fundrik\Core\Infrastructure\Platform\Interfaces\PlatformInterface;
-use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbQueryExecutor;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignPostType;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignSyncProvider;
+use Fundrik\WordPress\Infrastructure\DependencyProvider;
 
 /**
  * Represents the WordPress platform integration for Fundrik.
@@ -22,47 +22,84 @@ use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignPostType;
 final readonly class WordpressPlatform implements PlatformInterface {
 
 	/**
+	 * Constructs the WordPress platform integration.
+	 *
+	 * @param DependencyProvider $dependency_provider Provides all necessary bindings
+	 *                                                for dependency injection within the platform.
+	 *
+	 * @since 1.0.0
+	 */
+	public function __construct(
+		private DependencyProvider $dependency_provider
+	) {}
+
+	/**
 	 * Initializes the platform.
 	 *
 	 * @since 1.0.0
 	 */
 	public function init(): void {
 
-		$this->setup_container();
+		$this->register_bindings();
+		$this->register_listeners();
 
 		add_action( 'init', $this->register_post_types( ... ) );
 	}
 
 	/**
-	 * Registers the custom post types for the platform.
+	 * Registers all custom post types for the platform.
 	 *
 	 * @since 1.0.0
 	 */
 	public function register_post_types(): void {
 
 		register_post_type(
-			CampaignPostType::TYPE,
+			CampaignPostType::get_type(),
 			[
 				'labels'       => CampaignPostType::get_labels(),
 				'public'       => true,
 				'menu_icon'    => 'dashicons-heart',
 				'supports'     => [ 'title', 'editor' ],
 				'has_archive'  => true,
-				'rewrite'      => [ 'slug' => CampaignPostType::REWRITE_SLUG ],
+				'rewrite'      => [ 'slug' => CampaignPostType::get_rewrite_slug() ],
 				'show_in_rest' => true,
 			]
 		);
 	}
 
 	/**
-	 * Sets up the container for dependency injection.
+	 * Registers all dependency bindings into the container
 	 *
 	 * @since 1.0.0
 	 */
-	private function setup_container(): void {
+	private function register_bindings(): void {
 
 		$fundrik_container = fundrik();
 
-		$fundrik_container->singleton( QueryExecutorInterface::class, WpdbQueryExecutor::class );
+		foreach ( $this->dependency_provider->get_bindings() as $abstract => $concrete ) {
+
+			if ( is_array( $concrete ) ) {
+
+				foreach ( $concrete as $a => $c ) {
+					$fundrik_container->singleton( $a, $c );
+				}
+
+				continue;
+			}
+
+			$fundrik_container->singleton( $abstract, $concrete );
+		}
+	}
+
+	/**
+	 * Registers all platform-specific listeners.
+	 *
+	 * @since 1.0.0
+	 */
+	private function register_listeners(): void {
+
+		$fundrik_container = fundrik();
+
+		( $fundrik_container->get( CampaignSyncProvider::class ) )->register();
 	}
 }

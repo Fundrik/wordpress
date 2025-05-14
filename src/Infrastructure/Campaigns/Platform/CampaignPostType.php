@@ -9,28 +9,40 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Campaigns\Platform;
 
+use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
+
 /**
- * Contains constants and configuration for the 'fundrik_campaign' post type.
+ * Provides constants and configuration for the custom post type.
  *
  * @since 1.0.0
  */
-final readonly class CampaignPostType {
-
-	public const TYPE = 'fundrik_campaign';
+class CampaignPostType implements PostTypeInterface {
 
 	public const META_IS_OPEN          = 'is_open';
 	public const META_HAS_TARGET       = 'has_target';
 	public const META_TARGET_AMOUNT    = 'target_amount';
 	public const META_COLLECTED_AMOUNT = 'collected_amount';
 
-	public const REWRITE_SLUG = 'campaigns';
-
 	/**
-	 * Returns labels for the custom post type.
+	 * Returns the custom post type identifier for the campaign post type.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array<string, string>
+	 * @return string The campaign post type identifier.
+	 */
+	public static function get_type(): string {
+
+		return 'fundrik_campaign';
+	}
+
+	/**
+	 * Returns labels for the campaign post type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array<string, string> An associative array where the keys are label names
+	 *                               and the values are the corresponding localized label strings
+	 *                               for the campaign post type.
 	 */
 	public static function get_labels(): array {
 
@@ -60,5 +72,17 @@ final readonly class CampaignPostType {
 			'items_list_navigation' => __( 'Campaigns list navigation', 'fundrik' ),
 			'filter_items_list'     => __( 'Filter campaigns list', 'fundrik' ),
 		];
+	}
+
+	/**
+	 * Returns the rewrite slug used for the campaign post type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string The rewrite slug for the campaign post type.
+	 */
+	public static function get_rewrite_slug(): string {
+
+		return 'campaigns';
 	}
 }

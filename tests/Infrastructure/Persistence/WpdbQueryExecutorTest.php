@@ -18,7 +18,7 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 
 	private const TABLE = 'campaigns';
 
-	private MockInterface&wpdb $wpdb;
+	private wpdb&MockInterface $wpdb;
 	private string $table_name;
 
 	protected function setUp(): void {
@@ -56,9 +56,9 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			->shouldReceive( 'prepare' )
 			->once()
 			->with(
-				"SELECT * FROM %i WHERE id = {$placeholder} LIMIT 1",
-				self::TABLE,
-				$id
+				$this->identicalTo( "SELECT * FROM %i WHERE id = {$placeholder} LIMIT 1" ),
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( $id )
 			)
 			->andReturn( $prepared_sql );
 
@@ -66,8 +66,8 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			->shouldReceive( 'get_row' )
 			->once()
 			->with(
-				$prepared_sql,
-				ARRAY_A
+				$this->identicalTo( $prepared_sql ),
+				$this->identicalTo( ARRAY_A )
 			)
 			->andReturn(
 				[
@@ -79,7 +79,7 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 		$executor = new WpdbQueryExecutor( $this->wpdb );
 		$result   = $executor->get_by_id( self::TABLE, $id );
 
-		$this->assertSame(
+		$this->assertEquals(
 			[
 				'id'    => $id,
 				'title' => 'My Campaign',
@@ -99,9 +99,9 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			->shouldReceive( 'prepare' )
 			->once()
 			->with(
-				'SELECT * FROM %i WHERE id = %d LIMIT 1',
-				self::TABLE,
-				$id
+				$this->identicalTo( 'SELECT * FROM %i WHERE id = %d LIMIT 1' ),
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( $id )
 			)
 			->andReturn( $prepared_sql );
 
@@ -109,8 +109,8 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			->shouldReceive( 'get_row' )
 			->once()
 			->with(
-				$prepared_sql,
-				ARRAY_A
+				$this->identicalTo( $prepared_sql ),
+				$this->identicalTo( ARRAY_A )
 			)
 			->andReturn( null );
 
@@ -129,8 +129,8 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			->shouldReceive( 'prepare' )
 			->once()
 			->with(
-				'SELECT * FROM %i',
-				self::TABLE,
+				$this->identicalTo( 'SELECT * FROM %i' ),
+				$this->identicalTo( self::TABLE ),
 			)
 			->andReturn( $prepared_sql );
 
@@ -138,8 +138,8 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			->shouldReceive( 'get_results' )
 			->once()
 			->with(
-				$prepared_sql,
-				ARRAY_A
+				$this->identicalTo( $prepared_sql ),
+				$this->identicalTo( ARRAY_A )
 			)
 			->andReturn(
 				[
@@ -172,16 +172,16 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			->shouldReceive( 'prepare' )
 			->once()
 			->with(
-				"SELECT id FROM %i WHERE id = {$placeholder} LIMIT 1",
-				self::TABLE,
-				$id
+				$this->identicalTo( "SELECT id FROM %i WHERE id = {$placeholder} LIMIT 1" ),
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( $id )
 			)
 			->andReturn( $prepared_sql );
 
 		$this->wpdb
 			->shouldReceive( 'get_var' )
 			->once()
-			->with( $prepared_sql )
+			->with( $this->identicalTo( $prepared_sql ) )
 			->andReturn( $id );
 
 		$executor = new WpdbQueryExecutor( $this->wpdb );
@@ -200,16 +200,16 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			->shouldReceive( 'prepare' )
 			->once()
 			->with(
-				"SELECT id FROM %i WHERE id = {$placeholder} LIMIT 1",
-				self::TABLE,
-				$id
+				$this->identicalTo( "SELECT id FROM %i WHERE id = {$placeholder} LIMIT 1" ),
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( $id )
 			)
 			->andReturn( $prepared_sql );
 
 		$this->wpdb
 			->shouldReceive( 'get_var' )
 			->once()
-			->with( $prepared_sql )
+			->with( $this->identicalTo( $prepared_sql ) )
 			->andReturn( null );
 
 		$executor = new WpdbQueryExecutor( $this->wpdb );
@@ -227,7 +227,10 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 		$this->wpdb
 			->shouldReceive( 'insert' )
 			->once()
-			->with( self::TABLE, $data )
+			->with(
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( $data )
+			)
 			->andReturn( 1 );
 
 		$executor = new WpdbQueryExecutor( $this->wpdb );
@@ -245,7 +248,10 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 		$this->wpdb
 			->shouldReceive( 'insert' )
 			->once()
-			->with( self::TABLE, $data )
+			->with(
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( $data )
+			)
 			->andReturn( false );
 
 		$executor = new WpdbQueryExecutor( $this->wpdb );
@@ -264,7 +270,11 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 		$this->wpdb
 			->shouldReceive( 'update' )
 			->once()
-			->with( self::TABLE, $data, [ 'id' => $id ] )
+			->with(
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( $data ),
+				$this->identicalTo( [ 'id' => $id ] )
+			)
 			->andReturn( 1 );
 
 		$executor = new WpdbQueryExecutor( $this->wpdb );
@@ -283,11 +293,51 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 		$this->wpdb
 			->shouldReceive( 'update' )
 			->once()
-			->with( self::TABLE, $data, [ 'id' => $id ] )
+			->with(
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( $data ),
+				$this->identicalTo( [ 'id' => $id ] )
+			)
 			->andReturn( false );
 
 		$executor = new WpdbQueryExecutor( $this->wpdb );
 
 		$this->assertFalse( $executor->update( self::TABLE, $data, $id ) );
+	}
+
+	#[Test]
+	#[DataProvider( 'id_provider' )]
+	public function deletes_row_successfully( int|string $id ): void {
+
+		$this->wpdb
+			->shouldReceive( 'delete' )
+			->once()
+			->with(
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( [ 'id' => $id ] )
+			)
+			->andReturn( 1 );
+
+		$executor = new WpdbQueryExecutor( $this->wpdb );
+
+		$this->assertTrue( $executor->delete( self::TABLE, $id ) );
+	}
+
+	#[Test]
+	#[DataProvider( 'id_provider' )]
+	public function fails_to_delete_row_and_returns_false( int|string $id ): void {
+
+		$this->wpdb
+			->shouldReceive( 'delete' )
+			->once()
+			->with(
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( [ 'id' => $id ] )
+			)
+			->andReturn( false );
+
+		$executor = new WpdbQueryExecutor( $this->wpdb );
+
+		$this->assertFalse( $executor->delete( self::TABLE, $id ) );
 	}
 }

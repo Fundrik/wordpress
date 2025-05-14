@@ -70,4 +70,16 @@ interface QueryExecutorInterface {
 	 * @return bool True on success, false on failure.
 	 */
 	public function update( string $table, array $data, int|string $id ): bool;
+
+	/**
+	 * Deletes a row from the given table by its ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string     $table The name of the table.
+	 * @param int|string $id    The value of the primary key (integer or UUID).
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function delete( string $table, int|string $id ): bool;
 }

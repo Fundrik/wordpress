@@ -6,7 +6,6 @@ namespace Fundrik\WordPress\Tests\Infrastructure;
 
 use Brain\Monkey\Filters;
 use Fundrik\Core\Domain\Campaigns\Interfaces\CampaignRepositoryInterface;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\CampaignSyncListenerInterface;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
 use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
 use Fundrik\WordPress\Tests\FundrikTestCase;
@@ -27,22 +26,38 @@ class DependencyProviderTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function get_bindings_returns_all_bindings(): void {
+	public function get_bindings_contains_all_required_keys(): void {
 
-		$bindings = $this->provider->get_bindings();
+		$bindings      = $this->provider->get_bindings();
+		$all_keys      = $this->collect_keys_recursively( $bindings );
+		$required_keys = [
+			wpdb::class,
+			QueryExecutorInterface::class,
+			CampaignRepositoryInterface::class,
+		];
 
-		$this->assertArrayHasKey( wpdb::class, $bindings );
-		$this->assertArrayHasKey( QueryExecutorInterface::class, $bindings );
-		$this->assertArrayHasKey( CampaignRepositoryInterface::class, $bindings );
-		$this->assertArrayHasKey( 'listeners', $bindings );
+		foreach ( $required_keys as $key ) {
+			$this->assertContains( $key, $all_keys, "Missing required binding: $key" );
+		}
 	}
 
 	#[Test]
-	public function get_bindings_returns_bindings_for_category(): void {
+	public function get_bindings_returns_specific_category_if_exists(): void {
 
-		$listeners = $this->provider->get_bindings( 'listeners' );
+		$bindings = $this->provider->get_bindings();
 
-		$this->assertArrayHasKey( CampaignSyncListenerInterface::class, $listeners );
+		$result = $this->provider->get_bindings( 'core' );
+
+		$this->assertEquals( $bindings['core'], $result );
+	}
+
+	#[Test]
+	public function get_bindings_returns_empty_array_if_category_does_not_exist(): void {
+
+		$result = $this->provider->get_bindings( 'non_existing_category' );
+
+		$this->assertIsArray( $result );
+		$this->assertEmpty( $result );
 	}
 
 	#[Test]
@@ -62,5 +77,20 @@ class DependencyProviderTest extends FundrikTestCase {
 
 		$this->assertArrayHasKey( 'custom_binding', $bindings );
 		$this->assertSame( 'CustomClass', $bindings['custom_binding'] );
+	}
+
+	private function collect_keys_recursively( array $items ): array {
+
+		$keys = [];
+
+		foreach ( $items as $key => $value ) {
+			$keys[] = $key;
+
+			if ( is_array( $value ) ) {
+				$keys = array_merge( $keys, $this->collect_keys_recursively( $value ) );
+			}
+		}
+
+		return $keys;
 	}
 }

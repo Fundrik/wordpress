@@ -5,11 +5,15 @@
  * @since 1.0.0
  */
 
+declare(strict_types=1);
+
 namespace Fundrik\WordPress\Infrastructure\Campaigns\Platform;
 
 use WP_Post;
 use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
 use Fundrik\Core\Domain\Campaigns\CampaignDto;
+use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostToEntityDtoMapperInterface;
+use Fundrik\WordPress\Support\PostMetaHelper;
 
 /**
  * Extracts relevant campaign data from the WordPress campaign post object
@@ -19,7 +23,7 @@ use Fundrik\Core\Domain\Campaigns\CampaignDto;
  *
  * @since 1.0.0
  */
-final readonly class CampaignPostToCampaignDtoMapper {
+class CampaignPostToCampaignDtoMapper implements PostToEntityDtoMapperInterface {
 
 	/**
 	 * PostToCampaignDtoMapper constructor.
@@ -49,43 +53,12 @@ final readonly class CampaignPostToCampaignDtoMapper {
 			'title'            => $post->post_title,
 			'slug'             => $post->post_name,
 			'is_enabled'       => 'publish' === $post->post_status,
-			'is_open'          => $this->get_bool_meta( $post->ID, CampaignPostType::META_IS_OPEN ),
-			'has_target'       => $this->get_bool_meta( $post->ID, CampaignPostType::META_HAS_TARGET ),
-			'target_amount'    => $this->get_int_meta( $post->ID, CampaignPostType::META_TARGET_AMOUNT ),
-			'collected_amount' => $this->get_int_meta( $post->ID, CampaignPostType::META_COLLECTED_AMOUNT ),
+			'is_open'          => PostMetaHelper::get_bool( $post->ID, CampaignPostType::META_IS_OPEN ),
+			'has_target'       => PostMetaHelper::get_bool( $post->ID, CampaignPostType::META_HAS_TARGET ),
+			'target_amount'    => PostMetaHelper::get_int( $post->ID, CampaignPostType::META_TARGET_AMOUNT ),
+			'collected_amount' => PostMetaHelper::get_int( $post->ID, CampaignPostType::META_COLLECTED_AMOUNT ),
 		];
 
 		return $this->dto_factory->from_array( $data );
-	}
-
-	/**
-	 * Retrieves a boolean value from post metadata.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int    $post_id The ID of the post.
-	 * @param string $key     The metadata key.
-	 *
-	 * @return bool The boolean value of the metadata.
-	 */
-	private function get_bool_meta( int $post_id, string $key ): bool {
-
-		return filter_var(
-			get_post_meta( $post_id, $key, true ),
-			FILTER_VALIDATE_BOOLEAN
-		);
-	}
-
-	/**
-	 * Retrieves an integer value from post metadata.
-	 *
-	 * @param int    $post_id The ID of the post.
-	 * @param string $key     The metadata key.
-	 *
-	 * @return int The integer value of the metadata.
-	 */
-	private function get_int_meta( int $post_id, string $key ): int {
-
-		return (int) get_post_meta( $post_id, $key, true );
 	}
 }

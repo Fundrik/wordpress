@@ -16,12 +16,10 @@ class CampaignPostTypeTest extends FundrikTestCase {
 	#[Test]
 	public function it_has_correct_constants(): void {
 
-		self::assertEquals( 'fundrik_campaign', CampaignPostType::TYPE );
 		self::assertEquals( 'is_open', CampaignPostType::META_IS_OPEN );
 		self::assertEquals( 'has_target', CampaignPostType::META_HAS_TARGET );
 		self::assertEquals( 'target_amount', CampaignPostType::META_TARGET_AMOUNT );
 		self::assertEquals( 'collected_amount', CampaignPostType::META_COLLECTED_AMOUNT );
-		self::assertEquals( 'campaigns', CampaignPostType::REWRITE_SLUG );
 	}
 
 	#[Test]
@@ -66,5 +64,17 @@ class CampaignPostTypeTest extends FundrikTestCase {
 		self::assertEquals( 'Campaign', $labels['singular_name'] );
 		self::assertEquals( 'Campaigns', $labels['menu_name'] );
 		self::assertEquals( 'Campaign', $labels['name_admin_bar'] );
+	}
+
+	#[Test]
+	public function it_returns_correct_post_type(): void {
+
+		self::assertEquals( 'fundrik_campaign', CampaignPostType::get_type() );
+	}
+
+	#[Test]
+	public function it_returns_correct_rewrite_slug(): void {
+
+		self::assertEquals( 'campaigns', CampaignPostType::get_rewrite_slug() );
 	}
 }

@@ -12,8 +12,6 @@ namespace Fundrik\WordPress\Infrastructure;
 use Fundrik\Core\Domain\Campaigns\Interfaces\CampaignRepositoryInterface;
 use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
 use Fundrik\WordPress\Infrastructure\Persistence\WpdbQueryExecutor;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignSyncListener;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\CampaignSyncListenerInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbCampaignRepository;
 use wpdb;
 
@@ -48,11 +46,12 @@ class DependencyProvider {
 		$bindings = apply_filters(
 			'fundrik_container_bindings',
 			[
-				wpdb::class                        => fn() => $GLOBALS['wpdb'],
-				QueryExecutorInterface::class      => WpdbQueryExecutor::class,
-				CampaignRepositoryInterface::class => WpdbCampaignRepository::class,
-				'listeners'                        => [
-					CampaignSyncListenerInterface::class => CampaignSyncListener::class,
+				QueryExecutorInterface::class => WpdbQueryExecutor::class,
+				'core'                        => [
+					CampaignRepositoryInterface::class => WpdbCampaignRepository::class,
+				],
+				'wordpress'                   => [
+					wpdb::class => fn() => $GLOBALS['wpdb'],
 				],
 			]
 		);

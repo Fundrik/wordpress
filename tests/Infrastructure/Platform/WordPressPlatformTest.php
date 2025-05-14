@@ -5,10 +5,16 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure\Platform;
 
 use Brain\Monkey\Functions;
-use Fundrik\Core\Domain\Campaigns\Interfaces\QueryExecutorInterface;
+use Closure;
+use Fundrik\Core\Infrastructure\Internal\Container;
 use Fundrik\Core\Infrastructure\Internal\ContainerManager;
-use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbQueryExecutor;
+use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbCampaignRepository;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignPostToCampaignDtoMapper;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignPostType;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignSyncProvider;
+use Fundrik\WordPress\Infrastructure\DependencyProvider;
+use Fundrik\WordPress\Infrastructure\Persistence\WpdbQueryExecutor;
+use Fundrik\WordPress\Infrastructure\Platform\PostSyncListener;
 use Fundrik\WordPress\Infrastructure\Platform\WordpressPlatform;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
@@ -17,8 +23,13 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass( WordpressPlatform::class )]
-#[UsesClass( WpdbQueryExecutor::class )]
+#[UsesClass( WpdbCampaignRepository::class )]
+#[UsesClass( CampaignPostToCampaignDtoMapper::class )]
 #[UsesClass( CampaignPostType::class )]
+#[UsesClass( CampaignSyncProvider::class )]
+#[UsesClass( DependencyProvider::class )]
+#[UsesClass( WpdbQueryExecutor::class )]
+#[UsesClass( PostSyncListener::class )]
 class WordpressPlatformTest extends FundrikTestCase {
 
 	private WordpressPlatform $platform;
@@ -27,11 +38,14 @@ class WordpressPlatformTest extends FundrikTestCase {
 
 		parent::setUp();
 
-		$this->platform = new WordpressPlatform();
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$GLOBALS['wpdb'] = Mockery::mock( 'wpdb' );
+
+		$this->platform = new WordpressPlatform( new DependencyProvider() );
 	}
 
 	#[Test]
-	public function init_calls_register_post_types(): void {
+	public function init_registers_init_hooks(): void {
 
 		$this->platform->init();
 
@@ -44,44 +58,68 @@ class WordpressPlatformTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function setup_container_registers_dependencies(): void {
+	public function register_bindings_registers_dependencies(): void {
 
 		$container = ContainerManager::get_fresh();
 
-		$wpdb = Mockery::mock( 'wpdb' );
-		$container->singleton( 'wpdb', fn () => $wpdb );
-
 		$this->platform->init();
 
-		$query_executor = $container->get( QueryExecutorInterface::class );
+		$bindings = ( new DependencyProvider() )->get_bindings();
 
-		$this->assertInstanceOf( WpdbQueryExecutor::class, $query_executor );
+		foreach ( $bindings as $abstract => $concrete ) {
 
-		$second_instance = $container->get( QueryExecutorInterface::class );
+			if ( is_array( $concrete ) ) {
 
-		$this->assertEquals( $query_executor, $second_instance );
+				foreach ( $concrete as $a => $c ) {
+					$this->assertSingletonBinding( $container, $a, $c );
+				}
+
+				continue;
+			}
+
+			$this->assertSingletonBinding( $container, $abstract, $concrete );
+		}
 
 		ContainerManager::reset();
 	}
 
 	#[Test]
-	public function it_registers_post_types(): void {
+	public function register_post_types_registers_post_types(): void {
 
 		Functions\when( '__' )->returnArg();
 
 		Functions\expect( 'register_post_type' )
 			->once()
 			->with(
-				'fundrik_campaign',
-				Mockery::on(
-					static function ( $args ): bool {
-						return is_array( $args )
-						&& isset( $args['labels']['name'] )
-						&& CampaignPostType::get_labels()['name'] === $args['labels']['name'];
-					}
-				)
+				CampaignPostType::get_type(),
+				[
+					'labels'       => CampaignPostType::get_labels(),
+					'public'       => true,
+					'menu_icon'    => 'dashicons-heart',
+					'supports'     => [ 'title', 'editor' ],
+					'has_archive'  => true,
+					'rewrite'      => [ 'slug' => CampaignPostType::get_rewrite_slug() ],
+					'show_in_rest' => true,
+				]
 			);
 
 		$this->platform->register_post_types();
+	}
+
+	private function assertSingletonBinding(
+		Container $container,
+		string $abstract_name,
+		string|Closure $concrete
+	): void {
+
+		if ( is_callable( $concrete ) ) {
+			$concrete = $concrete()::class;
+		}
+
+		$instance1 = $container->get( $abstract_name );
+		$this->assertInstanceOf( $concrete, $instance1 );
+
+		$instance2 = $container->get( $abstract_name );
+		$this->assertSame( $instance1, $instance2 );
 	}
 }
