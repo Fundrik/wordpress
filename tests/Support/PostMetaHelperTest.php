@@ -28,7 +28,8 @@ class PostMetaHelperTest extends FundrikTestCase {
 		$this->assertTrue( $result );
 	}
 
-	public function test_get_bool_returns_false_when_value_is_false(): void {
+	#[Test]
+	public function get_bool_returns_false_when_value_is_false(): void {
 
 		$post_id  = 123;
 		$meta_key = 'some_key';
@@ -42,7 +43,8 @@ class PostMetaHelperTest extends FundrikTestCase {
 		$this->assertFalse( $result );
 	}
 
-	public function test_get_bool_returns_false_when_value_is_empty(): void {
+	#[Test]
+	public function get_bool_returns_false_when_value_is_empty(): void {
 
 		$post_id  = 123;
 		$meta_key = 'some_key';
@@ -56,7 +58,8 @@ class PostMetaHelperTest extends FundrikTestCase {
 		$this->assertFalse( $result );
 	}
 
-	public function test_get_int_returns_integer_value(): void {
+	#[Test]
+	public function get_int_returns_integer_value(): void {
 
 		$post_id  = 123;
 		$meta_key = 'some_key';
@@ -70,7 +73,8 @@ class PostMetaHelperTest extends FundrikTestCase {
 		$this->assertSame( 42, $result );
 	}
 
-	public function test_get_int_returns_zero_for_non_integer_value(): void {
+	#[Test]
+	public function get_int_returns_zero_for_non_integer_value(): void {
 
 		$post_id  = 123;
 		$meta_key = 'some_key';
@@ -84,7 +88,8 @@ class PostMetaHelperTest extends FundrikTestCase {
 		$this->assertSame( 0, $result );
 	}
 
-	public function test_get_int_returns_zero_when_value_is_empty(): void {
+	#[Test]
+	public function get_int_returns_zero_when_value_is_empty(): void {
 
 		$post_id  = 123;
 		$meta_key = 'some_key';
