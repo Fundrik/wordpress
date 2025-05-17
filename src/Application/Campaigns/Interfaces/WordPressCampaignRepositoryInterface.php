@@ -1,0 +1,84 @@
+<?php
+/**
+ * Interface for the WordPress-specific campaign repository.
+ *
+ * Defines methods for interacting with campaign data in the WordPress environment,
+ * using WordPress-specific DTOs and entities.
+ *
+ * @since 1.0.0
+ */
+
+declare(strict_types=1);
+
+namespace Fundrik\WordPress\Application\Campaigns\Interfaces;
+
+use Fundrik\Core\Domain\EntityId;
+use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
+use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
+
+interface WordPressCampaignRepositoryInterface {
+
+	/**
+	 * Get a campaign by its ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param EntityId $id The campaign ID.
+	 *
+	 * @return WordPressCampaignDto|null The campaign DTO if found, or null if not found.
+	 */
+	public function get_by_id( EntityId $id ): ?WordPressCampaignDto;
+
+	/**
+	 * Get all campaigns.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return WordPressCampaignDto[] An array of campaign DTOs.
+	 */
+	public function get_all(): array;
+
+	/**
+	 * Check if a campaign exists.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WordPressCampaign $campaign The campaign entity to check.
+	 *
+	 * @return bool True if the campaign exists, false otherwise.
+	 */
+	public function exists( WordPressCampaign $campaign ): bool;
+
+	/**
+	 * Insert a new campaign.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WordPressCampaign $campaign The campaign entity to insert.
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function insert( WordPressCampaign $campaign ): bool;
+
+	/**
+	 * Update an existing campaign.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WordPressCampaign $campaign The campaign entity to update.
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function update( WordPressCampaign $campaign ): bool;
+
+	/**
+	 * Delete a campaign by its ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param EntityId $id The ID of the campaign to delete.
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function delete( EntityId $id ): bool;
+}

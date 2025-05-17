@@ -48,7 +48,7 @@ class DependencyProviderTest extends FundrikTestCase {
 
 		$result = $this->provider->get_bindings( 'core' );
 
-		$this->assertEquals( $bindings['core'], $result );
+		$this->assertSame( $bindings['core'], $result );
 	}
 
 	#[Test]

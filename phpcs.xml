@@ -25,8 +25,8 @@
 		<exclude name="Universal.Operators.DisallowShortTernary.Found"/>
 		<!-- Disable check for missing @package tag -->
 		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
-		<!-- @see https://github.com/WordPress/wordpress-develop/pull/5136 -->
-		<!--<exclude name="WordPress.Security.EscapeOutput.ExceptionNotEscaped"/>-->
+		<!-- @see https://github.com/WordPress/WordPress-Coding-Standards/issues/2528 -->
+		<exclude name="Generic.Functions.CallTimePassByReference" />
 	</rule>
 	
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">

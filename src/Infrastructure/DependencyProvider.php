@@ -9,10 +9,17 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure;
 
-use Fundrik\Core\Domain\Campaigns\Interfaces\CampaignRepositoryInterface;
+use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
+use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
+use Fundrik\WordPress\Application\Campaigns\WordPressCampaignService;
 use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
 use Fundrik\WordPress\Infrastructure\Persistence\WpdbQueryExecutor;
-use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbCampaignRepository;
+use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbWordPressCampaignRepository;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignSyncListenerInterface;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostMapper;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
 use wpdb;
 
 /**
@@ -46,12 +53,21 @@ class DependencyProvider {
 		$bindings = apply_filters(
 			'fundrik_container_bindings',
 			[
-				QueryExecutorInterface::class => WpdbQueryExecutor::class,
-				'core'                        => [
-					CampaignRepositoryInterface::class => WpdbCampaignRepository::class,
+				'core'       => [],
+				'wordpress'  => [
+					wpdb::class                   => fn() => $GLOBALS['wpdb'],
+
+					QueryExecutorInterface::class => WpdbQueryExecutor::class,
+
+					WordPressCampaignRepositoryInterface::class => WpdbWordPressCampaignRepository::class,
+					WordPressCampaignServiceInterface::class => WordPressCampaignService::class,
+					WordPressCampaignPostMapperInterface::class => WordPressCampaignPostMapper::class,
 				],
-				'wordpress'                   => [
-					wpdb::class => fn() => $GLOBALS['wpdb'],
+				'post_types' => [
+					WordPressCampaignPostType::class,
+				],
+				'listeners'  => [
+					WordPressCampaignSyncListenerInterface::class => WordPressCampaignSyncListener::class,
 				],
 			]
 		);

@@ -79,7 +79,7 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 		$executor = new WpdbQueryExecutor( $this->wpdb );
 		$result   = $executor->get_by_id( self::TABLE, $id );
 
-		$this->assertEquals(
+		$this->assertSame(
 			[
 				'id'    => $id,
 				'title' => 'My Campaign',

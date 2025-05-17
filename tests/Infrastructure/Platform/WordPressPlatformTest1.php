@@ -15,14 +15,14 @@ use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignSyncProvider;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
 use Fundrik\WordPress\Infrastructure\Persistence\WpdbQueryExecutor;
 use Fundrik\WordPress\Infrastructure\Platform\PostSyncListener;
-use Fundrik\WordPress\Infrastructure\Platform\WordpressPlatform;
+use Fundrik\WordPress\Infrastructure\Platform\WordPressPlatform;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 
-#[CoversClass( WordpressPlatform::class )]
+#[CoversClass( WordPressPlatform::class )]
 #[UsesClass( WpdbCampaignRepository::class )]
 #[UsesClass( CampaignPostToCampaignDtoMapper::class )]
 #[UsesClass( CampaignPostType::class )]
@@ -30,9 +30,9 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass( DependencyProvider::class )]
 #[UsesClass( WpdbQueryExecutor::class )]
 #[UsesClass( PostSyncListener::class )]
-class WordpressPlatformTest extends FundrikTestCase {
+class WordPressPlatformTest extends FundrikTestCase {
 
-	private WordpressPlatform $platform;
+	private WordPressPlatform $platform;
 
 	protected function setUp(): void {
 
@@ -41,7 +41,7 @@ class WordpressPlatformTest extends FundrikTestCase {
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$GLOBALS['wpdb'] = Mockery::mock( 'wpdb' );
 
-		$this->platform = new WordpressPlatform( new DependencyProvider() );
+		$this->platform = new WordPressPlatform( new DependencyProvider() );
 	}
 
 	#[Test]

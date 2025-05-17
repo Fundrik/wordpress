@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Platform;
 
 use Brain\Monkey\Functions;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignPostType;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 
-#[CoversClass( CampaignPostType::class )]
-class CampaignPostTypeTest extends FundrikTestCase {
+#[CoversClass( WordPressCampaignPostType::class )]
+class WordPressCampaignPostTypeTest extends FundrikTestCase {
 
 	#[Test]
 	public function it_has_correct_constants(): void {
 
-		self::assertEquals( 'is_open', CampaignPostType::META_IS_OPEN );
-		self::assertEquals( 'has_target', CampaignPostType::META_HAS_TARGET );
-		self::assertEquals( 'target_amount', CampaignPostType::META_TARGET_AMOUNT );
-		self::assertEquals( 'collected_amount', CampaignPostType::META_COLLECTED_AMOUNT );
+		self::assertSame( 'is_open', WordPressCampaignPostType::META_IS_OPEN );
+		self::assertSame( 'has_target', WordPressCampaignPostType::META_HAS_TARGET );
+		self::assertSame( 'target_amount', WordPressCampaignPostType::META_TARGET_AMOUNT );
+		self::assertSame( 'collected_amount', WordPressCampaignPostType::META_COLLECTED_AMOUNT );
 	}
 
 	#[Test]
@@ -27,7 +27,7 @@ class CampaignPostTypeTest extends FundrikTestCase {
 
 		Functions\when( '__' )->returnArg();
 
-		$labels = CampaignPostType::get_labels();
+		$labels = WordPressCampaignPostType::get_labels();
 
 		$expected_keys = [
 			'name',
@@ -60,21 +60,21 @@ class CampaignPostTypeTest extends FundrikTestCase {
 			self::assertArrayHasKey( $key, $labels );
 		}
 
-		self::assertEquals( 'Campaigns', $labels['name'] );
-		self::assertEquals( 'Campaign', $labels['singular_name'] );
-		self::assertEquals( 'Campaigns', $labels['menu_name'] );
-		self::assertEquals( 'Campaign', $labels['name_admin_bar'] );
+		self::assertSame( 'Campaigns', $labels['name'] );
+		self::assertSame( 'Campaign', $labels['singular_name'] );
+		self::assertSame( 'Campaigns', $labels['menu_name'] );
+		self::assertSame( 'Campaign', $labels['name_admin_bar'] );
 	}
 
 	#[Test]
 	public function it_returns_correct_post_type(): void {
 
-		self::assertEquals( 'fundrik_campaign', CampaignPostType::get_type() );
+		self::assertSame( 'fundrik_campaign', WordPressCampaignPostType::get_type() );
 	}
 
 	#[Test]
 	public function it_returns_correct_rewrite_slug(): void {
 
-		self::assertEquals( 'campaigns', CampaignPostType::get_rewrite_slug() );
+		self::assertSame( 'campaigns', WordPressCampaignPostType::get_rewrite_slug() );
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Interface for providing synchronization functionality for a custom post type.
+ * Defines an interface for classes that register WordPress hooks or listeners.
  *
  * @since 1.0.0
  */
@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Platform\Interfaces;
 
-interface SyncProviderInterface {
+interface ListenerInterface {
 
 	/**
-	 * Registers the post synchronization listener for the custom post type.
+	 * Registers necessary WordPress hooks or actions.
 	 *
 	 * @since 1.0.0
 	 */

@@ -18,7 +18,7 @@ interface PostTypeInterface {
 	 *
 	 * @return string The custom post type identifier.
 	 */
-	public static function get_type(): string;
+	public function get_type(): string;
 
 	/**
 	 * Returns labels for the custom post type.
@@ -29,7 +29,7 @@ interface PostTypeInterface {
 	 *                               and the values are the corresponding localized label strings
 	 *                               for the custom post type.
 	 */
-	public static function get_labels(): array;
+	public function get_labels(): array;
 
 	/**
 	 * Returns the rewrite slug used for the custom post type.
@@ -38,5 +38,5 @@ interface PostTypeInterface {
 	 *
 	 * @return string The rewrite slug for the custom post type.
 	 */
-	public static function get_rewrite_slug(): string;
+	public function get_rewrite_slug(): string;
 }

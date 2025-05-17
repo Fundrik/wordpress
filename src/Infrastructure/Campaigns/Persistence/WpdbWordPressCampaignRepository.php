@@ -1,6 +1,6 @@
 <?php
 /**
- * WpdbCampaignRepository class.
+ * WpdbWordPressCampaignRepository class.
  *
  * @since 1.0.0
  */
@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Campaigns\Persistence;
 
-use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
-use Fundrik\Core\Domain\Campaigns\Campaign;
-use Fundrik\Core\Domain\Campaigns\CampaignDto;
-use Fundrik\Core\Domain\Campaigns\Interfaces\CampaignRepositoryInterface;
 use Fundrik\Core\Domain\EntityId;
+use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
+use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
+use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
+use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
 
 /**
@@ -21,7 +21,7 @@ use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterfa
  *
  * @since 1.0.0
  */
-final readonly class WpdbCampaignRepository implements CampaignRepositoryInterface {
+final readonly class WpdbWordPressCampaignRepository implements WordPressCampaignRepositoryInterface {
 
 	private const TABLE = 'fundrik_campaigns';
 
@@ -30,11 +30,11 @@ final readonly class WpdbCampaignRepository implements CampaignRepositoryInterfa
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param CampaignDtoFactory     $dto_factory The factory to create CampaignDto objects from database data.
-	 * @param QueryExecutorInterface $query_executor The query executor interface for interacting with the database.
+	 * @param WordPressCampaignDtoFactory $dto_factory The factory to create WordPressCampaignDto objects from database data.
+	 * @param QueryExecutorInterface      $query_executor The query executor interface for interacting with the database.
 	 */
 	public function __construct(
-		private CampaignDtoFactory $dto_factory,
+		private WordPressCampaignDtoFactory $dto_factory,
 		private QueryExecutorInterface $query_executor
 	) {
 	}
@@ -46,9 +46,9 @@ final readonly class WpdbCampaignRepository implements CampaignRepositoryInterfa
 	 *
 	 * @param EntityId $id The campaign ID.
 	 *
-	 * @return CampaignDto|null The campaign DTO if found, or null if not found.
+	 * @return WordPressCampaignDto|null The campaign DTO if found, or null if not found.
 	 */
-	public function get_by_id( EntityId $id ): ?CampaignDto {
+	public function get_by_id( EntityId $id ): ?WordPressCampaignDto {
 
 		$data = $this->query_executor->get_by_id( self::TABLE, $id->value );
 
@@ -60,14 +60,14 @@ final readonly class WpdbCampaignRepository implements CampaignRepositoryInterfa
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return CampaignDto[] An array of campaign DTOs.
+	 * @return WordPressCampaignDto[] An array of campaign DTOs.
 	 */
 	public function get_all(): array {
 
 		$data = $this->query_executor->get_all( self::TABLE );
 
 		return array_map(
-			fn( $item ): CampaignDto => $this->dto_factory->from_array( $item ),
+			fn( $item ): WordPressCampaignDto => $this->dto_factory->from_array( $item ),
 			$data
 		);
 	}
@@ -77,13 +77,13 @@ final readonly class WpdbCampaignRepository implements CampaignRepositoryInterfa
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Campaign $campaign The campaign entity to check.
+	 * @param WordPressCampaign $campaign The campaign entity to check.
 	 *
 	 * @return bool True if the campaign exists, false otherwise.
 	 */
-	public function exists( Campaign $campaign ): bool {
+	public function exists( WordPressCampaign $campaign ): bool {
 
-		return $this->query_executor->exists( self::TABLE, $campaign->id->value );
+		return $this->query_executor->exists( self::TABLE, $campaign->get_id() );
 	}
 
 	/**
@@ -91,11 +91,11 @@ final readonly class WpdbCampaignRepository implements CampaignRepositoryInterfa
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Campaign $campaign The campaign entity to insert.
+	 * @param WordPressCampaign $campaign The campaign entity to insert.
 	 *
 	 * @return bool True on success, false on failure.
 	 */
-	public function insert( Campaign $campaign ): bool {
+	public function insert( WordPressCampaign $campaign ): bool {
 
 		$dto = $this->dto_factory->from_campaign( $campaign );
 
@@ -107,18 +107,18 @@ final readonly class WpdbCampaignRepository implements CampaignRepositoryInterfa
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Campaign $campaign The campaign entity to update.
+	 * @param WordPressCampaign $campaign The campaign entity to update.
 	 *
 	 * @return bool True on success, false on failure.
 	 */
-	public function update( Campaign $campaign ): bool {
+	public function update( WordPressCampaign $campaign ): bool {
 
 		$dto = $this->dto_factory->from_campaign( $campaign );
 
 		return $this->query_executor->update(
 			self::TABLE,
 			(array) $dto,
-			$campaign->id->value
+			$campaign->get_id()
 		);
 	}
 

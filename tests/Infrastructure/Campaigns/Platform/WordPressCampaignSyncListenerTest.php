@@ -2,38 +2,46 @@
 
 declare(strict_types=1);
 
-namespace Fundrik\WordPress\Tests\Infrastructure\Platform;
+namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Platform;
 
-use Fundrik\WordPress\Infrastructure\Platform\PostSyncListener;
-use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostToEntityDtoMapperInterface;
-use Fundrik\Core\Application\Interfaces\EntityServiceInterface;
+use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
+use Fundrik\Core\Domain\Campaigns\CampaignFactory;
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\Core\Domain\Interfaces\EntityDto;
+use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
+use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
+use Fundrik\WordPress\Application\Campaigns\WordPressCampaignService;
+use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignFactory;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostMapper;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use WP_Post;
 
-#[CoversClass( PostSyncListener::class )]
-class PostSyncListenerTest extends FundrikTestCase {
+#[CoversClass( WordPressCampaignSyncListener::class )]
+class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
-	private PostToEntityDtoMapperInterface&MockInterface $mapper;
-	private EntityServiceInterface&MockInterface $service;
-	private PostSyncListener $listener;
+	private WordPressCampaignRepositoryInterface&MockInterface $repository;
+
+	private WordPressCampaignPostMapper $mapper;
+	private WordPressCampaignService $service;
+	private WordPressCampaignSyncListener $listener;
 
 	protected function setUp(): void {
 
 		parent::setUp();
 
-		$this->mapper  = Mockery::mock( PostToEntityDtoMapperInterface::class );
-		$this->service = Mockery::mock( EntityServiceInterface::class );
+		$this->repository = Mockery::mock( WordPressCampaignRepositoryInterface::class );
 
-		$this->listener = new PostSyncListener(
-			'custom_post_type',
+		$this->mapper  = Mockery::mock( WordPressCampaignPostMapper::class );
+		$this->service = Mockery::mock( WordPressCampaignService::class );
+
+		$this->listener = new WordPressCampaignSyncListener(
 			$this->mapper,
-			$this->service
+			$this->service,
 		);
 	}
 
@@ -61,7 +69,7 @@ class PostSyncListenerTest extends FundrikTestCase {
 	public function sync_method_saves_entity(): void {
 
 		$post            = Mockery::mock( 'WP_Post' );
-		$post->post_type = 'custom_post_type';
+		$post->post_type = WordPressCampaignPostType::get_type();
 
 		$dto = Mockery::mock( EntityDto::class );
 

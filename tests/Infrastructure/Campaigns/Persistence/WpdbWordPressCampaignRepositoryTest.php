@@ -4,27 +4,32 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Persistence;
 
-use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
 use Fundrik\Core\Domain\Campaigns\Campaign;
-use Fundrik\Core\Domain\Campaigns\CampaignDto;
 use Fundrik\Core\Domain\Campaigns\CampaignTarget;
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbCampaignRepository;
+use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
+use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
+use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
+use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbWordPressCampaignRepository;
 use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 
-#[CoversClass( WpdbCampaignRepository::class )]
-class WpdbCampaignRepositoryTest extends FundrikTestCase {
+#[CoversClass( WpdbWordPressCampaignRepository::class )]
+#[UsesClass( WordPressCampaignDto::class )]
+#[UsesClass( WordPressCampaignDtoFactory::class )]
+#[UsesClass( WordPressCampaign::class )]
+class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 
 	private const TABLE = 'fundrik_campaigns';
 
 	private QueryExecutorInterface&MockInterface $query_executor;
 
-	private WpdbCampaignRepository $repository;
+	private WpdbWordPressCampaignRepository $repository;
 
 	protected function setUp(): void {
 
@@ -32,8 +37,8 @@ class WpdbCampaignRepositoryTest extends FundrikTestCase {
 
 		$this->query_executor = Mockery::mock( QueryExecutorInterface::class );
 
-		$this->repository = new WpdbCampaignRepository(
-			new CampaignDtoFactory(),
+		$this->repository = new WpdbWordPressCampaignRepository(
+			new WordPressCampaignDtoFactory(),
 			$this->query_executor
 		);
 	}
@@ -43,17 +48,16 @@ class WpdbCampaignRepositoryTest extends FundrikTestCase {
 
 		$id = 123;
 
-		$campaign_id = EntityId::from_int( $id );
+		$campaign_id = EntityId::create( $id );
 
 		$db_data = [
-			'id'               => $id,
-			'title'            => 'Test Campaign',
-			'slug'             => 'test-campaign',
-			'is_enabled'       => true,
-			'is_open'          => true,
-			'has_target'       => true,
-			'target_amount'    => 1000,
-			'collected_amount' => 200,
+			'id'            => $id,
+			'title'         => 'Test Campaign',
+			'slug'          => 'test-campaign',
+			'is_enabled'    => true,
+			'is_open'       => true,
+			'has_target'    => true,
+			'target_amount' => 1000,
 		];
 
 		$this->query_executor
@@ -67,9 +71,9 @@ class WpdbCampaignRepositoryTest extends FundrikTestCase {
 
 		$result = $this->repository->get_by_id( $campaign_id );
 
-		$this->assertInstanceOf( CampaignDto::class, $result );
-		$this->assertEquals( $id, $result->id );
-		$this->assertEquals( 'Test Campaign', $result->title );
+		$this->assertInstanceOf( WordPressCampaignDto::class, $result );
+		$this->assertSame( $id, $result->id );
+		$this->assertSame( 'Test Campaign', $result->title );
 	}
 
 	#[Test]
@@ -77,7 +81,7 @@ class WpdbCampaignRepositoryTest extends FundrikTestCase {
 
 		$id = 999;
 
-		$campaign_id = EntityId::from_int( $id );
+		$campaign_id = EntityId::create( $id );
 
 		$this->query_executor
 			->shouldReceive( 'get_by_id' )
@@ -129,11 +133,11 @@ class WpdbCampaignRepositoryTest extends FundrikTestCase {
 
 		$this->assertCount( 2, $result );
 
-		$this->assertInstanceOf( CampaignDto::class, $result[0] );
-		$this->assertEquals( 123, $result[0]->id );
+		$this->assertInstanceOf( WordPressCampaignDto::class, $result[0] );
+		$this->assertSame( 123, $result[0]->id );
 
-		$this->assertInstanceOf( CampaignDto::class, $result[1] );
-		$this->assertEquals( 124, $result[1]->id );
+		$this->assertInstanceOf( WordPressCampaignDto::class, $result[1] );
+		$this->assertSame( 124, $result[1]->id );
 	}
 
 	#[Test]
@@ -223,7 +227,7 @@ class WpdbCampaignRepositoryTest extends FundrikTestCase {
 
 		$id = 1;
 
-		$campaign_id = EntityId::from_int( $id );
+		$campaign_id = EntityId::create( $id );
 
 		$this->query_executor
 			->shouldReceive( 'delete' )
@@ -239,16 +243,17 @@ class WpdbCampaignRepositoryTest extends FundrikTestCase {
 		$this->assertTrue( $result );
 	}
 
-	private function create_fake_campaign_with_id( int $id ): Campaign {
+	private function create_fake_campaign_with_id( int $id ): WordPressCampaign {
 
-		return new Campaign(
-			EntityId::from_int( $id ),
-			'title',
+		return new WordPressCampaign(
+			new Campaign(
+				EntityId::create( $id ),
+				'title',
+				true,
+				true,
+				new CampaignTarget( true, 1000 ),
+			),
 			'slug',
-			true,
-			true,
-			new CampaignTarget( true, 1000 ),
-			200
 		);
 	}
 }

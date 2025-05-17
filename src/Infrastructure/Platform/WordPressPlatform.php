@@ -1,6 +1,6 @@
 <?php
 /**
- * WordpressPlatform class.
+ * WordPressPlatform class.
  *
  * @since 1.0.0
  */
@@ -9,17 +9,17 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Platform;
 
-use Fundrik\Core\Infrastructure\Platform\Interfaces\PlatformInterface;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignPostType;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignSyncProvider;
+use Fundrik\Core\Application\Platform\Interfaces\PlatformInterface;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
+use Fundrik\WordPress\Infrastructure\Platform\Interfaces\ListenerInterface;
+use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
 
 /**
  * Represents the WordPress platform integration for Fundrik.
  *
  * @since 1.0.0
  */
-final readonly class WordpressPlatform implements PlatformInterface {
+final readonly class WordPressPlatform implements PlatformInterface {
 
 	/**
 	 * Constructs the WordPress platform integration.
@@ -53,18 +53,34 @@ final readonly class WordpressPlatform implements PlatformInterface {
 	 */
 	public function register_post_types(): void {
 
-		register_post_type(
-			CampaignPostType::get_type(),
-			[
-				'labels'       => CampaignPostType::get_labels(),
-				'public'       => true,
-				'menu_icon'    => 'dashicons-heart',
-				'supports'     => [ 'title', 'editor' ],
-				'has_archive'  => true,
-				'rewrite'      => [ 'slug' => CampaignPostType::get_rewrite_slug() ],
-				'show_in_rest' => true,
-			]
-		);
+		$post_types = $this->dependency_provider->get_bindings( 'post_types' );
+
+		foreach ( $post_types as $class ) {
+
+			/**
+			 * Instance of a post type configuration class.
+			 *
+			 * @var PostTypeInterface $post_type
+			 */
+			$post_type = fundrik()->get( $class );
+
+			if ( ! $post_type instanceof PostTypeInterface ) {
+				continue;
+			}
+
+			register_post_type(
+				$post_type->get_type(),
+				[
+					'labels'       => $post_type->get_labels(),
+					'public'       => true,
+					'menu_icon'    => 'dashicons-heart',
+					'supports'     => [ 'title', 'editor' ],
+					'has_archive'  => true,
+					'rewrite'      => [ 'slug' => $post_type->get_rewrite_slug() ],
+					'show_in_rest' => true,
+				]
+			);
+		}
 	}
 
 	/**
@@ -98,8 +114,22 @@ final readonly class WordpressPlatform implements PlatformInterface {
 	 */
 	private function register_listeners(): void {
 
-		$fundrik_container = fundrik();
+		$listeners = $this->dependency_provider->get_bindings( 'listeners' );
 
-		( $fundrik_container->get( CampaignSyncProvider::class ) )->register();
+		foreach ( $listeners as $class ) {
+
+			/**
+			 * Instance of a post type configuration class.
+			 *
+			 * @var ListenerInterface $listener
+			 */
+			$listener = fundrik()->get( $class );
+
+			if ( ! $listener instanceof ListenerInterface ) {
+				continue;
+			}
+
+			$listener->register();
+		}
 	}
 }

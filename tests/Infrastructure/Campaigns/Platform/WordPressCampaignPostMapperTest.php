@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Platform;
 
 use Brain\Monkey\Functions;
-use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
-use Fundrik\Core\Domain\Campaigns\CampaignDto;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\CampaignPostToCampaignDtoMapper;
+use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
+use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostMapper;
 use Fundrik\WordPress\Support\PostMetaHelper;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
@@ -15,20 +15,21 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 
-#[CoversClass( CampaignPostToCampaignDtoMapper::class )]
+#[CoversClass( WordPressCampaignPostMapper::class )]
+#[UsesClass( WordPressCampaignDtoFactory::class )]
 #[UsesClass( PostMetaHelper::class )]
-class CampaignPostToCampaignDtoMapperTest extends FundrikTestCase {
+class WordPressCampaignPostMapperTest extends FundrikTestCase {
 
-	private CampaignPostToCampaignDtoMapper $mapper;
-	private CampaignDtoFactory $dto_factory;
+	private WordPressCampaignPostMapper $mapper;
+	private WordPressCampaignDtoFactory $dto_factory;
 
 	protected function setUp(): void {
 
 		parent::setUp();
 
-		$this->dto_factory = new CampaignDtoFactory();
+		$this->dto_factory = new WordPressCampaignDtoFactory();
 
-		$this->mapper = new CampaignPostToCampaignDtoMapper( $this->dto_factory );
+		$this->mapper = new WordPressCampaignPostMapper( $this->dto_factory );
 	}
 
 	#[Test]
@@ -59,15 +60,14 @@ class CampaignPostToCampaignDtoMapperTest extends FundrikTestCase {
 
 		$result = $this->mapper->from_wp_post( $wp_post );
 
-		$this->assertInstanceOf( CampaignDto::class, $result );
-		$this->assertEquals( $id, $result->id );
-		$this->assertEquals( 'Test Campaign', $result->title );
-		$this->assertEquals( 'test-campaign', $result->slug );
+		$this->assertInstanceOf( WordPressCampaignDto::class, $result );
+		$this->assertSame( $id, $result->id );
+		$this->assertSame( 'Test Campaign', $result->title );
+		$this->assertSame( 'test-campaign', $result->slug );
 		$this->assertTrue( $result->is_enabled );
 		$this->assertFalse( $result->is_open );
 		$this->assertTrue( $result->has_target );
-		$this->assertEquals( 1000, $result->target_amount );
-		$this->assertEquals( 500, $result->collected_amount );
+		$this->assertSame( 1000, $result->target_amount );
 	}
 
 	#[Test]
@@ -85,15 +85,14 @@ class CampaignPostToCampaignDtoMapperTest extends FundrikTestCase {
 
 		$result = $this->mapper->from_wp_post( $wp_post );
 
-		$this->assertInstanceOf( CampaignDto::class, $result );
-		$this->assertEquals( $id, $result->id );
-		$this->assertEquals( 'Another Campaign', $result->title );
-		$this->assertEquals( 'another-campaign', $result->slug );
+		$this->assertInstanceOf( WordPressCampaignDto::class, $result );
+		$this->assertSame( $id, $result->id );
+		$this->assertSame( 'Another Campaign', $result->title );
+		$this->assertSame( 'another-campaign', $result->slug );
 		$this->assertTrue( $result->is_enabled );
 		$this->assertFalse( $result->is_open );
 		$this->assertFalse( $result->has_target );
-		$this->assertEquals( 0, $result->target_amount );
-		$this->assertEquals( 0, $result->collected_amount );
+		$this->assertSame( 0, $result->target_amount );
 	}
 
 	#[Test]
@@ -123,15 +122,14 @@ class CampaignPostToCampaignDtoMapperTest extends FundrikTestCase {
 
 		$result = $this->mapper->from_wp_post( $wp_post );
 
-		$this->assertInstanceOf( CampaignDto::class, $result );
-		$this->assertEquals( $id, $result->id );
-		$this->assertEquals( 'Faulty Campaign', $result->title );
-		$this->assertEquals( 'faulty-campaign', $result->slug );
+		$this->assertInstanceOf( WordPressCampaignDto::class, $result );
+		$this->assertSame( $id, $result->id );
+		$this->assertSame( 'Faulty Campaign', $result->title );
+		$this->assertSame( 'faulty-campaign', $result->slug );
 		$this->assertTrue( $result->is_enabled );
 		$this->assertFalse( $result->is_open );
 		$this->assertFalse( $result->has_target );
-		$this->assertEquals( 0, $result->target_amount );
-		$this->assertEquals( 0, $result->collected_amount );
+		$this->assertSame( 0, $result->target_amount );
 	}
 
 	#[Test]
@@ -149,10 +147,10 @@ class CampaignPostToCampaignDtoMapperTest extends FundrikTestCase {
 
 		$result = $this->mapper->from_wp_post( $wp_post );
 
-		$this->assertInstanceOf( CampaignDto::class, $result );
-		$this->assertEquals( $id, $result->id );
-		$this->assertEquals( 'Draft Campaign', $result->title );
-		$this->assertEquals( 'draft-campaign', $result->slug );
+		$this->assertInstanceOf( WordPressCampaignDto::class, $result );
+		$this->assertSame( $id, $result->id );
+		$this->assertSame( 'Draft Campaign', $result->title );
+		$this->assertSame( 'draft-campaign', $result->slug );
 		$this->assertFalse( $result->is_enabled );
 	}
 }
