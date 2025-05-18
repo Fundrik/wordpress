@@ -64,7 +64,7 @@ class DependencyProvider {
 					WordPressCampaignPostMapperInterface::class => WordPressCampaignPostMapper::class,
 				],
 				'post_types' => [
-					WordPressCampaignPostType::class,
+					WordPressCampaignPostType::class => WordPressCampaignPostType::class,
 				],
 				'listeners'  => [
 					WordPressCampaignSyncListenerInterface::class => WordPressCampaignSyncListener::class,

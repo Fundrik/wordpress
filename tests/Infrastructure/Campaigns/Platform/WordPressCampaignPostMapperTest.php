@@ -21,15 +21,14 @@ use PHPUnit\Framework\Attributes\UsesClass;
 class WordPressCampaignPostMapperTest extends FundrikTestCase {
 
 	private WordPressCampaignPostMapper $mapper;
-	private WordPressCampaignDtoFactory $dto_factory;
 
 	protected function setUp(): void {
 
 		parent::setUp();
 
-		$this->dto_factory = new WordPressCampaignDtoFactory();
-
-		$this->mapper = new WordPressCampaignPostMapper( $this->dto_factory );
+		$this->mapper = new WordPressCampaignPostMapper(
+			new WordPressCampaignDtoFactory()
+		);
 	}
 
 	#[Test]
@@ -48,10 +47,9 @@ class WordPressCampaignPostMapperTest extends FundrikTestCase {
 			function ( $post_id, $key ) {
 
 				$meta_data = [
-					'is_open'          => '0',
-					'has_target'       => '1',
-					'target_amount'    => '1000',
-					'collected_amount' => '500',
+					'is_open'       => '0',
+					'has_target'    => '1',
+					'target_amount' => '1000',
 				];
 
 				return $meta_data[ $key ] ?? '';
@@ -110,10 +108,9 @@ class WordPressCampaignPostMapperTest extends FundrikTestCase {
 			function ( $post_id, $key ) {
 
 				$meta_data = [
-					'is_open'          => 'not-a-boolean',
-					'has_target'       => 'not-a-boolean',
-					'target_amount'    => 'invalid-int',
-					'collected_amount' => 'invalid-int',
+					'is_open'       => 'not-a-boolean',
+					'has_target'    => 'not-a-boolean',
+					'target_amount' => 'invalid-int',
 				];
 
 				return $meta_data[ $key ] ?? '';

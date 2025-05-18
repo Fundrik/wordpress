@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Platform;
 
-use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
-use Fundrik\Core\Domain\Campaigns\CampaignFactory;
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
-use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
-use Fundrik\WordPress\Application\Campaigns\WordPressCampaignService;
-use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignFactory;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostMapper;
+use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
+use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
 use Fundrik\WordPress\Tests\FundrikTestCase;
@@ -19,27 +15,30 @@ use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use WP_Post;
 
 #[CoversClass( WordPressCampaignSyncListener::class )]
+#[UsesClass( WordPressCampaignPostType::class )]
 class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
-	private WordPressCampaignRepositoryInterface&MockInterface $repository;
+	private WordPressCampaignPostMapperInterface&MockInterface $mapper;
+	private WordPressCampaignServiceInterface&MockInterface $service;
 
-	private WordPressCampaignPostMapper $mapper;
-	private WordPressCampaignService $service;
+	private WordPressCampaignPostType $post_type;
 	private WordPressCampaignSyncListener $listener;
 
 	protected function setUp(): void {
 
 		parent::setUp();
 
-		$this->repository = Mockery::mock( WordPressCampaignRepositoryInterface::class );
+		$this->mapper  = Mockery::mock( WordPressCampaignPostMapperInterface::class );
+		$this->service = Mockery::mock( WordPressCampaignServiceInterface::class );
 
-		$this->mapper  = Mockery::mock( WordPressCampaignPostMapper::class );
-		$this->service = Mockery::mock( WordPressCampaignService::class );
+		$this->post_type = new WordPressCampaignPostType();
 
 		$this->listener = new WordPressCampaignSyncListener(
+			$this->post_type,
 			$this->mapper,
 			$this->service,
 		);
@@ -69,9 +68,17 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 	public function sync_method_saves_entity(): void {
 
 		$post            = Mockery::mock( 'WP_Post' );
-		$post->post_type = WordPressCampaignPostType::get_type();
+		$post->post_type = $this->post_type->get_type();
 
-		$dto = Mockery::mock( EntityDto::class );
+		$dto = new WordPressCampaignDto(
+			id            : 123,
+			title         : 'Post Campaign',
+			slug          : 'post-campaign',
+			is_enabled    : true,
+			is_open       : true,
+			has_target    : true,
+			target_amount : 1500,
+		);
 
 		$this->mapper
 			->shouldReceive( 'from_wp_post' )
@@ -80,7 +87,7 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 			->andReturn( $dto );
 
 		$this->service
-			->shouldReceive( 'save' )
+			->shouldReceive( 'save_campaign' )
 			->once()
 			->with( $dto );
 
@@ -97,7 +104,7 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 			->shouldNotReceive( 'from_wp_post' );
 
 		$this->service
-			->shouldNotReceive( 'save' );
+			->shouldNotReceive( 'save_campaign' );
 
 		$this->listener->sync( 123, $post );
 	}
@@ -106,13 +113,13 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 	public function delete_method_deletes_entity(): void {
 
 		$post            = Mockery::mock( WP_Post::class );
-		$post->post_type = 'custom_post_type';
+		$post->post_type = $this->post_type->get_type();
 		$post_id         = 123;
 
 		$entity_id = EntityId::create( $post_id );
 
 		$this->service
-			->shouldReceive( 'delete' )
+			->shouldReceive( 'delete_campaign' )
 			->once()
 			->with(
 				Mockery::on(
@@ -132,7 +139,7 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 		$post->post_type = 'different_post_type';
 
 		$this->service
-			->shouldNotReceive( 'delete' );
+			->shouldNotReceive( 'delete_campaign' );
 
 		$this->listener->delete( 123, $post );
 	}

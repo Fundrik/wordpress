@@ -102,24 +102,22 @@ class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 
 		$db_data = [
 			[
-				'id'               => 123,
-				'title'            => 'Campaign 1',
-				'slug'             => 'campaign-1',
-				'is_enabled'       => true,
-				'is_open'          => true,
-				'has_target'       => true,
-				'target_amount'    => 1000,
-				'collected_amount' => 200,
+				'id'            => 123,
+				'title'         => 'Campaign 1',
+				'slug'          => 'campaign-1',
+				'is_enabled'    => true,
+				'is_open'       => true,
+				'has_target'    => true,
+				'target_amount' => 1000,
 			],
 			[
-				'id'               => 124,
-				'title'            => 'Campaign 2',
-				'slug'             => 'campaign-2',
-				'is_enabled'       => true,
-				'is_open'          => false,
-				'has_target'       => false,
-				'target_amount'    => 0,
-				'collected_amount' => 0,
+				'id'            => 124,
+				'title'         => 'Campaign 2',
+				'slug'          => 'campaign-2',
+				'is_enabled'    => true,
+				'is_open'       => false,
+				'has_target'    => false,
+				'target_amount' => 0,
 			],
 		];
 

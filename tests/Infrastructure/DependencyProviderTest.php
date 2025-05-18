@@ -6,6 +6,11 @@ namespace Fundrik\WordPress\Tests\Infrastructure;
 
 use Brain\Monkey\Filters;
 use Fundrik\Core\Domain\Campaigns\Interfaces\CampaignRepositoryInterface;
+use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
+use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignSyncListenerInterface;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
 use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
 use Fundrik\WordPress\Tests\FundrikTestCase;
@@ -33,7 +38,11 @@ class DependencyProviderTest extends FundrikTestCase {
 		$required_keys = [
 			wpdb::class,
 			QueryExecutorInterface::class,
-			CampaignRepositoryInterface::class,
+			WordPressCampaignRepositoryInterface::class,
+			WordPressCampaignServiceInterface::class,
+			WordPressCampaignPostMapperInterface::class,
+			WordPressCampaignPostType::class,
+			WordPressCampaignSyncListenerInterface::class,
 		];
 
 		foreach ( $required_keys as $key ) {
@@ -46,9 +55,9 @@ class DependencyProviderTest extends FundrikTestCase {
 
 		$bindings = $this->provider->get_bindings();
 
-		$result = $this->provider->get_bindings( 'core' );
+		$result = $this->provider->get_bindings( 'post_types' );
 
-		$this->assertSame( $bindings['core'], $result );
+		$this->assertSame( $bindings['post_types'], $result );
 	}
 
 	#[Test]

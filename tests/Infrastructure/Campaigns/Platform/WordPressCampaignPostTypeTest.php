@@ -13,13 +13,21 @@ use PHPUnit\Framework\Attributes\Test;
 #[CoversClass( WordPressCampaignPostType::class )]
 class WordPressCampaignPostTypeTest extends FundrikTestCase {
 
+	private WordPressCampaignPostType $post_type;
+
+	protected function setUp(): void {
+
+		parent::setUp();
+
+		$this->post_type = new WordPressCampaignPostType();
+	}
+
 	#[Test]
 	public function it_has_correct_constants(): void {
 
 		self::assertSame( 'is_open', WordPressCampaignPostType::META_IS_OPEN );
 		self::assertSame( 'has_target', WordPressCampaignPostType::META_HAS_TARGET );
 		self::assertSame( 'target_amount', WordPressCampaignPostType::META_TARGET_AMOUNT );
-		self::assertSame( 'collected_amount', WordPressCampaignPostType::META_COLLECTED_AMOUNT );
 	}
 
 	#[Test]
@@ -27,7 +35,7 @@ class WordPressCampaignPostTypeTest extends FundrikTestCase {
 
 		Functions\when( '__' )->returnArg();
 
-		$labels = WordPressCampaignPostType::get_labels();
+		$labels = $this->post_type->get_labels();
 
 		$expected_keys = [
 			'name',
@@ -69,12 +77,12 @@ class WordPressCampaignPostTypeTest extends FundrikTestCase {
 	#[Test]
 	public function it_returns_correct_post_type(): void {
 
-		self::assertSame( 'fundrik_campaign', WordPressCampaignPostType::get_type() );
+		self::assertSame( 'fundrik_campaign', $this->post_type->get_type() );
 	}
 
 	#[Test]
 	public function it_returns_correct_rewrite_slug(): void {
 
-		self::assertSame( 'campaigns', WordPressCampaignPostType::get_rewrite_slug() );
+		self::assertSame( 'campaigns', $this->post_type->get_rewrite_slug() );
 	}
 }
