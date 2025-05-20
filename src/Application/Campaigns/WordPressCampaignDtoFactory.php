@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Application\Campaigns;
 
+use Fundrik\Core\Support\TypeCaster;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 
 /**
@@ -39,13 +40,13 @@ final readonly class WordPressCampaignDtoFactory {
 	public function from_array( array $data ): WordPressCampaignDto {
 
 		return new WordPressCampaignDto(
-			id: $data['id'],
-			title: $data['title'],
-			slug: $data['slug'],
-			is_enabled: $data['is_enabled'],
-			is_open: $data['is_open'],
-			has_target: $data['has_target'],
-			target_amount: $data['target_amount'],
+			id: TypeCaster::to_id( $data['id'] ),
+			title: TypeCaster::to_string( $data['title'] ),
+			slug: TypeCaster::to_string( $data['slug'] ),
+			is_enabled: TypeCaster::to_bool( $data['is_enabled'] ),
+			is_open: TypeCaster::to_bool( $data['is_open'] ),
+			has_target: TypeCaster::to_bool( $data['has_target'] ),
+			target_amount: TypeCaster::to_int( $data['target_amount'] ),
 		);
 	}
 

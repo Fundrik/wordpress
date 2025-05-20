@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Support;
 
+use Fundrik\Core\Support\TypeCaster;
+
 /**
  * A utility class for working with post metadata in WordPress.
  *
@@ -28,9 +30,8 @@ final readonly class PostMetaHelper {
 	 */
 	public static function get_bool( int $post_id, string $key ): bool {
 
-		return filter_var(
-			get_post_meta( $post_id, $key, true ),
-			FILTER_VALIDATE_BOOLEAN
+		return TypeCaster::to_bool(
+			get_post_meta( $post_id, $key, true )
 		);
 	}
 
@@ -44,6 +45,8 @@ final readonly class PostMetaHelper {
 	 */
 	public static function get_int( int $post_id, string $key ): int {
 
-		return (int) get_post_meta( $post_id, $key, true );
+		return TypeCaster::to_int(
+			get_post_meta( $post_id, $key, true )
+		);
 	}
 }
