@@ -79,11 +79,35 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 
 		$placeholder = is_int( $id ) ? '%d' : '%s';
 
-		$sql   = "SELECT id FROM %i WHERE id = {$placeholder} LIMIT 1";
+		$sql   = "SELECT 1 FROM %i WHERE id = {$placeholder} LIMIT 1";
 		$query = $this->db->prepare( $sql, $table, $id );
 
 		return (bool) $this->db->get_var( $query );
 	}
+
+	/**
+	 * Checks if a record exists in the table by a specific column and value.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $table  The name of the table.
+	 * @param string $column The column name.
+	 * @param mixed  $value  The value to check.
+	 *
+	 * @return bool True if the record exists, false otherwise.
+	 */
+	public function exists_by_column( string $table, string $column, mixed $value ): bool {
+
+		$placeholder = is_int( $value ) ? '%d' : '%s';
+
+		$column_escaped = esc_sql( $column );
+
+		$sql   = "SELECT 1 FROM %i WHERE {$column_escaped} = {$placeholder} LIMIT 1";
+		$query = $this->db->prepare( $sql, $table, $value );
+
+		return (bool) $this->db->get_var( $query );
+	}
+
 
 	/**
 	 * Inserts a new row into the given table.

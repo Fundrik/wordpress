@@ -50,6 +50,17 @@ interface WordPressCampaignRepositoryInterface {
 	public function exists( WordPressCampaign $campaign ): bool;
 
 	/**
+	 * Check if a campaign exists by its slug.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $slug The slug to check.
+	 *
+	 * @return bool True if the campaign exists, false otherwise.
+	 */
+	public function exists_by_slug( string $slug ): bool;
+
+	/**
 	 * Insert a new campaign.
 	 *
 	 * @since 1.0.0

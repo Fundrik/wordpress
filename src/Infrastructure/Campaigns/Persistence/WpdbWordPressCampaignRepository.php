@@ -87,6 +87,20 @@ final readonly class WpdbWordPressCampaignRepository implements WordPressCampaig
 	}
 
 	/**
+	 * Check if a campaign exists by its slug.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $slug The slug to check.
+	 *
+	 * @return bool True if the campaign exists, false otherwise.
+	 */
+	public function exists_by_slug( string $slug ): bool {
+
+		return $this->query_executor->exists_by_column( self::TABLE, 'slug', $slug );
+	}
+
+	/**
 	 * Insert a new campaign.
 	 *
 	 * @since 1.0.0

@@ -47,6 +47,19 @@ interface QueryExecutorInterface {
 	public function exists( string $table, int|string $id ): bool;
 
 	/**
+	 * Checks if a record exists in the table by a specific column and value.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $table  The name of the table.
+	 * @param string $column The column name.
+	 * @param mixed  $value  The value to check.
+	 *
+	 * @return bool True if the record exists, false otherwise.
+	 */
+	public function exists_by_column( string $table, string $column, mixed $value ): bool;
+
+	/**
 	 * Inserts a new row into the given table.
 	 *
 	 * @since 1.0.0
