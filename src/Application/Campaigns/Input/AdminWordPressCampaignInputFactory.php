@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Application\Campaigns\Input;
 
 use Fundrik\Core\Support\TypeCaster;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
+use WP_Post;
 
 /**
  * Factory for creating AdminWordPressCampaignInput DTOs.
@@ -17,6 +19,17 @@ use Fundrik\Core\Support\TypeCaster;
  * @since 1.0.0
  */
 final readonly class AdminWordPressCampaignInputFactory {
+
+	/**
+	 * AdminWordPressCampaignInputFactory constructor.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WordPressCampaignPostMapperInterface $mapper Mapper to extract structured data from WP_Post.
+	 */
+	public function __construct(
+		private WordPressCampaignPostMapperInterface $mapper
+	) {}
 
 	/**
 	 * Creates an AdminWordPressCampaignInput object from an associative array.
@@ -46,5 +59,21 @@ final readonly class AdminWordPressCampaignInputFactory {
 			has_target: $has_target,
 			target_amount: $target_amount,
 		);
+	}
+
+	/**
+	 * Creates an AdminWordPressCampaignInput object from a WP_Post instance.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_Post $post WordPress post object representing the campaign.
+	 *
+	 * @return AdminWordPressCampaignInput DTO with normalized and casted data.
+	 */
+	public function from_wp_post( WP_Post $post ): AdminWordPressCampaignInput {
+
+		$data = $this->mapper->to_array_from_post( $post );
+
+		return $this->from_array( $data );
 	}
 }

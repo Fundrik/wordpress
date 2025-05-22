@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Campaigns\Platform;
 
-use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
+use Fundrik\WordPress\Application\Campaigns\Input\WordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use WP_Post;
@@ -38,19 +38,19 @@ final readonly class WordPressCampaignPostMapper implements WordPressCampaignPos
 	}
 
 	/**
-	 * Maps a WordPress campaign post to a WordPressCampaignDto.
+	 * Maps a WP_Post to a raw associative array.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param WP_Post $post The WordPress post object.
 	 *
-	 * @return WordPressCampaignDto The corresponding WordPressCampaignDto object.
+	 * @return array<string, mixed> An associative array of raw post data.
 	 */
-	public function from_wp_post( WP_Post $post ): WordPressCampaignDto {
+	public function to_array_from_post( WP_Post $post ): array {
 
 		$post_type_class = fundrik()->get( WordPressCampaignPostType::class )::class;
 
-		$data = [
+		return [
 			'id'            => $post->ID,
 			'title'         => $post->post_title,
 			'slug'          => $post->post_name,
@@ -59,7 +59,5 @@ final readonly class WordPressCampaignPostMapper implements WordPressCampaignPos
 			'has_target'    => PostMetaHelper::get_bool( $post->ID, $post_type_class::META_HAS_TARGET ),
 			'target_amount' => PostMetaHelper::get_int( $post->ID, $post_type_class::META_TARGET_AMOUNT ),
 		];
-
-		return $this->dto_factory->from_array( $data );
 	}
 }
