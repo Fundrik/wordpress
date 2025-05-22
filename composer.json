@@ -26,7 +26,8 @@
 	},
 	"require": {
 		"php": "^8.2",
-		"fundrik/core": "dev-main"
+		"fundrik/core": "dev-main",
+		"symfony/validator": "^7.2"
 	},
 	"require-dev": {
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",

@@ -20,6 +20,8 @@ use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCamp
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostMapper;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use wpdb;
 
 /**
@@ -62,6 +64,10 @@ class DependencyProvider {
 					WordPressCampaignRepositoryInterface::class => WpdbWordPressCampaignRepository::class,
 					WordPressCampaignServiceInterface::class => WordPressCampaignService::class,
 					WordPressCampaignPostMapperInterface::class => WordPressCampaignPostMapper::class,
+
+					ValidatorInterface::class     => fn() => Validation::createValidatorBuilder()
+						->enableAttributeMapping()
+						->getValidator(),
 				],
 				'post_types' => [
 					WordPressCampaignPostType::class => WordPressCampaignPostType::class,
