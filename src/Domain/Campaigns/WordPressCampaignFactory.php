@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Domain\Campaigns;
 
 use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
-use Fundrik\Core\Domain\Campaigns\Campaign;
 use Fundrik\Core\Domain\Campaigns\CampaignFactory;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
 
@@ -64,6 +63,8 @@ final readonly class WordPressCampaignFactory {
 
 		$campaign = $this->core_factory->create( $core_dto );
 
-		return new WordPressCampaign( $campaign, $dto->slug );
+		$slug = new WordPressCampaignSlug( $dto->slug );
+
+		return new WordPressCampaign( $campaign, $slug );
 	}
 }
