@@ -1,6 +1,6 @@
 <?php
 /**
- * WordPressCampaignInput class.
+ * AdminWordPressCampaignInput class.
  *
  * @since 1.0.0
  */
@@ -19,11 +19,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @since 1.0.0
  */
-abstract readonly class WordPressCampaignInput {
+final readonly class AdminWordPressCampaignInput {
 
 	/**
-	 * Constructor for WordPressCampaignInput.
+	 * Constructor for AdminWordPressCampaignInput.
 	 *
+	 * @param int    $id Campaign identifier provided by WordPress. Must not be blank.
 	 * @param string $title Campaign title. Must not be blank.
 	 * @param string $slug Campaign slug. Must not be blank.
 	 * @param bool   $is_enabled Whether the campaign is enabled.
@@ -32,6 +33,8 @@ abstract readonly class WordPressCampaignInput {
 	 * @param int    $target_amount Target amount for the campaign. Must be zero or positive.
 	 */
 	public function __construct(
+		#[Assert\NotBlank( message: 'ID must not be blank' )]
+		public int $id,
 		#[Assert\NotBlank( message: 'Title must not be blank' )]
 		public string $title,
 		#[Assert\NotBlank( message: 'Slug must not be blank' )]
