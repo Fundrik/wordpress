@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Application\Campaigns\Interfaces;
 
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 
 interface WordPressCampaignServiceInterface {
@@ -38,9 +38,11 @@ interface WordPressCampaignServiceInterface {
 	/**
 	 * Save a campaign (create or update).
 	 *
-	 * @param WordPressCampaignDto $dto The campaign DTO to save.
+	 * @param AdminWordPressCampaignInput $input The input DTO containing campaign data.
+	 *
+	 * @return bool True on success, false on failure.
 	 */
-	public function save_campaign( WordPressCampaignDto $dto ): bool;
+	public function save_campaign( AdminWordPressCampaignInput $input ): bool;
 
 	/**
 	 * Delete a campaign by its ID.
@@ -52,4 +54,15 @@ interface WordPressCampaignServiceInterface {
 	 * @return bool True if the campaign was successfully deleted, false otherwise.
 	 */
 	public function delete_campaign( EntityId $id ): bool;
+
+	/**
+	 * Validates the provided campaign input.
+	 *
+	 * Implementations are expected to throw an exception if validation fails.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param AdminWordPressCampaignInput $input The input DTO containing campaign data.
+	 */
+	public function validate_input( AdminWordPressCampaignInput $input ): void;
 }

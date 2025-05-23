@@ -10,10 +10,14 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Infrastructure\Campaigns\Platform;
 
 use Fundrik\Core\Domain\EntityId;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInputFactory;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignSyncListenerInterface;
+use stdClass;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
+use WP_Error;
 use WP_Post;
+use WP_REST_Request;
 
 /**
  * Listens for changes in the WordPress posts and synchronizes them with the WordPressCampaign entity.
@@ -27,13 +31,13 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WordPressCampaignPostType            $post_type Post type definition for campaign posts.
-	 * @param WordPressCampaignPostMapperInterface $mapper    Mapper to convert WP_Post to a WordPressCampaignDto.
-	 * @param WordPressCampaignServiceInterface    $service   Service to manage the WordPressCampaign entity.
+	 * @param WordPressCampaignPostType          $post_type Post type definition for campaign posts.
+	 * @param AdminWordPressCampaignInputFactory $input_factory  Factory to create input DTOs.
+	 * @param WordPressCampaignServiceInterface  $service   Service to manage the WordPressCampaign entity.
 	 */
 	public function __construct(
 		private WordPressCampaignPostType $post_type,
-		private WordPressCampaignPostMapperInterface $mapper,
+		private AdminWordPressCampaignInputFactory $input_factory,
 		private WordPressCampaignServiceInterface $service
 	) {
 	}
@@ -44,6 +48,13 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 	 * @since 1.0.0
 	 */
 	public function register(): void {
+
+		add_filter(
+			'rest_pre_insert_fundrik_campaign',
+			$this->validate( ... ),
+			10,
+			2
+		);
 
 		add_action(
 			'wp_after_insert_post',
@@ -61,6 +72,34 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 	}
 
 	/**
+	 * Validates the incoming request data before inserting a new campaign post.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param stdClass        $prepared_post The post object prepared for insertion.
+	 * @param WP_REST_Request $request       The REST request containing input data.
+	 *
+	 * @return stdClass|WP_Error The validated post object, or WP_Error on failure.
+	 */
+	public function validate( stdClass $prepared_post, WP_REST_Request $request ): stdClass|WP_Error {
+
+		$input_data = $request->get_params();
+
+		try {
+			$input = $this->input_factory->from_array( $input_data );
+			$this->service->validate_input( $input );
+		} catch ( ValidationFailedException $e ) {
+			return new WP_Error(
+				'validation_failed',
+				$e->getMessage(),
+				[ 'status' => 400 ]
+			);
+		}
+
+		return $prepared_post;
+	}
+
+	/**
 	 * Synchronizes a WordPress campaign post with the WordPressCampaign entity.
 	 *
 	 * @since 1.0.0
@@ -74,9 +113,12 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 			return;
 		}
 
-		$dto = $this->mapper->from_wp_post( $post );
-
-		$this->service->save_campaign( $dto );
+		try {
+			$input = $this->input_factory->from_wp_post( $post );
+			$this->service->save_campaign( $input );
+		} catch ( ValidationFailedException $e ) {
+			error_log( 'Campaign validation failed: ' . $e->getMessage() );
+		}
 	}
 
 	/**
