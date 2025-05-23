@@ -12,14 +12,14 @@ namespace Fundrik\WordPress\Application\Campaigns\Input;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Base input DTO for WordPress campaign data.
+ * Input DTO for managing full WordPress campaign data via the admin interface.
  *
- * Contains common properties used both for creating and updating campaigns,
- * with validation constraints applied to required fields.
+ * Represents the complete set of campaign fields after WordPress has saved the post.
+ * Used primarily for synchronization and validation against the full set of constraints.
  *
  * @since 1.0.0
  */
-final readonly class AdminWordPressCampaignInput {
+final readonly class AdminWordPressCampaignInput extends AbstractAdminWordPressCampaignInput {
 
 	/**
 	 * Constructor for AdminWordPressCampaignInput.
@@ -33,8 +33,7 @@ final readonly class AdminWordPressCampaignInput {
 	 * @param int    $target_amount Target amount for the campaign. Must be zero or positive.
 	 */
 	public function __construct(
-		#[Assert\NotBlank( message: 'ID must not be blank' )]
-		public int $id,
+		int $id,
 		#[Assert\NotBlank( message: 'Title must not be blank' )]
 		public string $title,
 		#[Assert\NotBlank( message: 'Slug must not be blank' )]
@@ -42,8 +41,10 @@ final readonly class AdminWordPressCampaignInput {
 		public bool $is_enabled,
 		public bool $is_open,
 		public bool $has_target,
-		#[Assert\PositiveOrZero]
+		#[Assert\PositiveOrZero( message: 'Target amount must be zero or positive' )]
 		public int $target_amount,
 	) {
+
+		parent::__construct( $id );
 	}
 }

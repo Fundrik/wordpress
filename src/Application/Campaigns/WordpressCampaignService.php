@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Application\Campaigns;
 
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AbstractAdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
@@ -83,11 +83,11 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param AdminWordPressCampaignInput $input The admin input used to create or update the campaign.
+	 * @param AbstractAdminWordPressCampaignInput $input The admin input used to create or update the campaign.
 	 *
 	 * @return bool True on success, false on failure.
 	 */
-	public function save_campaign( AdminWordPressCampaignInput $input ): bool {
+	public function save_campaign( AbstractAdminWordPressCampaignInput $input ): bool {
 
 		$this->validate_input( $input );
 
@@ -114,17 +114,17 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 	}
 
 	/**
-	 * Validates the given AdminWordPressCampaignInput.
+	 * Validates the given AbstractAdminWordPressCampaignInput.
 	 *
 	 * Throws a ValidationFailedException if validation fails.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param AdminWordPressCampaignInput $input The input data to validate.
+	 * @param AbstractAdminWordPressCampaignInput $input The input data to validate.
 	 *
 	 * @throws ValidationFailedException If validation constraints are violated.
 	 */
-	public function validate_input( AdminWordPressCampaignInput $input ): void {
+	public function validate_input( AbstractAdminWordPressCampaignInput $input ): void {
 
 		$errors = $this->validator->validate( $input );
 

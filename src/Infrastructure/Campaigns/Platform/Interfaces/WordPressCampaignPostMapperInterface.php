@@ -1,4 +1,9 @@
 <?php
+/**
+ * Defines an interface for mapping WordPress WP_Post objects.
+ *
+ * @since 1.0.0
+ */
 
 declare(strict_types=1);
 

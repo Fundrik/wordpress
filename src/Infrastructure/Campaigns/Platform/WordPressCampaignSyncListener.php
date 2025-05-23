@@ -11,6 +11,7 @@ namespace Fundrik\WordPress\Infrastructure\Campaigns\Platform;
 
 use Fundrik\Core\Domain\EntityId;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInputFactory;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInputFactory;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignSyncListenerInterface;
 use stdClass;
@@ -31,13 +32,15 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WordPressCampaignPostType          $post_type Post type definition for campaign posts.
-	 * @param AdminWordPressCampaignInputFactory $input_factory  Factory to create input DTOs.
-	 * @param WordPressCampaignServiceInterface  $service   Service to manage the WordPressCampaign entity.
+	 * @param WordPressCampaignPostType                 $post_type             Post type definition for campaign posts.
+	 * @param AdminWordPressCampaignInputFactory        $input_factory         Factory to create full input DTOs.
+	 * @param AdminWordPressCampaignPartialInputFactory $partial_input_factory Factory to create partial input DTOs.
+	 * @param WordPressCampaignServiceInterface         $service               Service to manage WordPress campaign entities.
 	 */
 	public function __construct(
 		private WordPressCampaignPostType $post_type,
 		private AdminWordPressCampaignInputFactory $input_factory,
+		private AdminWordPressCampaignPartialInputFactory $partial_input_factory,
 		private WordPressCampaignServiceInterface $service
 	) {
 	}
@@ -49,18 +52,18 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 	 */
 	public function register(): void {
 
+		$post_type = $this->post_type->get_type();
+
 		add_filter(
-			'rest_pre_insert_fundrik_campaign',
+			"rest_pre_insert_{$post_type}",
 			$this->validate( ... ),
 			10,
 			2
 		);
 
 		add_action(
-			'wp_after_insert_post',
+			"rest_after_insert_{$post_type}",
 			$this->sync( ... ),
-			10,
-			2
 		);
 
 		add_action(
@@ -86,7 +89,7 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 		$input_data = $request->get_params();
 
 		try {
-			$input = $this->input_factory->from_array( $input_data );
+			$input = $this->partial_input_factory->from_array( $input_data );
 			$this->service->validate_input( $input );
 		} catch ( ValidationFailedException $e ) {
 			return new WP_Error(
@@ -104,19 +107,15 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int     $post_id The ID of the post being synchronized.
 	 * @param WP_Post $post The post object being synchronized.
 	 */
-	public function sync( int $post_id, WP_Post $post ): void {
-
-		if ( $this->post_type->get_type() !== $post->post_type ) {
-			return;
-		}
+	public function sync( WP_Post $post ): void {
 
 		try {
 			$input = $this->input_factory->from_wp_post( $post );
 			$this->service->save_campaign( $input );
 		} catch ( ValidationFailedException $e ) {
+			// phpcs:ignore
 			error_log( 'Campaign validation failed: ' . $e->getMessage() );
 		}
 	}
