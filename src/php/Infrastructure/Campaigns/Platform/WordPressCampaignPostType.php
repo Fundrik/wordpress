@@ -22,6 +22,8 @@ class WordPressCampaignPostType implements PostTypeInterface {
 	public const META_HAS_TARGET    = 'has_target';
 	public const META_TARGET_AMOUNT = 'target_amount';
 
+	public const CAMPAIGN_SETTINGS_BLOCK = 'fundrik/campaign-settings';
+
 	/**
 	 * Returns the custom post type identifier for the campaign post type.
 	 *
@@ -110,19 +112,51 @@ class WordPressCampaignPostType implements PostTypeInterface {
 	}
 
 	/**
-	 * Returns an array of meta fields associated with the custom post type.
+	 * Returns an array of meta fields associated with the campaign post type.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array<string, string> An associative array where keys are meta field names,
-	 *                               and values are the corresponding data types.
+	 * @return array<string, array<string, mixed>> An associative array where keys are meta field names,
+	 *                                             and values are arrays of configuration options for each field.
 	 */
 	public function get_meta_fields(): array {
 
 		return [
-			self::META_IS_OPEN       => 'boolean',
-			self::META_HAS_TARGET    => 'boolean',
-			self::META_TARGET_AMOUNT => 'string',
+			self::META_IS_OPEN       => [
+				'type'    => 'boolean',
+				'default' => true,
+			],
+			self::META_HAS_TARGET    => [ 'type' => 'boolean' ],
+			self::META_TARGET_AMOUNT => [ 'type' => 'string' ],
+		];
+	}
+
+	/**
+	 * Returns the block-based template used to render the campaign post type in the editor.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array<int, array<string>> A nested array of block names representing
+	 *                                   the template layout for the campaign post type.
+	 */
+	public function get_template_blocks(): array {
+
+		return [
+			[ self::CAMPAIGN_SETTINGS_BLOCK ],
+		];
+	}
+
+	/**
+	 * Returns a list of block names that are specifically allowed for the campaign post type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string[] List of block names allowed for the campaign post type.
+	 */
+	public function get_specific_blocks(): array {
+
+		return [
+			self::CAMPAIGN_SETTINGS_BLOCK,
 		];
 	}
 }

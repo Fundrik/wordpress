@@ -14,6 +14,7 @@ use Fundrik\WordPress\Infrastructure\DependencyProvider;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\ListenerInterface;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
 use Fundrik\WordPress\Support\Path;
+use WP_Block_Editor_Context;
 
 /**
  * Represents the WordPress platform integration for Fundrik.
@@ -46,6 +47,13 @@ final readonly class WordPressPlatform implements PlatformInterface {
 
 		add_action( 'init', $this->register_post_types( ... ) );
 		add_action( 'init', $this->register_blocks( ... ) );
+
+		add_filter(
+			'allowed_block_types_all',
+			$this->filter_allowed_blocks_by_post_type( ... ),
+			10,
+			2
+		);
 	}
 
 	/**
@@ -55,20 +63,7 @@ final readonly class WordPressPlatform implements PlatformInterface {
 	 */
 	public function register_post_types(): void {
 
-		$post_types = $this->dependency_provider->get_bindings( 'post_types' );
-
-		foreach ( $post_types as $class ) {
-
-			/**
-			 * Instance of a post type configuration class.
-			 *
-			 * @var PostTypeInterface $post_type
-			 */
-			$post_type = fundrik()->get( $class );
-
-			if ( ! $post_type instanceof PostTypeInterface ) {
-				continue;
-			}
+		foreach ( $this->get_post_types() as $post_type ) {
 
 			register_post_type(
 				$post_type->get_type(),
@@ -80,19 +75,22 @@ final readonly class WordPressPlatform implements PlatformInterface {
 					'has_archive'  => true,
 					'rewrite'      => [ 'slug' => $post_type->get_slug() ],
 					'show_in_rest' => true,
+					'template'     => $post_type->get_template_blocks(),
 				]
 			);
 
-			foreach ( $post_type->get_meta_fields() as $meta_key => $type ) {
+			foreach ( $post_type->get_meta_fields() as $meta_key => $args ) {
 
 				register_post_meta(
 					$post_type->get_type(),
 					$meta_key,
-					[
-						'show_in_rest' => true,
-						'single'       => true,
-						'type'         => $type,
-					]
+					wp_parse_args(
+						$args,
+						[
+							'show_in_rest' => true,
+							'single'       => true,
+						]
+					)
 				);
 			}
 		}
@@ -108,6 +106,31 @@ final readonly class WordPressPlatform implements PlatformInterface {
 		wp_register_block_types_from_metadata_collection(
 			Path::blocks(),
 			Path::blocks_manifest()
+		);
+	}
+
+	/**
+	 * Filters the allowed block types based on the current post type context.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param bool|array              $allowed_blocks The blocks allowed by default.
+	 *                                                Can be true (all allowed), false (none allowed),
+	 *                                                or an array of block names.
+	 * @param WP_Block_Editor_Context $editor_context Context object containing info about
+	 *                                                the editor state.
+	 *
+	 * @return array The filtered array of allowed block names for the current post type.
+	 */
+	public function filter_allowed_blocks_by_post_type(
+		bool|array $allowed_blocks,
+		WP_Block_Editor_Context $editor_context
+	): array {
+
+		return ( new AllowedBlockTypesFilter() )->filter(
+			$allowed_blocks,
+			$editor_context,
+			$this->get_post_types()
 		);
 	}
 
@@ -142,22 +165,57 @@ final readonly class WordPressPlatform implements PlatformInterface {
 	 */
 	private function register_listeners(): void {
 
-		$listeners = $this->dependency_provider->get_bindings( 'listeners' );
-
-		foreach ( $listeners as $class ) {
-
-			/**
-			 * Instance of a post type configuration class.
-			 *
-			 * @var ListenerInterface $listener
-			 */
-			$listener = fundrik()->get( $class );
-
-			if ( ! $listener instanceof ListenerInterface ) {
-				continue;
-			}
+		foreach ( $this->get_listeners() as $listener ) {
 
 			$listener->register();
 		}
+	}
+
+	/**
+	 * Retrieves all post type instances.
+	 *
+	 * @return PostTypeInterface[] Array of post type instances.
+	 *
+	 * @since 1.0.0
+	 */
+	private function get_post_types(): array {
+
+		$post_type_classes = $this->dependency_provider->get_bindings( 'post_types' );
+		$post_types        = [];
+
+		foreach ( $post_type_classes as $class ) {
+
+			$post_type = fundrik()->get( $class );
+
+			if ( $post_type instanceof PostTypeInterface ) {
+				$post_types[] = $post_type;
+			}
+		}
+
+		return $post_types;
+	}
+
+	/**
+	 * Retrieves all listener instances.
+	 *
+	 * @return ListenerInterface[] Array of listener instances.
+	 *
+	 * @since 1.0.0
+	 */
+	private function get_listeners(): array {
+
+		$listeners_classes = $this->dependency_provider->get_bindings( 'listeners' );
+		$listeners         = [];
+
+		foreach ( $listeners_classes as $class ) {
+
+			$listener = fundrik()->get( $class );
+
+			if ( $listener instanceof ListenerInterface ) {
+				$listeners[] = $listener;
+			}
+		}
+
+		return $listeners;
 	}
 }

@@ -49,4 +49,23 @@ interface PostTypeInterface {
 	 *                               and values are the corresponding data types.
 	 */
 	public function get_meta_fields(): array;
+
+	/**
+	 * Returns the block-based template used to render the custom post type in the editor.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array<int, array<string>> A nested array of block names representing
+	 *                                   the template layout for the custom post type.
+	 */
+	public function get_template_blocks(): array;
+
+	/**
+	 * Returns a list of block names that are specifically allowed for the custom post type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string[] List of block names allowed for the custom post type.
+	 */
+	public function get_specific_blocks(): array;
 }
