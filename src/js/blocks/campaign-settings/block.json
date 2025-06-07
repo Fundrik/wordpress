@@ -1,0 +1,32 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fundrik/campaign-settings",
+	"title": "Campaign Settings",
+	"category": "widgets",
+	"icon": "admin-settings",
+	"description": "Campaign settings. Not displayed on the site.",
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"inserter": false,
+		"multiple": false,
+		"renaming": false,
+		"reusable": false,
+		"lock": false
+	},
+	"attributes": {
+		"lock": {
+			"type": "object",
+			"default": {
+				"move": true,
+				"remove": true
+			}
+		}
+	},
+	"textdomain": "fundrik",
+	"editorScript": "file:./index.js",
+	"usesContext": [
+		"postType"
+	]
+}
