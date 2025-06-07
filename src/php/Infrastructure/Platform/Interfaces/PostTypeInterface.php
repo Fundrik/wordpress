@@ -40,5 +40,13 @@ interface PostTypeInterface {
 	 */
 	public function get_slug(): string;
 
+	/**
+	 * Returns an array of meta fields associated with the custom post type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array<string, string> An associative array where keys are meta field names,
+	 *                               and values are the corresponding data types.
+	 */
 	public function get_meta_fields(): array;
 }

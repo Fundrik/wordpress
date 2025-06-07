@@ -98,6 +98,11 @@ final readonly class WordPressPlatform implements PlatformInterface {
 		}
 	}
 
+	/**
+	 * Registers all custom blocks for the platform.
+	 *
+	 * @since 1.0.0
+	 */
 	public function register_blocks(): void {
 
 		wp_register_block_types_from_metadata_collection(
