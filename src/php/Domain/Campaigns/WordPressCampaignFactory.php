@@ -63,7 +63,7 @@ final readonly class WordPressCampaignFactory {
 
 		$campaign = $this->core_factory->create( $core_dto );
 
-		$slug = new WordPressCampaignSlug( $dto->slug );
+		$slug = WordPressCampaignSlug::create( $dto->slug );
 
 		return new WordPressCampaign( $campaign, $slug );
 	}

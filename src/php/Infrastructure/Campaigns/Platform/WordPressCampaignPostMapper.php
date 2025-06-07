@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Campaigns\Platform;
 
-use Fundrik\WordPress\Application\Campaigns\Input\WordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use WP_Post;

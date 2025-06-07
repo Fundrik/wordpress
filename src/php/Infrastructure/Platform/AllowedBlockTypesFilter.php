@@ -15,7 +15,7 @@ use WP_Block_Type_Registry;
  *
  * @since 1.0.0
  */
-final class AllowedBlockTypesFilter {
+final readonly class AllowedBlockTypesFilter {
 
 	/**
 	 * Filters allowed block types by current post type.
