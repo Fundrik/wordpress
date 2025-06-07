@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Support;
 
 use Brain\Monkey\Functions;
-use Fundrik\WordPress\Support\PostMetaHelper;
+use Fundrik\WordPress\Support\PostMeta;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 
-#[CoversClass( PostMetaHelper::class )]
-class PostMetaHelperTest extends FundrikTestCase {
+#[CoversClass( PostMeta::class )]
+class PostMetaTest extends FundrikTestCase {
 
 	#[Test]
 	public function get_bool_returns_true_when_value_is_true(): void {
@@ -23,7 +23,7 @@ class PostMetaHelperTest extends FundrikTestCase {
 			->with( $post_id, $meta_key, true )
 			->andReturn( 'true' );
 
-		$result = PostMetaHelper::get_bool( $post_id, $meta_key );
+		$result = PostMeta::get_bool( $post_id, $meta_key );
 
 		$this->assertTrue( $result );
 	}
@@ -38,7 +38,7 @@ class PostMetaHelperTest extends FundrikTestCase {
 			->with( $post_id, $meta_key, true )
 			->andReturn( 'off' );
 
-		$result = PostMetaHelper::get_bool( $post_id, $meta_key );
+		$result = PostMeta::get_bool( $post_id, $meta_key );
 
 		$this->assertFalse( $result );
 	}
@@ -53,7 +53,7 @@ class PostMetaHelperTest extends FundrikTestCase {
 			->with( $post_id, $meta_key, true )
 			->andReturn( '' );
 
-		$result = PostMetaHelper::get_bool( $post_id, $meta_key );
+		$result = PostMeta::get_bool( $post_id, $meta_key );
 
 		$this->assertFalse( $result );
 	}
@@ -68,7 +68,7 @@ class PostMetaHelperTest extends FundrikTestCase {
 			->with( $post_id, $meta_key, true )
 			->andReturn( '42' );
 
-		$result = PostMetaHelper::get_int( $post_id, $meta_key );
+		$result = PostMeta::get_int( $post_id, $meta_key );
 
 		$this->assertSame( 42, $result );
 	}
@@ -83,7 +83,7 @@ class PostMetaHelperTest extends FundrikTestCase {
 			->with( $post_id, $meta_key, true )
 			->andReturn( 'some string' );
 
-		$result = PostMetaHelper::get_int( $post_id, $meta_key );
+		$result = PostMeta::get_int( $post_id, $meta_key );
 
 		$this->assertSame( 0, $result );
 	}
@@ -98,7 +98,7 @@ class PostMetaHelperTest extends FundrikTestCase {
 			->with( $post_id, $meta_key, true )
 			->andReturn( '' );
 
-		$result = PostMetaHelper::get_int( $post_id, $meta_key );
+		$result = PostMeta::get_int( $post_id, $meta_key );
 
 		$this->assertSame( 0, $result );
 	}

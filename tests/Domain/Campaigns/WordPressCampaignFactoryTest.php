@@ -9,15 +9,18 @@ use Fundrik\Core\Domain\Campaigns\CampaignFactory;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignFactory;
+use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignSlug;
+use Fundrik\WordPress\Tests\FundrikTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
-use PHPUnit\Framework\TestCase;
 
 #[CoversClass( WordPressCampaignFactory::class )]
 #[UsesClass( WordPressCampaign::class )]
-class WordPressCampaignFactoryTest extends TestCase {
+#[UsesClass( WordPressCampaignSlug::class )]
+#[UsesClass( WordPressCampaignDto::class )]
+class WordPressCampaignFactoryTest extends FundrikTestCase {
 
 	private WordPressCampaignFactory $factory;
 

@@ -7,24 +7,37 @@ namespace Fundrik\WordPress\Tests\Application\Campaigns;
 use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
 use Fundrik\Core\Domain\Campaigns\CampaignFactory;
 use Fundrik\Core\Domain\EntityId;
+use Fundrik\WordPress\Application\Campaigns\Input\AbstractAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
+use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignService;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignFactory;
+use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignSlug;
+use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
-use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[CoversClass( WordPressCampaignService::class )]
 #[UsesClass( WordPressCampaign::class )]
 #[UsesClass( WordPressCampaignFactory::class )]
-class WordPressCampaignServiceTest extends TestCase {
+#[UsesClass( WordPressCampaignSlug::class )]
+#[UsesClass( AbstractAdminWordPressCampaignInput::class )]
+#[UsesClass( AdminWordPressCampaignInput::class )]
+#[UsesClass( WordPressCampaignDtoFactory::class )]
+#[UsesClass( WordPressCampaignDto::class )]
+class WordPressCampaignServiceTest extends FundrikTestCase {
 
 	private WordPressCampaignRepositoryInterface&MockInterface $repository;
+	private ValidatorInterface&MockInterface $validator;
 
 	private WordPressCampaignService $service;
 
@@ -33,13 +46,16 @@ class WordPressCampaignServiceTest extends TestCase {
 		parent::setUp();
 
 		$this->repository = Mockery::mock( WordPressCampaignRepositoryInterface::class );
+		$this->validator  = Mockery::mock( ValidatorInterface::class );
 
 		$this->service = new WordPressCampaignService(
 			new WordPressCampaignFactory(
 				new CampaignFactory(),
 				new CampaignDtoFactory(),
 			),
+			new WordPressCampaignDtoFactory(),
 			$this->repository,
+			$this->validator,
 		);
 	}
 
@@ -68,6 +84,7 @@ class WordPressCampaignServiceTest extends TestCase {
 
 		$this->assertInstanceOf( WordPressCampaign::class, $result );
 	}
+
 
 	#[Test]
 	public function get_by_id_returns_null_when_not_found(): void {
@@ -123,7 +140,7 @@ class WordPressCampaignServiceTest extends TestCase {
 	#[Test]
 	public function save_campaign_inserts_when_not_exists(): void {
 
-		$dto = new WordPressCampaignDto(
+		$input = new AdminWordPressCampaignInput(
 			id            : 555,
 			title         : 'New Campaign',
 			slug          : 'new-campaign',
@@ -132,6 +149,17 @@ class WordPressCampaignServiceTest extends TestCase {
 			has_target    : false,
 			target_amount : 0,
 		);
+
+		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
+		$mock_violation_list
+			->shouldReceive( 'count' )
+			->andReturn( 0 );
+
+		$this->validator
+			->shouldReceive( 'validate' )
+			->once()
+			->with( $input )
+			->andReturn( $mock_violation_list );
 
 		$this->repository
 			->shouldReceive( 'exists' )
@@ -145,7 +173,7 @@ class WordPressCampaignServiceTest extends TestCase {
 			->with( Mockery::type( WordPressCampaign::class ) )
 			->andReturn( true );
 
-		$result = $this->service->save_campaign( $dto );
+		$result = $this->service->save_campaign( $input );
 
 		$this->assertTrue( $result );
 	}
@@ -153,7 +181,7 @@ class WordPressCampaignServiceTest extends TestCase {
 	#[Test]
 	public function save_campaign_updates_when_exists(): void {
 
-		$dto = new WordPressCampaignDto(
+		$input = new AdminWordPressCampaignInput(
 			id            : 777,
 			title         : 'Existing Campaign',
 			slug          : 'existing-campaign',
@@ -162,6 +190,17 @@ class WordPressCampaignServiceTest extends TestCase {
 			has_target    : true,
 			target_amount : 999,
 		);
+
+		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
+		$mock_violation_list
+			->shouldReceive( 'count' )
+			->andReturn( 0 );
+
+		$this->validator
+			->shouldReceive( 'validate' )
+			->once()
+			->with( $input )
+			->andReturn( $mock_violation_list );
 
 		$this->repository
 			->shouldReceive( 'exists' )
@@ -175,9 +214,38 @@ class WordPressCampaignServiceTest extends TestCase {
 			->with( Mockery::type( WordPressCampaign::class ) )
 			->andReturn( true );
 
-		$result = $this->service->save_campaign( $dto );
+		$result = $this->service->save_campaign( $input );
 
 		$this->assertTrue( $result );
+	}
+
+	#[Test]
+	public function save_campaign_throws_exception_when_validation_fails(): void {
+
+		$input = new AdminWordPressCampaignInput(
+			id            : 999,
+			title         : 'Invalid Campaign',
+			slug          : 'invalid-campaign',
+			is_enabled    : true,
+			is_open       : true,
+			has_target    : false,
+			target_amount : 0,
+		);
+
+		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
+		$mock_violation_list
+			->shouldReceive( 'count' )
+			->andReturn( 1 );
+
+		$this->validator
+			->shouldReceive( 'validate' )
+			->once()
+			->with( $input )
+			->andReturn( $mock_violation_list );
+
+		$this->expectException( ValidationFailedException::class );
+
+		$this->service->save_campaign( $input );
 	}
 
 	#[Test]
@@ -210,5 +278,65 @@ class WordPressCampaignServiceTest extends TestCase {
 		$result = $this->service->delete_campaign( $campaign_id );
 
 		$this->assertFalse( $result );
+	}
+
+	#[Test]
+	public function validate_input_passes_when_no_errors(): void {
+
+		$input = new AdminWordPressCampaignInput(
+			id            : 1,
+			title         : 'Valid Campaign',
+			slug          : 'valid-campaign',
+			is_enabled    : true,
+			is_open       : true,
+			has_target    : false,
+			target_amount : 0,
+		);
+
+		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
+		$mock_violation_list
+			->shouldReceive( 'count' )
+			->once()
+			->andReturn( 0 );
+
+		$this->validator
+			->shouldReceive( 'validate' )
+			->once()
+			->with( $input )
+			->andReturn( $mock_violation_list );
+
+		$this->service->validate_input( $input );
+
+		$this->assertTrue( true );
+	}
+
+	#[Test]
+	public function validate_input_throws_exception_when_errors_present(): void {
+
+		$input = new AdminWordPressCampaignInput(
+			id            : 2,
+			title         : 'Invalid Campaign',
+			slug          : 'invalid-campaign',
+			is_enabled    : false,
+			is_open       : false,
+			has_target    : true,
+			target_amount : 1000,
+		);
+
+		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
+		$mock_violation_list
+			->shouldReceive( 'count' )
+			->once()
+			->andReturn( 3 );
+
+		$this->validator
+			->shouldReceive( 'validate' )
+			->once()
+			->with( $input )
+			->andReturn( $mock_violation_list );
+
+		$this->expectException( ValidationFailedException::class );
+
+		$this->service->validate_input( $input );
 	}
 }

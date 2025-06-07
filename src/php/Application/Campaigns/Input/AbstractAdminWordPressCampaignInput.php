@@ -17,6 +17,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * This abstract class defines the minimal required property — the campaign ID.
  *
  * @since 1.0.0
+ *
+ * @codeCoverageIgnore
+ *
+ * @todo Remove @codeCoverageIgnore after migrating to PHP 8.3+
  */
 abstract readonly class AbstractAdminWordPressCampaignInput {
 

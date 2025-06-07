@@ -33,8 +33,6 @@ class WordPressCampaignPostTypeTest extends FundrikTestCase {
 	#[Test]
 	public function it_returns_correct_and_localized_labels(): void {
 
-		Functions\when( '__' )->returnArg();
-
 		$labels = $this->post_type->get_labels();
 
 		$expected_keys = [
@@ -83,6 +81,58 @@ class WordPressCampaignPostTypeTest extends FundrikTestCase {
 	#[Test]
 	public function it_returns_correct_rewrite_slug(): void {
 
-		self::assertSame( 'campaigns', $this->post_type->get_rewrite_slug() );
+		self::assertSame( 'campaigns', $this->post_type->get_slug() );
+	}
+
+	#[Test]
+	public function it_returns_correct_meta_fields(): void {
+
+		$meta_fields = $this->post_type->get_meta_fields();
+
+		self::assertIsArray( $meta_fields );
+		self::assertArrayHasKey( 'is_open', $meta_fields );
+		self::assertArrayHasKey( 'has_target', $meta_fields );
+		self::assertArrayHasKey( 'target_amount', $meta_fields );
+
+		self::assertSame(
+			[
+				'type'    => 'boolean',
+				'default' => true,
+			],
+			$meta_fields['is_open']
+		);
+
+		self::assertSame(
+			[ 'type' => 'boolean' ],
+			$meta_fields['has_target']
+		);
+
+		self::assertSame(
+			[ 'type' => 'string' ],
+			$meta_fields['target_amount']
+		);
+	}
+
+	#[Test]
+	public function it_returns_correct_template_blocks(): void {
+
+		$template_blocks = $this->post_type->get_template_blocks();
+
+		self::assertIsArray( $template_blocks );
+		self::assertCount( 1, $template_blocks );
+		self::assertSame(
+			[ 'fundrik/campaign-settings' ],
+			$template_blocks[0]
+		);
+	}
+
+	#[Test]
+	public function it_returns_specific_blocks(): void {
+
+		$blocks = $this->post_type->get_specific_blocks();
+
+		self::assertIsArray( $blocks );
+		self::assertContains( 'fundrik/campaign-settings', $blocks );
+		self::assertCount( 1, $blocks );
 	}
 }

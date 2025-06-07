@@ -6,18 +6,26 @@ namespace Fundrik\WordPress\Tests\Application\Campaigns;
 
 use Fundrik\Core\Domain\Campaigns\Campaign;
 use Fundrik\Core\Domain\Campaigns\CampaignTarget;
+use Fundrik\Core\Domain\Campaigns\CampaignTitle;
 use Fundrik\Core\Domain\EntityId;
+use Fundrik\WordPress\Application\Campaigns\Input\AbstractAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
+use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignSlug;
+use Fundrik\WordPress\Tests\FundrikTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
-use PHPUnit\Framework\TestCase;
 
 #[CoversClass( WordPressCampaignDtoFactory::class )]
 #[UsesClass( WordPressCampaign::class )]
-class WordPressCampaignDtoFactoryTest extends TestCase {
+#[UsesClass( WordPressCampaignSlug::class )]
+#[UsesClass( AbstractAdminWordPressCampaignInput::class )]
+#[UsesClass( AdminWordPressCampaignInput::class )]
+#[UsesClass( WordPressCampaignDto::class )]
+class WordPressCampaignDtoFactoryTest extends FundrikTestCase {
 
 	#[Test]
 	public function creates_dto_from_array(): void {
@@ -50,12 +58,12 @@ class WordPressCampaignDtoFactoryTest extends TestCase {
 		$campaign = new WordPressCampaign(
 			new Campaign(
 				id: EntityId::create( 456 ),
-				title: 'Domain Campaign',
+				title: CampaignTitle::create( 'Domain Campaign' ),
 				is_enabled: false,
 				is_open: true,
-				target: new CampaignTarget( is_enabled: false, amount: 0 ),
+				target: CampaignTarget::create( is_enabled: false, amount: 0 ),
 			),
-			slug: 'domain-campaign',
+			slug: WordPressCampaignSlug::create( 'domain-campaign' ),
 		);
 
 		$dto = ( new WordPressCampaignDtoFactory() )->from_campaign( $campaign );
@@ -68,5 +76,30 @@ class WordPressCampaignDtoFactoryTest extends TestCase {
 		$this->assertTrue( $dto->is_open );
 		$this->assertFalse( $dto->has_target );
 		$this->assertSame( 0, $dto->target_amount );
+	}
+
+	#[Test]
+	public function creates_dto_from_input(): void {
+
+		$input = new AdminWordPressCampaignInput(
+			id: 789,
+			title: 'Input Campaign',
+			slug: 'input-campaign',
+			is_enabled: true,
+			is_open: false,
+			has_target: true,
+			target_amount: 3000,
+		);
+
+		$dto = ( new WordPressCampaignDtoFactory() )->from_input( $input );
+
+		$this->assertInstanceOf( WordPressCampaignDto::class, $dto );
+		$this->assertSame( 789, $dto->id );
+		$this->assertSame( 'Input Campaign', $dto->title );
+		$this->assertSame( 'input-campaign', $dto->slug );
+		$this->assertTrue( $dto->is_enabled );
+		$this->assertFalse( $dto->is_open );
+		$this->assertTrue( $dto->has_target );
+		$this->assertSame( 3000, $dto->target_amount );
 	}
 }

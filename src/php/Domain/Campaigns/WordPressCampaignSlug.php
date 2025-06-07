@@ -26,16 +26,10 @@ final readonly class WordPressCampaignSlug {
 	 * @since 1.0.0
 	 *
 	 * @param string $value The campaign slug.
-	 *
-	 * @throws InvalidArgumentException If the slug is empty or whitespace.
 	 */
 	private function __construct(
 		public string $value,
-	) {
-		if ( '' === trim( $value ) ) {
-			throw new InvalidArgumentException( 'Campaign slug cannot be empty or whitespace.' );
-		}
-	}
+	) {}
 
 	/**
 	 * Factory method to create a WordPressCampaignSlug instance.
@@ -49,6 +43,12 @@ final readonly class WordPressCampaignSlug {
 	 * @throws InvalidArgumentException If the slug is empty or whitespace.
 	 */
 	public static function create( string $value ): self {
+
+		$value = trim( $value );
+
+		if ( '' === $value ) {
+			throw new InvalidArgumentException( 'Campaign slug cannot be empty or whitespace.' );
+		}
 
 		return new self( $value );
 	}

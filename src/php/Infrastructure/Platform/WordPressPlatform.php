@@ -32,7 +32,8 @@ final readonly class WordPressPlatform implements PlatformInterface {
 	 * @since 1.0.0
 	 */
 	public function __construct(
-		private DependencyProvider $dependency_provider
+		private DependencyProvider $dependency_provider,
+		private AllowedBlockTypesFilter $allowed_block_types_filter,
 	) {}
 
 	/**
@@ -127,9 +128,9 @@ final readonly class WordPressPlatform implements PlatformInterface {
 		WP_Block_Editor_Context $editor_context
 	): array {
 
-		return ( new AllowedBlockTypesFilter() )->filter(
+		return $this->allowed_block_types_filter->filter(
 			$allowed_blocks,
-			$editor_context,
+			$editor_context->post->post_type,
 			$this->get_post_types()
 		);
 	}

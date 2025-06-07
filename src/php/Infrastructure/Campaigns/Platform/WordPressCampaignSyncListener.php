@@ -52,18 +52,18 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 	 */
 	public function register(): void {
 
-		$post_type = $this->post_type->get_type();
-
 		add_filter(
-			"rest_pre_insert_{$post_type}",
+			'rest_pre_insert_' . $this->post_type->get_type(),
 			$this->validate( ... ),
 			10,
 			2
 		);
 
 		add_action(
-			"rest_after_insert_{$post_type}",
+			'wp_insert_post',
 			$this->sync( ... ),
+			10,
+			2
 		);
 
 		add_action(
@@ -93,7 +93,7 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 			$this->service->validate_input( $input );
 		} catch ( ValidationFailedException $e ) {
 			return new WP_Error(
-				'validation_failed',
+				'campaign_validation_failed',
 				$e->getMessage(),
 				[ 'status' => 400 ]
 			);
@@ -107,9 +107,14 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param int     $post_id The ID of the post being synchronized.
 	 * @param WP_Post $post The post object being synchronized.
 	 */
-	public function sync( WP_Post $post ): void {
+	public function sync( int $post_id, WP_Post $post ): void {
+
+		if ( $this->post_type->get_type() !== $post->post_type ) {
+			return;
+		}
 
 		try {
 			$input = $this->input_factory->from_wp_post( $post );

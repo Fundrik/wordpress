@@ -6,10 +6,12 @@ namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Persistence;
 
 use Fundrik\Core\Domain\Campaigns\Campaign;
 use Fundrik\Core\Domain\Campaigns\CampaignTarget;
+use Fundrik\Core\Domain\Campaigns\CampaignTitle;
 use Fundrik\Core\Domain\EntityId;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
+use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignSlug;
 use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbWordPressCampaignRepository;
 use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
 use Fundrik\WordPress\Tests\FundrikTestCase;
@@ -23,6 +25,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass( WordPressCampaignDto::class )]
 #[UsesClass( WordPressCampaignDtoFactory::class )]
 #[UsesClass( WordPressCampaign::class )]
+#[UsesClass( WordPressCampaignSlug::class )]
 class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 
 	private const TABLE = 'fundrik_campaigns';
@@ -139,6 +142,21 @@ class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 	}
 
 	#[Test]
+	public function get_all_returns_empty_array_when_no_data(): void {
+
+		$this->query_executor
+			->shouldReceive( 'get_all' )
+			->once()
+			->with( $this->identicalTo( self::TABLE ) )
+			->andReturn( [] );
+
+		$result = $this->repository->get_all();
+
+		$this->assertIsArray( $result );
+		$this->assertCount( 0, $result );
+	}
+
+	#[Test]
 	public function exists_returns_true_when_campaign_exists(): void {
 
 		$id       = 123;
@@ -180,7 +198,47 @@ class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function insert_calls_executor_and_returns_true_on_success(): void {
+	public function exists_by_slug_returns_true_when_exists(): void {
+
+		$slug = 'test-slug';
+
+		$this->query_executor
+			->shouldReceive( 'exists_by_column' )
+			->once()
+			->with(
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( 'slug' ),
+				$this->identicalTo( $slug )
+			)
+			->andReturn( true );
+
+		$result = $this->repository->exists_by_slug( $slug );
+
+		$this->assertTrue( $result );
+	}
+
+	#[Test]
+	public function exists_by_slug_returns_false_when_not_exists(): void {
+
+		$slug = 'non-existent-slug';
+
+		$this->query_executor
+			->shouldReceive( 'exists_by_column' )
+			->once()
+			->with(
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( 'slug' ),
+				$this->identicalTo( $slug )
+			)
+			->andReturn( false );
+
+		$result = $this->repository->exists_by_slug( $slug );
+
+		$this->assertFalse( $result );
+	}
+
+	#[Test]
+	public function insert_returns_true_on_success(): void {
 
 		$campaign = $this->create_fake_campaign_with_id( 1 );
 
@@ -199,7 +257,26 @@ class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function update_calls_executor_and_returns_true_on_success(): void {
+	public function insert_returns_false_on_failure(): void {
+
+		$campaign = $this->create_fake_campaign_with_id( 1 );
+
+		$this->query_executor
+			->shouldReceive( 'insert' )
+			->once()
+			->with(
+				$this->identicalTo( self::TABLE ),
+				Mockery::type( 'array' )
+			)
+			->andReturn( false );
+
+		$result = $this->repository->insert( $campaign );
+
+		$this->assertFalse( $result );
+	}
+
+	#[Test]
+	public function update_returns_true_on_success(): void {
 
 		$id = 1;
 
@@ -221,7 +298,27 @@ class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function delete_calls_executor_and_returns_true_on_success(): void {
+	public function update_returns_false_on_failure(): void {
+
+		$campaign = $this->create_fake_campaign_with_id( 1 );
+
+		$this->query_executor
+			->shouldReceive( 'update' )
+			->once()
+			->with(
+				$this->identicalTo( self::TABLE ),
+				Mockery::type( 'array' ),
+				$this->identicalTo( 1 )
+			)
+			->andReturn( false );
+
+		$result = $this->repository->update( $campaign );
+
+		$this->assertFalse( $result );
+	}
+
+	#[Test]
+	public function delete_returns_true_on_success(): void {
 
 		$id = 1;
 
@@ -245,13 +342,13 @@ class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 
 		return new WordPressCampaign(
 			new Campaign(
-				EntityId::create( $id ),
-				'title',
-				true,
-				true,
-				new CampaignTarget( true, 1000 ),
+				id: EntityId::create( $id ),
+				title: CampaignTitle::create( 'title' ),
+				is_enabled: true,
+				is_open: true,
+				target: CampaignTarget::create( true, 1000 ),
 			),
-			'slug',
+			slug: WordPressCampaignSlug::create( 'slug' ),
 		);
 	}
 }

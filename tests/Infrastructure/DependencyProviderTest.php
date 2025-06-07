@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure;
 
 use Brain\Monkey\Filters;
-use Fundrik\Core\Domain\Campaigns\Interfaces\CampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
@@ -16,6 +15,7 @@ use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterfa
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use wpdb;
 
 #[CoversClass( DependencyProvider::class )]
@@ -40,6 +40,7 @@ class DependencyProviderTest extends FundrikTestCase {
 			QueryExecutorInterface::class,
 			WordPressCampaignRepositoryInterface::class,
 			WordPressCampaignServiceInterface::class,
+			ValidatorInterface::class,
 			WordPressCampaignPostMapperInterface::class,
 			WordPressCampaignPostType::class,
 			WordPressCampaignSyncListenerInterface::class,

@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Platform;
 
 use Fundrik\Core\Domain\EntityId;
+use Fundrik\WordPress\Application\Campaigns\Input\AbstractAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInputFactory;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInputFactory;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
-use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
@@ -16,16 +20,27 @@ use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
-use WP_Post;
+use stdClass;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
+use WP_Error;
+use WP_REST_Request;
 
 #[CoversClass( WordPressCampaignSyncListener::class )]
 #[UsesClass( WordPressCampaignPostType::class )]
+#[UsesClass( AbstractAdminWordPressCampaignInput::class )]
+#[UsesClass( AdminWordPressCampaignInputFactory::class )]
+#[UsesClass( AdminWordPressCampaignPartialInput::class )]
+#[UsesClass( AdminWordPressCampaignPartialInputFactory::class )]
+#[UsesClass( AdminWordPressCampaignInput::class )]
 class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
 	private WordPressCampaignPostMapperInterface&MockInterface $mapper;
 	private WordPressCampaignServiceInterface&MockInterface $service;
 
 	private WordPressCampaignPostType $post_type;
+	private AdminWordPressCampaignInputFactory $input_factory;
+	private AdminWordPressCampaignPartialInputFactory $partial_input_factory;
 	private WordPressCampaignSyncListener $listener;
 
 	protected function setUp(): void {
@@ -35,23 +50,33 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 		$this->mapper  = Mockery::mock( WordPressCampaignPostMapperInterface::class );
 		$this->service = Mockery::mock( WordPressCampaignServiceInterface::class );
 
-		$this->post_type = new WordPressCampaignPostType();
+		$this->post_type             = new WordPressCampaignPostType();
+		$this->input_factory         = new AdminWordPressCampaignInputFactory( $this->mapper );
+		$this->partial_input_factory = new AdminWordPressCampaignPartialInputFactory();
 
 		$this->listener = new WordPressCampaignSyncListener(
 			$this->post_type,
-			$this->mapper,
-			$this->service,
+			$this->input_factory,
+			$this->partial_input_factory,
+			$this->service
 		);
 	}
 
 	#[Test]
-	public function register_hooks(): void {
+	public function it_registers_hooks(): void {
 
 		$this->listener->register();
 
 		self::assertNotFalse(
+			has_filter(
+				'rest_pre_insert_' . $this->post_type->get_type(),
+				$this->listener->validate( ... )
+			)
+		);
+
+		self::assertNotFalse(
 			has_action(
-				'wp_after_insert_post',
+				'wp_insert_post',
 				$this->listener->sync( ... )
 			)
 		);
@@ -65,82 +90,164 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function sync_method_saves_entity(): void {
+	public function validate_returns_post_when_validation_successful(): void {
 
-		$post            = Mockery::mock( 'WP_Post' );
-		$post->post_type = $this->post_type->get_type();
+		$prepared_post = new stdClass();
+		$request       = Mockery::mock( WP_REST_Request::class );
 
-		$dto = new WordPressCampaignDto(
-			id            : 123,
-			title         : 'Post Campaign',
-			slug          : 'post-campaign',
-			is_enabled    : true,
-			is_open       : true,
-			has_target    : true,
-			target_amount : 1500,
-		);
+		$input_data = [
+			'id'    => 123,
+			'title' => 'Valid Campaign',
+		];
+
+		$request->shouldReceive( 'get_params' )
+			->once()
+			->andReturn( $input_data );
+
+		$this->service
+			->shouldReceive( 'validate_input' )
+			->once()
+			->with( Mockery::type( AdminWordPressCampaignPartialInput::class ) );
+
+		$result = $this->listener->validate( $prepared_post, $request );
+
+		self::assertSame( $prepared_post, $result );
+	}
+
+	#[Test]
+	public function validate_returns_wp_error_when_validation_fails(): void {
+
+		$prepared_post = new stdClass();
+		$request       = Mockery::mock( WP_REST_Request::class );
+
+		$input_data = [
+			'id'    => 456,
+			'title' => 'Invalid Campaign',
+		];
+
+		$request->shouldReceive( 'get_params' )
+			->once()
+			->andReturn( $input_data );
+
+		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
+		$mock_violation_list
+			->shouldReceive( 'count' )
+			->andReturn( 1 );
+
+		$this->service
+			->shouldReceive( 'validate_input' )
+			->once()
+			->with( Mockery::type( AdminWordPressCampaignPartialInput::class ) )
+			->andThrow( new ValidationFailedException( [], $mock_violation_list ) );
+
+		$result = $this->listener->validate( $prepared_post, $request );
+
+		self::assertInstanceOf( WP_Error::class, $result );
+		self::assertSame( 'campaign_validation_failed', $result->get_error_code() );
+	}
+
+	#[Test]
+	public function sync_calls_save_campaign_on_service(): void {
+
+		$post             = Mockery::mock( 'WP_Post' );
+		$post->ID         = 123;
+		$post->post_title = 'Test Campaign';
+		$post->post_type  = $this->post_type->get_type();
 
 		$this->mapper
-			->shouldReceive( 'from_wp_post' )
+			->shouldReceive( 'to_array_from_post' )
 			->once()
-			->with( $post )
-			->andReturn( $dto );
+			->with( Mockery::type( 'WP_Post' ) )
+			->andReturn(
+				[
+					'id'    => $post->ID,
+					'title' => $post->post_title,
+				]
+			);
 
 		$this->service
 			->shouldReceive( 'save_campaign' )
 			->once()
-			->with( $dto );
+			->with( Mockery::type( AdminWordPressCampaignInput::class ) );
 
-		$this->listener->sync( 123, $post );
+		$this->listener->sync( $post->ID, $post );
 	}
 
 	#[Test]
-	public function sync_method_does_not_save_entity_for_other_post_type(): void {
+	public function sync_logs_error_when_validation_exception_thrown(): void {
 
-		$post            = Mockery::mock( WP_Post::class );
-		$post->post_type = 'different_post_type';
+		$post             = Mockery::mock( 'WP_Post' );
+		$post->ID         = 123;
+		$post->post_title = 'Test Campaign';
+		$post->post_type  = $this->post_type->get_type();
 
 		$this->mapper
-			->shouldNotReceive( 'from_wp_post' );
+			->shouldReceive( 'to_array_from_post' )
+			->once()
+			->with( Mockery::type( 'WP_Post' ) )
+			->andReturn(
+				[
+					'id'    => $post->ID,
+					'title' => $post->post_title,
+				]
+			);
+
+		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
+		$mock_violation_list
+			->shouldReceive( 'count' )
+			->andReturn( 1 );
+
+		$this->service
+			->shouldReceive( 'save_campaign' )
+			->once()
+			->with( Mockery::type( AdminWordPressCampaignInput::class ) )
+			->andThrow( new ValidationFailedException( [], $mock_violation_list ) );
+
+		$this->listener->sync( $post->ID, $post );
+	}
+
+	#[Test]
+	public function sync_does_nothing_if_post_type_is_not_campaign(): void {
+
+		$post             = Mockery::mock( 'WP_Post' );
+		$post->ID         = 123;
+		$post->post_title = 'Irrelevant Post';
+		$post->post_type  = 'other_post_type';
+
+		$this->mapper
+			->shouldNotReceive( 'to_array_from_post' );
 
 		$this->service
 			->shouldNotReceive( 'save_campaign' );
 
-		$this->listener->sync( 123, $post );
+		$this->listener->sync( $post->ID, $post );
 	}
 
 	#[Test]
-	public function delete_method_deletes_entity(): void {
+	public function delete_calls_delete_campaign_on_service(): void {
 
-		$post            = Mockery::mock( WP_Post::class );
+		$post            = Mockery::mock( 'WP_Post' );
+		$post->ID        = 42;
 		$post->post_type = $this->post_type->get_type();
-		$post_id         = 123;
-
-		$entity_id = EntityId::create( $post_id );
 
 		$this->service
 			->shouldReceive( 'delete_campaign' )
 			->once()
-			->with(
-				Mockery::on(
-					function ( $arg ) use ( $entity_id ) {
-						return $arg instanceof EntityId && $arg->value === $entity_id->value;
-					}
-				)
-			);
+			->with( Mockery::on( fn ( EntityId $id ) => 42 === $id->value ) );
 
-		$this->listener->delete( $post_id, $post );
+		$this->listener->delete( $post->ID, $post );
 	}
 
 	#[Test]
-	public function delete_method_does_not_delete_for_other_post_type(): void {
+	public function delete_does_nothing_if_post_type_is_not_campaign(): void {
 
-		$post            = Mockery::mock( WP_Post::class );
-		$post->post_type = 'different_post_type';
+		$post            = Mockery::mock( 'WP_Post' );
+		$post->ID        = 42;
+		$post->post_type = 'not_campaign';
 
 		$this->service
 			->shouldNotReceive( 'delete_campaign' );
 
-		$this->listener->delete( 123, $post );
+		$this->listener->delete( $post->ID, $post );
 	}
 }

@@ -13,8 +13,6 @@ namespace Fundrik\WordPress\Application\Campaigns;
  * Represents the full state of a campaign entity within the WordPress implementation.
  *
  * @since 1.0.0
- *
- * @codeCoverageIgnore
  */
 final readonly class WordPressCampaignDto {
 

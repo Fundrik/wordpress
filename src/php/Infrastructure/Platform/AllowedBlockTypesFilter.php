@@ -7,7 +7,6 @@
 
 namespace Fundrik\WordPress\Infrastructure\Platform;
 
-use WP_Block_Editor_Context;
 use WP_Block_Type_Registry;
 
 /**
@@ -18,25 +17,33 @@ use WP_Block_Type_Registry;
 final readonly class AllowedBlockTypesFilter {
 
 	/**
+	 * AllowedBlockTypesFilter constructor.
+	 *
+	 * @param string[]|null $all_registered_blocks Optional list of all registered block names
+	 *                                             for test injection or override.
+	 */
+	public function __construct(
+		private ?array $all_registered_blocks = null
+	) {}
+
+	/**
 	 * Filters allowed block types by current post type.
 	 *
-	 * @param bool|array              $allowed_blocks True or list of block names currently allowed.
-	 * @param WP_Block_Editor_Context $editor_context Provides info about current editor state.
-	 * @param PostTypeInterface[]     $post_types List of post type objects.
+	 * @param bool|array          $allowed_blocks True or list of block names currently allowed.
+	 * @param string              $current_post_type The post type currently being edited.
+	 * @param PostTypeInterface[] $post_types List of post type objects.
 	 *
 	 * @return array<int, string> Filtered list of allowed block names for the current post type.
 	 */
 	public function filter(
 		bool|array $allowed_blocks,
-		WP_Block_Editor_Context $editor_context,
+		string $current_post_type,
 		array $post_types
 	): array {
 
 		if ( false === $allowed_blocks ) {
 			return [];
 		}
-
-		$current_post_type = $editor_context->post->post_type;
 
 		$block_allowed_post_types = $this->build_block_allowed_post_types_map( $post_types );
 
@@ -84,7 +91,13 @@ final readonly class AllowedBlockTypesFilter {
 	 */
 	private function get_all_registered_block_names(): array {
 
+		if ( null !== $this->all_registered_blocks ) {
+			return $this->all_registered_blocks;
+		}
+
+		// @codeCoverageIgnoreStart
 		return array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

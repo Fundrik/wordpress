@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Platform;
 
 use Brain\Monkey\Functions;
-use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostMapper;
-use Fundrik\WordPress\Support\PostMetaHelper;
+use Fundrik\WordPress\Support\PostMeta;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -17,7 +16,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass( WordPressCampaignPostMapper::class )]
 #[UsesClass( WordPressCampaignDtoFactory::class )]
-#[UsesClass( PostMetaHelper::class )]
+#[UsesClass( PostMeta::class )]
 class WordPressCampaignPostMapperTest extends FundrikTestCase {
 
 	private WordPressCampaignPostMapper $mapper;
@@ -32,12 +31,11 @@ class WordPressCampaignPostMapperTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function from_wp_post_creates_campaign_dto_correctly(): void {
+	public function to_array_from_post_extracts_expected_data(): void {
 
-		$id = 1;
+		$id = 10;
 
-		$wp_post = Mockery::mock( 'WP_Post' );
-
+		$wp_post              = Mockery::mock( 'WP_Post' );
 		$wp_post->ID          = $id;
 		$wp_post->post_title  = 'Test Campaign';
 		$wp_post->post_name   = 'test-campaign';
@@ -45,94 +43,65 @@ class WordPressCampaignPostMapperTest extends FundrikTestCase {
 
 		Functions\when( 'get_post_meta' )->alias(
 			function ( $post_id, $key ) {
-
-				$meta_data = [
-					'is_open'       => '0',
-					'has_target'    => '1',
-					'target_amount' => '1000',
+				$meta = [
+					'is_open'       => '1',
+					'has_target'    => '0',
+					'target_amount' => '500',
 				];
 
-				return $meta_data[ $key ] ?? '';
+				return $meta[ $key ] ?? '';
 			}
 		);
 
-		$result = $this->mapper->from_wp_post( $wp_post );
+		$result = $this->mapper->to_array_from_post( $wp_post );
 
-		$this->assertInstanceOf( WordPressCampaignDto::class, $result );
-		$this->assertSame( $id, $result->id );
-		$this->assertSame( 'Test Campaign', $result->title );
-		$this->assertSame( 'test-campaign', $result->slug );
-		$this->assertTrue( $result->is_enabled );
-		$this->assertFalse( $result->is_open );
-		$this->assertTrue( $result->has_target );
-		$this->assertSame( 1000, $result->target_amount );
+		$this->assertSame(
+			[
+				'id'            => $id,
+				'title'         => 'Test Campaign',
+				'slug'          => 'test-campaign',
+				'is_enabled'    => true,
+				'is_open'       => true,
+				'has_target'    => false,
+				'target_amount' => 500,
+			],
+			$result
+		);
 	}
 
 	#[Test]
-	public function from_wp_post_handles_missing_meta_data(): void {
+	public function to_array_from_post_handles_missing_meta(): void {
 
-		$id = 2;
+		$id = 20;
 
 		$wp_post              = Mockery::mock( 'WP_Post' );
 		$wp_post->ID          = $id;
-		$wp_post->post_title  = 'Another Campaign';
-		$wp_post->post_name   = 'another-campaign';
+		$wp_post->post_title  = 'Campaign Without Meta';
+		$wp_post->post_name   = 'campaign-no-meta';
 		$wp_post->post_status = 'publish';
 
 		Functions\when( 'get_post_meta' )->justReturn( '' );
 
-		$result = $this->mapper->from_wp_post( $wp_post );
+		$result = $this->mapper->to_array_from_post( $wp_post );
 
-		$this->assertInstanceOf( WordPressCampaignDto::class, $result );
-		$this->assertSame( $id, $result->id );
-		$this->assertSame( 'Another Campaign', $result->title );
-		$this->assertSame( 'another-campaign', $result->slug );
-		$this->assertTrue( $result->is_enabled );
-		$this->assertFalse( $result->is_open );
-		$this->assertFalse( $result->has_target );
-		$this->assertSame( 0, $result->target_amount );
-	}
-
-	#[Test]
-	public function from_wp_post_handles_incorrect_meta_data(): void {
-
-		$id = 3;
-
-		$wp_post              = Mockery::mock( 'WP_Post' );
-		$wp_post->ID          = $id;
-		$wp_post->post_title  = 'Faulty Campaign';
-		$wp_post->post_name   = 'faulty-campaign';
-		$wp_post->post_status = 'publish';
-
-		Functions\when( 'get_post_meta' )->alias(
-			function ( $post_id, $key ) {
-
-				$meta_data = [
-					'is_open'       => 'not-a-boolean',
-					'has_target'    => 'not-a-boolean',
-					'target_amount' => 'invalid-int',
-				];
-
-				return $meta_data[ $key ] ?? '';
-			}
+		$this->assertSame(
+			[
+				'id'            => $id,
+				'title'         => 'Campaign Without Meta',
+				'slug'          => 'campaign-no-meta',
+				'is_enabled'    => true,
+				'is_open'       => false,
+				'has_target'    => false,
+				'target_amount' => 0,
+			],
+			$result
 		);
-
-		$result = $this->mapper->from_wp_post( $wp_post );
-
-		$this->assertInstanceOf( WordPressCampaignDto::class, $result );
-		$this->assertSame( $id, $result->id );
-		$this->assertSame( 'Faulty Campaign', $result->title );
-		$this->assertSame( 'faulty-campaign', $result->slug );
-		$this->assertTrue( $result->is_enabled );
-		$this->assertFalse( $result->is_open );
-		$this->assertFalse( $result->has_target );
-		$this->assertSame( 0, $result->target_amount );
 	}
 
 	#[Test]
-	public function from_wp_post_creates_campaign_dto_for_draft_status(): void {
+	public function to_array_from_post_handles_draft_post(): void {
 
-		$id = 4;
+		$id = 30;
 
 		$wp_post              = Mockery::mock( 'WP_Post' );
 		$wp_post->ID          = $id;
@@ -140,14 +109,31 @@ class WordPressCampaignPostMapperTest extends FundrikTestCase {
 		$wp_post->post_name   = 'draft-campaign';
 		$wp_post->post_status = 'draft';
 
-		Functions\when( 'get_post_meta' )->justReturn( '' );
+		Functions\when( 'get_post_meta' )->alias(
+			function ( $post_id, $key ) {
+				$meta = [
+					'is_open'       => '1',
+					'has_target'    => '1',
+					'target_amount' => '2000',
+				];
 
-		$result = $this->mapper->from_wp_post( $wp_post );
+				return $meta[ $key ] ?? '';
+			}
+		);
 
-		$this->assertInstanceOf( WordPressCampaignDto::class, $result );
-		$this->assertSame( $id, $result->id );
-		$this->assertSame( 'Draft Campaign', $result->title );
-		$this->assertSame( 'draft-campaign', $result->slug );
-		$this->assertFalse( $result->is_enabled );
+		$result = $this->mapper->to_array_from_post( $wp_post );
+
+		$this->assertSame(
+			[
+				'id'            => $id,
+				'title'         => 'Draft Campaign',
+				'slug'          => 'draft-campaign',
+				'is_enabled'    => false,
+				'is_open'       => true,
+				'has_target'    => true,
+				'target_amount' => 2000,
+			],
+			$result
+		);
 	}
 }

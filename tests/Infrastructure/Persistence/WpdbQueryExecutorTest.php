@@ -19,6 +19,8 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 	private const TABLE = 'campaigns';
 
 	private wpdb&MockInterface $wpdb;
+
+	private WpdbQueryExecutor $executor;
 	private string $table_name;
 
 	protected function setUp(): void {
@@ -28,6 +30,7 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 		$this->wpdb         = Mockery::mock( 'wpdb' );
 		$this->wpdb->prefix = 'wp_';
 
+		$this->executor   = new WpdbQueryExecutor( $this->wpdb );
 		$this->table_name = $this->wpdb->prefix . self::TABLE;
 
 		if ( ! defined( 'ARRAY_A' ) ) {
@@ -76,8 +79,7 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 				]
 			);
 
-		$executor = new WpdbQueryExecutor( $this->wpdb );
-		$result   = $executor->get_by_id( self::TABLE, $id );
+		$result = $this->executor->get_by_id( self::TABLE, $id );
 
 		$this->assertSame(
 			[
@@ -114,8 +116,7 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			)
 			->andReturn( null );
 
-		$executor = new WpdbQueryExecutor( $this->wpdb );
-		$result   = $executor->get_by_id( self::TABLE, $id );
+		$result = $this->executor->get_by_id( self::TABLE, $id );
 
 		$this->assertNull( $result );
 	}
@@ -154,8 +155,7 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 				]
 			);
 
-		$executor = new WpdbQueryExecutor( $this->wpdb );
-		$result   = $executor->get_all( self::TABLE );
+		$result = $this->executor->get_all( self::TABLE );
 
 		$this->assertCount( 2, $result );
 		$this->assertSame( 'First', $result[0]['title'] );
@@ -166,13 +166,13 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 	public function returns_true_if_record_exists( int|string $id ): void {
 
 		$placeholder  = is_int( $id ) ? '%d' : '%s';
-		$prepared_sql = "SELECT id FROM {$this->table_name} WHERE id = {$id} LIMIT 1";
+		$prepared_sql = "SELECT 1 FROM {$this->table_name} WHERE id = {$id} LIMIT 1";
 
 		$this->wpdb
 			->shouldReceive( 'prepare' )
 			->once()
 			->with(
-				$this->identicalTo( "SELECT id FROM %i WHERE id = {$placeholder} LIMIT 1" ),
+				$this->identicalTo( "SELECT 1 FROM %i WHERE id = {$placeholder} LIMIT 1" ),
 				$this->identicalTo( self::TABLE ),
 				$this->identicalTo( $id )
 			)
@@ -182,11 +182,9 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			->shouldReceive( 'get_var' )
 			->once()
 			->with( $this->identicalTo( $prepared_sql ) )
-			->andReturn( $id );
+			->andReturn( 1 );
 
-		$executor = new WpdbQueryExecutor( $this->wpdb );
-
-		$this->assertTrue( $executor->exists( self::TABLE, $id ) );
+		$this->assertTrue( $this->executor->exists( self::TABLE, $id ) );
 	}
 
 	#[Test]
@@ -194,13 +192,13 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 	public function returns_false_if_record_does_not_exist( int|string $id ): void {
 
 		$placeholder  = is_int( $id ) ? '%d' : '%s';
-		$prepared_sql = "SELECT id FROM {$this->table_name} WHERE id = {$id} LIMIT 1";
+		$prepared_sql = "SELECT 1 FROM {$this->table_name} WHERE id = {$id} LIMIT 1";
 
 		$this->wpdb
 			->shouldReceive( 'prepare' )
 			->once()
 			->with(
-				$this->identicalTo( "SELECT id FROM %i WHERE id = {$placeholder} LIMIT 1" ),
+				$this->identicalTo( "SELECT 1 FROM %i WHERE id = {$placeholder} LIMIT 1" ),
 				$this->identicalTo( self::TABLE ),
 				$this->identicalTo( $id )
 			)
@@ -212,9 +210,67 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			->with( $this->identicalTo( $prepared_sql ) )
 			->andReturn( null );
 
-		$executor = new WpdbQueryExecutor( $this->wpdb );
+		$this->assertFalse( $this->executor->exists( self::TABLE, $id ) );
+	}
 
-		$this->assertFalse( $executor->exists( self::TABLE, $id ) );
+	#[Test]
+	public function exists_by_column_returns_true_if_record_exists(): void {
+
+		$value  = 'test-campaign';
+		$column = 'slug';
+
+		$placeholder    = is_int( $value ) ? '%d' : '%s';
+		$column_escaped = esc_sql( $column );
+
+		$prepared_sql = "SELECT 1 FROM {$this->table_name} WHERE slug = {$value} LIMIT 1";
+
+		$this->wpdb
+			->shouldReceive( 'prepare' )
+			->once()
+			->with(
+				$this->identicalTo( "SELECT 1 FROM %i WHERE {$column_escaped} = {$placeholder} LIMIT 1" ),
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( $value )
+			)
+			->andReturn( $prepared_sql );
+
+		$this->wpdb
+			->shouldReceive( 'get_var' )
+			->once()
+			->with( $this->identicalTo( $prepared_sql ) )
+			->andReturn( 1 );
+
+		$this->assertTrue( $this->executor->exists_by_column( self::TABLE, $column, $value ) );
+	}
+
+	#[Test]
+	public function exists_by_column_returns_false_if_record_does_not_exist(): void {
+
+		$value  = 'test-campaign';
+		$column = 'slug';
+
+		$placeholder    = is_int( $value ) ? '%d' : '%s';
+		$column_escaped = esc_sql( $column );
+
+		$prepared_sql = "SELECT 1 FROM {$this->table_name} WHERE slug = {$value} LIMIT 1";
+
+		$this->wpdb
+			->shouldReceive( 'prepare' )
+			->once()
+			->with(
+				$this->identicalTo( "SELECT 1 FROM %i WHERE {$column_escaped} = {$placeholder} LIMIT 1" ),
+				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( $value )
+			)
+			->andReturn( $prepared_sql );
+
+		$this->wpdb
+			->shouldReceive( 'get_var' )
+			->once()
+			->with( $this->identicalTo( $prepared_sql ) )
+			->andReturn( null );
+
+		$this->assertFalse( $this->executor->exists_by_column( self::TABLE, $column, $value ) );
 	}
 
 	#[Test]
@@ -233,9 +289,7 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			)
 			->andReturn( 1 );
 
-		$executor = new WpdbQueryExecutor( $this->wpdb );
-
-		$this->assertTrue( $executor->insert( self::TABLE, $data ) );
+		$this->assertTrue( $this->executor->insert( self::TABLE, $data ) );
 	}
 
 	#[Test]
@@ -254,9 +308,7 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			)
 			->andReturn( false );
 
-		$executor = new WpdbQueryExecutor( $this->wpdb );
-
-		$this->assertFalse( $executor->insert( self::TABLE, $data ) );
+		$this->assertFalse( $this->executor->insert( self::TABLE, $data ) );
 	}
 
 	#[Test]
@@ -277,9 +329,7 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			)
 			->andReturn( 1 );
 
-		$executor = new WpdbQueryExecutor( $this->wpdb );
-
-		$this->assertTrue( $executor->update( self::TABLE, $data, $id ) );
+		$this->assertTrue( $this->executor->update( self::TABLE, $data, $id ) );
 	}
 
 	#[Test]
@@ -300,9 +350,7 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			)
 			->andReturn( false );
 
-		$executor = new WpdbQueryExecutor( $this->wpdb );
-
-		$this->assertFalse( $executor->update( self::TABLE, $data, $id ) );
+		$this->assertFalse( $this->executor->update( self::TABLE, $data, $id ) );
 	}
 
 	#[Test]
@@ -318,9 +366,7 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			)
 			->andReturn( 1 );
 
-		$executor = new WpdbQueryExecutor( $this->wpdb );
-
-		$this->assertTrue( $executor->delete( self::TABLE, $id ) );
+		$this->assertTrue( $this->executor->delete( self::TABLE, $id ) );
 	}
 
 	#[Test]
@@ -336,8 +382,6 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 			)
 			->andReturn( false );
 
-		$executor = new WpdbQueryExecutor( $this->wpdb );
-
-		$this->assertFalse( $executor->delete( self::TABLE, $id ) );
+		$this->assertFalse( $this->executor->delete( self::TABLE, $id ) );
 	}
 }

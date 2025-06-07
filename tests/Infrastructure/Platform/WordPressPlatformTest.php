@@ -8,22 +8,27 @@ use Brain\Monkey\Functions;
 use Closure;
 use Fundrik\Core\Infrastructure\Internal\Container;
 use Fundrik\Core\Infrastructure\Internal\ContainerManager;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInputFactory;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignService;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignFactory;
 use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbWordPressCampaignRepository;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostMapper;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
 use Fundrik\WordPress\Infrastructure\Persistence\WpdbQueryExecutor;
+use Fundrik\WordPress\Infrastructure\Platform\AllowedBlockTypesFilter;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\ListenerInterface;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
 use Fundrik\WordPress\Infrastructure\Platform\WordPressPlatform;
+use Fundrik\WordPress\Support\Path;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
+use stdClass;
 
 #[CoversClass( WordPressPlatform::class )]
 #[UsesClass( WordPressCampaignService::class )]
@@ -33,10 +38,13 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass( WordPressCampaignSyncListener::class )]
 #[UsesClass( DependencyProvider::class )]
 #[UsesClass( WpdbQueryExecutor::class )]
+#[UsesClass( AdminWordPressCampaignInputFactory::class )]
+#[UsesClass( WordPressCampaignPostType::class )]
+#[UsesClass( Path::class )]
+#[UsesClass( AllowedBlockTypesFilter::class )]
 class WordPressPlatformTest extends FundrikTestCase {
 
-	private WordPressPlatform $platform_mocked;
-	private WordPressPlatform $platform_real;
+	private WordPressPlatform $platform;
 	private DependencyProvider&MockInterface $dependency_provider;
 
 	protected function setUp(): void {
@@ -48,19 +56,55 @@ class WordPressPlatformTest extends FundrikTestCase {
 
 		$this->dependency_provider = Mockery::mock( DependencyProvider::class );
 
-		$this->platform_mocked = new WordPressPlatform( $this->dependency_provider );
-		$this->platform_real   = new WordPressPlatform( new DependencyProvider() );
+		$allowed_block_types_filter = new AllowedBlockTypesFilter(
+			[ 'core/paragraph', 'core/image', 'core/quote' ]
+		);
+
+		$this->platform = new WordPressPlatform(
+			$this->dependency_provider,
+			$allowed_block_types_filter,
+		);
 	}
 
 	#[Test]
 	public function init_registers_init_hooks(): void {
 
-		$this->platform_real->init();
+		// WordPressPlatform::init() internally calls get_bindings() with no arguments
+		// and get_bindings() with 'listeners' argument,
+		// so even though this is not the focus of the current test,
+		// we need to mock it to avoid unexpected calls and test failures.
+		$this->dependency_provider
+			->shouldReceive( 'get_bindings' )
+			->once()
+			->withNoArgs()
+			->andReturn( [] );
+
+		$this->dependency_provider
+			->shouldReceive( 'get_bindings' )
+			->once()
+			->with( 'listeners' )
+			->andReturn( [] );
+
+		$this->platform->init();
 
 		self::assertNotFalse(
 			has_action(
 				'init',
-				$this->platform_real->register_post_types( ... )
+				$this->platform->register_post_types( ... )
+			)
+		);
+
+		self::assertNotFalse(
+			has_action(
+				'init',
+				$this->platform->register_blocks( ... )
+			)
+		);
+
+		self::assertNotFalse(
+			has_filter(
+				'allowed_block_types_all',
+				$this->platform->filter_allowed_blocks_by_post_type( ... )
 			)
 		);
 	}
@@ -71,20 +115,33 @@ class WordPressPlatformTest extends FundrikTestCase {
 		$container = ContainerManager::get_fresh();
 
 		$post_type_mock_1 = Mockery::mock( PostTypeInterface::class );
-		$post_type_mock_1->shouldReceive( 'get_type' )->andReturn( 'type_1' );
-		$post_type_mock_1->shouldReceive( 'get_labels' )->andReturn( [ 'name' => 'Type 1' ] );
-		$post_type_mock_1->shouldReceive( 'get_rewrite_slug' )->andReturn( 'type-1-slug' );
+		$post_type_mock_1->shouldReceive( 'get_type' )->twice()->andReturn( 'type_1' );
+		$post_type_mock_1->shouldReceive( 'get_labels' )->once()->andReturn( [ 'name' => 'Type 1' ] );
+		$post_type_mock_1->shouldReceive( 'get_slug' )->once()->andReturn( 'type-1-slug' );
+		$post_type_mock_1->shouldReceive( 'get_template_blocks' )->once()->andReturn( [] );
+		$post_type_mock_1->shouldReceive( 'get_meta_fields' )->once()->andReturn(
+			[
+				'meta_key_1' => [ 'type' => 'string' ],
+			]
+		);
 
 		$post_type_mock_2 = Mockery::mock( PostTypeInterface::class );
-		$post_type_mock_2->shouldReceive( 'get_type' )->andReturn( 'type_2' );
-		$post_type_mock_2->shouldReceive( 'get_labels' )->andReturn( [ 'name' => 'Type 2' ] );
-		$post_type_mock_2->shouldReceive( 'get_rewrite_slug' )->andReturn( 'type-2-slug' );
+		$post_type_mock_2->shouldReceive( 'get_type' )->twice()->andReturn( 'type_2' );
+		$post_type_mock_2->shouldReceive( 'get_labels' )->once()->andReturn( [ 'name' => 'Type 2' ] );
+		$post_type_mock_2->shouldReceive( 'get_slug' )->once()->andReturn( 'type-2-slug' );
+		$post_type_mock_2->shouldReceive( 'get_template_blocks' )->once()->andReturn( [] );
+		$post_type_mock_2->shouldReceive( 'get_meta_fields' )->once()->andReturn(
+			[
+				'meta_key_2' => [ 'type' => 'boolean' ],
+			]
+		);
 
 		$container->singleton( 'PostType1', fn() => $post_type_mock_1 );
 		$container->singleton( 'PostType2', fn() => $post_type_mock_2 );
 
 		$this->dependency_provider
 			->shouldReceive( 'get_bindings' )
+			->once()
 			->with( 'post_types' )
 			->andReturn( [ 'PostType1', 'PostType2' ] );
 
@@ -92,14 +149,74 @@ class WordPressPlatformTest extends FundrikTestCase {
 			->twice()
 			->andReturnUsing(
 				function ( string $type, array $args ) {
-					$this->assertStringContainsString( 'type_', $type );
+					$this->assertStringStartsWith( 'type_', $type );
 					$this->assertArrayHasKey( 'labels', $args );
+					$this->assertArrayHasKey( 'rewrite', $args );
+					$this->assertArrayHasKey( 'template', $args );
 				}
 			);
 
-		$this->platform_mocked->register_post_types();
+		Functions\expect( 'register_post_meta' )
+			->twice()
+			->andReturnUsing(
+				function ( string $post_type, string $meta_key, array $args ) {
+					$this->assertStringStartsWith( 'type_', $post_type );
+					$this->assertStringStartsWith( 'meta_key_', $meta_key );
+					$this->assertArrayHasKey( 'show_in_rest', $args );
+					$this->assertArrayHasKey( 'single', $args );
+				}
+			);
+
+		Functions\expect( 'wp_parse_args' )
+			->twice()
+			->andReturnUsing(
+				function ( $args, $defaults ) {
+					return array_merge( $defaults, $args );
+				}
+			);
+
+		$this->platform->register_post_types();
 
 		ContainerManager::reset();
+	}
+
+	#[Test]
+	public function register_blocks_registers_all_blocks(): void {
+
+		Functions\expect( 'wp_register_block_types_from_metadata_collection' )
+			->once()
+			->with(
+				Path::blocks(),
+				Path::blocks_manifest()
+			);
+
+		$this->platform->register_blocks();
+	}
+
+	#[Test]
+	public function filter_allowed_blocks_by_post_type_returns_filtered_result(): void {
+
+		$allowed_blocks = true;
+		$post_type      = 'custom_type';
+
+		$post            = Mockery::mock( 'WP_Post' );
+		$post->post_type = $post_type;
+
+		$editor_context       = Mockery::mock( 'WP_Block_Editor_Context' );
+		$editor_context->post = $post;
+
+		$this->dependency_provider
+			->shouldReceive( 'get_bindings' )
+			->once()
+			->with( 'post_types' )
+			->andReturn( [] );
+
+		$result = $this->platform->filter_allowed_blocks_by_post_type(
+			$allowed_blocks,
+			$editor_context
+		);
+
+		$this->assertIsArray( $result );
 	}
 
 	#[Test]
@@ -107,9 +224,30 @@ class WordPressPlatformTest extends FundrikTestCase {
 
 		$container = ContainerManager::get_fresh();
 
-		$this->platform_real->init();
+		$bindings = [
+			'Some\Simple\Interface' => stdClass::class,
+			'grouped'               => [
+				'Some\Grouped\Interface1' => stdClass::class,
+				'Some\Grouped\Interface2' => stdClass::class,
+			],
+		];
 
-		$bindings = ( new DependencyProvider() )->get_bindings();
+		// WordPressPlatform::init() internally calls get_bindings() with 'listeners' argument,
+		// so even though this is not the focus of the current test,
+		// we need to mock it to avoid unexpected calls and test failures.
+		$this->dependency_provider
+			->shouldReceive( 'get_bindings' )
+			->once()
+			->with( 'listeners' )
+			->andReturn( [] );
+
+		$this->dependency_provider
+			->shouldReceive( 'get_bindings' )
+			->once()
+			->withNoArgs()
+			->andReturn( $bindings );
+
+		$this->platform->init();
 
 		foreach ( $bindings as $abstract => $concrete ) {
 
@@ -131,12 +269,12 @@ class WordPressPlatformTest extends FundrikTestCase {
 	#[Test]
 	public function register_listeners_registers_all_listeners(): void {
 
-		// WordPressPlatform::init() calls register_bindings() first,
-		// which internally calls get_bindings() with no arguments.
-		// Even though this call is not directly relevant to this test,
-		// we still need to mock it to avoid unexpected behavior.
+		// WordPressPlatform::init() internally calls get_bindings() with no arguments,
+		// so even though this is not the focus of the current test,
+		// we need to mock it to avoid unexpected calls and test failures.
 		$this->dependency_provider
 			->shouldReceive( 'get_bindings' )
+			->once()
 			->withNoArgs()
 			->andReturn( [] );
 
@@ -153,10 +291,11 @@ class WordPressPlatformTest extends FundrikTestCase {
 
 		$this->dependency_provider
 			->shouldReceive( 'get_bindings' )
+			->once()
 			->with( 'listeners' )
 			->andReturn( [ 'Listener1', 'Listener2' ] );
 
-		$this->platform_mocked->init();
+		$this->platform->init();
 
 		ContainerManager::reset();
 	}
