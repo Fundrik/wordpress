@@ -91,21 +91,30 @@ class WordPressCampaignPostType implements PostTypeInterface {
 	}
 
 	/**
-	 * Returns the rewrite slug used for the campaign post type.
+	 * Returns the slug used for the campaign post type.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return string The rewrite slug for the campaign post type.
+	 * @return string The slug for the campaign post type.
 	 */
-	public function get_rewrite_slug(): string {
+	public function get_slug(): string {
 
 		/**
-		 * Filters the rewrite slug for the campaign post type.
+		 * Filters the slug for the campaign post type.
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param string $slug The default rewrite slug.
+		 * @param string $slug The default slug.
 		 */
-		return apply_filters( 'fundrik_campaign_post_type_rewrite_slug', 'campaigns' );
+		return apply_filters( 'fundrik_campaign_post_type_slug', 'campaigns' );
+	}
+
+	public function get_meta_fields(): array {
+
+		return [
+			self::META_IS_OPEN       => 'boolean',
+			self::META_HAS_TARGET    => 'boolean',
+			self::META_TARGET_AMOUNT => 'string',
+		];
 	}
 }

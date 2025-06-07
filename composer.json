@@ -39,7 +39,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Fundrik\\WordPress\\": "src/"
+			"Fundrik\\WordPress\\": "src/php/"
 		}
 	},
 	"autoload-dev": {

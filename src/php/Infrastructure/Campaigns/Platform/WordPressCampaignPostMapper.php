@@ -13,7 +13,7 @@ use Fundrik\WordPress\Application\Campaigns\Input\WordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use WP_Post;
-use Fundrik\WordPress\Support\PostMetaHelper;
+use Fundrik\WordPress\Support\PostMeta;
 
 /**
  * Maps data from a WordPress campaign post to a WordPressCampaignDto.
@@ -55,9 +55,9 @@ final readonly class WordPressCampaignPostMapper implements WordPressCampaignPos
 			'title'         => $post->post_title,
 			'slug'          => $post->post_name,
 			'is_enabled'    => 'publish' === $post->post_status,
-			'is_open'       => PostMetaHelper::get_bool( $post->ID, $post_type_class::META_IS_OPEN ),
-			'has_target'    => PostMetaHelper::get_bool( $post->ID, $post_type_class::META_HAS_TARGET ),
-			'target_amount' => PostMetaHelper::get_int( $post->ID, $post_type_class::META_TARGET_AMOUNT ),
+			'is_open'       => PostMeta::get_bool( $post->ID, $post_type_class::META_IS_OPEN ),
+			'has_target'    => PostMeta::get_bool( $post->ID, $post_type_class::META_HAS_TARGET ),
+			'target_amount' => PostMeta::get_int( $post->ID, $post_type_class::META_TARGET_AMOUNT ),
 		];
 	}
 }

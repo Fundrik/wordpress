@@ -13,6 +13,7 @@ use Fundrik\Core\Application\Platform\Interfaces\PlatformInterface;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\ListenerInterface;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
+use Fundrik\WordPress\Support\Path;
 
 /**
  * Represents the WordPress platform integration for Fundrik.
@@ -44,6 +45,7 @@ final readonly class WordPressPlatform implements PlatformInterface {
 		$this->register_listeners();
 
 		add_action( 'init', $this->register_post_types( ... ) );
+		add_action( 'init', $this->register_blocks( ... ) );
 	}
 
 	/**
@@ -74,13 +76,34 @@ final readonly class WordPressPlatform implements PlatformInterface {
 					'labels'       => $post_type->get_labels(),
 					'public'       => true,
 					'menu_icon'    => 'dashicons-heart',
-					'supports'     => [ 'title', 'editor' ],
+					'supports'     => [ 'title', 'editor', 'custom-fields' ],
 					'has_archive'  => true,
-					'rewrite'      => [ 'slug' => $post_type->get_rewrite_slug() ],
+					'rewrite'      => [ 'slug' => $post_type->get_slug() ],
 					'show_in_rest' => true,
 				]
 			);
+
+			foreach ( $post_type->get_meta_fields() as $meta_key => $type ) {
+
+				register_post_meta(
+					$post_type->get_type(),
+					$meta_key,
+					[
+						'show_in_rest' => true,
+						'single'       => true,
+						'type'         => $type,
+					]
+				);
+			}
 		}
+	}
+
+	public function register_blocks(): void {
+
+		wp_register_block_types_from_metadata_collection(
+			Path::blocks(),
+			Path::blocks_manifest()
+		);
 	}
 
 	/**

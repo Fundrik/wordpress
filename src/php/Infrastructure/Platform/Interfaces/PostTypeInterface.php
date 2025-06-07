@@ -32,11 +32,13 @@ interface PostTypeInterface {
 	public function get_labels(): array;
 
 	/**
-	 * Returns the rewrite slug used for the custom post type.
+	 * Returns the slug used for the custom post type.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return string The rewrite slug for the custom post type.
+	 * @return string The slug for the custom post type.
 	 */
-	public function get_rewrite_slug(): string;
+	public function get_slug(): string;
+
+	public function get_meta_fields(): array;
 }

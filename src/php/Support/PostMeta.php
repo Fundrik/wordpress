@@ -1,6 +1,6 @@
 <?php
 /**
- * PostMetaHelper class.
+ * PostMeta class.
  *
  * @since 1.0.0
  */
@@ -16,7 +16,7 @@ use Fundrik\Core\Support\TypeCaster;
  *
  * @since 1.0.0
  */
-final readonly class PostMetaHelper {
+final readonly class PostMeta {
 
 	/**
 	 * Retrieves a boolean value from post metadata.
