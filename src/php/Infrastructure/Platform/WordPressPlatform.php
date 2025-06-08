@@ -26,8 +26,9 @@ final readonly class WordPressPlatform implements PlatformInterface {
 	/**
 	 * Constructs the WordPress platform integration.
 	 *
-	 * @param DependencyProvider $dependency_provider Provides all necessary bindings
-	 *                                                for dependency injection within the platform.
+	 * @param DependencyProvider      $dependency_provider Provides all necessary bindings
+	 *                                                     for dependency injection within the platform.
+	 * @param AllowedBlockTypesFilter $allowed_block_types_filter Handles filtering of allowed block types.
 	 *
 	 * @since 1.0.0
 	 */
