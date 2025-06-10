@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests;
 
 use Brain\Monkey;
-use Brain\Monkey\Functions;
+use InvalidArgumentException;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
+use ReflectionClass;
 use ReflectionProperty;
 
 abstract class FundrikTestCase extends PHPUnitTestCase {
@@ -21,8 +22,8 @@ abstract class FundrikTestCase extends PHPUnitTestCase {
 
 		Monkey\setUp();
 
-		Functions\stubEscapeFunctions();
-		Functions\stubTranslationFunctions();
+		Monkey\Functions\stubEscapeFunctions();
+		Monkey\Functions\stubTranslationFunctions();
 	}
 
 	protected function tearDown(): void {
@@ -32,36 +33,46 @@ abstract class FundrikTestCase extends PHPUnitTestCase {
 		parent::tearDown();
 	}
 
-	protected function assertPropertyHasConstraint(
+	protected function assert_has_attribute_instance_of(
 		string $class_name,
-		string $property_name,
-		string $constraint_class,
-		?array $expected_values = null
+		string $target_name,
+		string $attribute_class,
+		?array $expected_values = null,
+		string $target_type = 'property'
 	): void {
 
-		$property   = new ReflectionProperty( $class_name, $property_name );
-		$attributes = $property->getAttributes( $constraint_class );
+		if ( 'property' === $target_type ) {
+			$reflection = new ReflectionProperty( $class_name, $target_name );
+		} elseif ( 'class' === $target_type ) {
+			$reflection = new ReflectionClass( $class_name );
+		} else {
+			throw new InvalidArgumentException( 'Invalid target type. Use "property" or "class".' );
+		}
+
+		$attributes = $reflection->getAttributes( $attribute_class );
 
 		Assert::assertCount(
 			1,
 			$attributes,
 			sprintf(
-				'Property "%s" of class "%s" must have the "%s" constraint.',
-				$property_name,
+				'%s "%s" of class "%s" must have the "%s" attribute.',
+				ucfirst( $target_type ),
+				$target_name,
 				$class_name,
-				$constraint_class
+				$attribute_class
 			)
 		);
 
 		$instance = $attributes[0]->newInstance();
 
 		Assert::assertInstanceOf(
-			$constraint_class,
+			$attribute_class,
 			$instance,
 			sprintf(
-				'Expected instance of "%s" for property "%s", got "%s"',
-				$constraint_class,
-				$property_name,
+				'Expected instance of "%s" for %s "%s", got "%s"',
+				$attribute_class,
+				$target_type,
+				$target_name,
 				get_class( $instance )
 			)
 		);
@@ -75,14 +86,45 @@ abstract class FundrikTestCase extends PHPUnitTestCase {
 					$expected,
 					$actual,
 					sprintf(
-						'Expected value "%s" for property "%s" on constraint "%s", got "%s"',
+						'Expected value "%s" for property "%s" on attribute "%s", got "%s"',
 						$expected,
 						$property,
-						$constraint_class,
+						$attribute_class,
 						$actual
 					)
 				);
 			}
 		}
+	}
+
+	protected function assert_property_has_attribute(
+		string $class_name,
+		string $property_name,
+		string $attribute_class,
+		?array $expected_values = null
+	): void {
+
+		$this->assert_has_attribute_instance_of(
+			class_name: $class_name,
+			target_name: $property_name,
+			attribute_class: $attribute_class,
+			expected_values: $expected_values,
+			target_type: 'property'
+		);
+	}
+
+	protected function assert_сlass_has_attribute(
+		string $class_name,
+		string $attribute_class,
+		?array $expected_values = null
+	): void {
+
+		$this->assert_has_attribute_instance_of(
+			class_name: $class_name,
+			target_name: $class_name,
+			attribute_class: $attribute_class,
+			expected_values: $expected_values,
+			target_type: 'class'
+		);
 	}
 }

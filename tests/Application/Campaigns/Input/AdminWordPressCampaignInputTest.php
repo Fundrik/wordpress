@@ -9,7 +9,6 @@ use Fundrik\WordPress\Tests\FundrikTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\PositiveOrZero;
 
 #[CoversClass( AdminWordPressCampaignInput::class )]
 final class AdminWordPressCampaignInputTest extends FundrikTestCase {
@@ -17,7 +16,7 @@ final class AdminWordPressCampaignInputTest extends FundrikTestCase {
 	#[Test]
 	public function title_property_has_not_blank_constraint(): void {
 
-		$this->assertPropertyHasConstraint(
+		$this->assert_has_attribute_instance_of(
 			AdminWordPressCampaignInput::class,
 			'title',
 			NotBlank::class,
@@ -28,22 +27,11 @@ final class AdminWordPressCampaignInputTest extends FundrikTestCase {
 	#[Test]
 	public function slug_property_has_not_blank_constraint(): void {
 
-		$this->assertPropertyHasConstraint(
+		$this->assert_has_attribute_instance_of(
 			AdminWordPressCampaignInput::class,
 			'slug',
 			NotBlank::class,
 			[ 'message' => 'Slug must not be blank' ]
-		);
-	}
-
-	#[Test]
-	public function target_amount_property_has_positive_or_zero_constraint(): void {
-
-		$this->assertPropertyHasConstraint(
-			AdminWordPressCampaignInput::class,
-			'target_amount',
-			PositiveOrZero::class,
-			[ 'message' => 'Target amount must be zero or positive' ]
 		);
 	}
 

@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 final readonly class AdminWordPressCampaignInput extends AbstractAdminWordPressCampaignInput {
 
 	/**
-	 * Constructor for AdminWordPressCampaignInput.
+	 * AdminWordPressCampaignInput constructor.
 	 *
 	 * @param int    $id Campaign identifier provided by WordPress. Must not be blank.
 	 * @param string $title Campaign title. Must not be blank.
@@ -39,12 +39,10 @@ final readonly class AdminWordPressCampaignInput extends AbstractAdminWordPressC
 		#[Assert\NotBlank( message: 'Slug must not be blank' )]
 		public string $slug,
 		public bool $is_enabled,
-		public bool $is_open,
-		public bool $has_target,
-		#[Assert\PositiveOrZero( message: 'Target amount must be zero or positive' )]
-		public int $target_amount,
+		bool $is_open,
+		bool $has_target,
+		int $target_amount,
 	) {
-
-		parent::__construct( $id );
+		parent::__construct( $id, $is_open, $has_target, $target_amount );
 	}
 }

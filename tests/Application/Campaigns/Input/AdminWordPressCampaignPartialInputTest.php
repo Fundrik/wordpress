@@ -9,7 +9,6 @@ use Fundrik\WordPress\Tests\FundrikTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\PositiveOrZero;
 
 #[CoversClass( AdminWordPressCampaignPartialInput::class )]
 final class AdminWordPressCampaignPartialInputTest extends FundrikTestCase {
@@ -17,7 +16,7 @@ final class AdminWordPressCampaignPartialInputTest extends FundrikTestCase {
 	#[Test]
 	public function title_property_has_not_blank_constraint_allowing_null(): void {
 
-		$this->assertPropertyHasConstraint(
+		$this->assert_has_attribute_instance_of(
 			AdminWordPressCampaignPartialInput::class,
 			'title',
 			NotBlank::class,
@@ -29,13 +28,16 @@ final class AdminWordPressCampaignPartialInputTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function target_amount_property_has_positive_or_zero_constraint(): void {
+	public function slug_property_has_not_blank_constraint_allowing_null(): void {
 
-		$this->assertPropertyHasConstraint(
+		$this->assert_has_attribute_instance_of(
 			AdminWordPressCampaignPartialInput::class,
-			'target_amount',
-			PositiveOrZero::class,
-			[ 'message' => 'Target amount must be zero or positive' ]
+			'slug',
+			NotBlank::class,
+			[
+				'allowNull' => true,
+				'message'   => 'Slug must not be blank',
+			]
 		);
 	}
 
@@ -44,34 +46,38 @@ final class AdminWordPressCampaignPartialInputTest extends FundrikTestCase {
 
 		$input = new AdminWordPressCampaignPartialInput(
 			id: 42,
-			title: 'Updated Title',
-			slug: 'updated-slug',
-			is_enabled: true,
-			is_open: false,
+			is_open: true,
 			has_target: true,
-			target_amount: 2500,
+			target_amount: 1000,
+			title: 'New title',
+			slug: 'new-slug',
 		);
 
 		$this->assertSame( 42, $input->id );
-		$this->assertSame( 'Updated Title', $input->title );
-		$this->assertSame( 'updated-slug', $input->slug );
-		$this->assertTrue( $input->is_enabled );
-		$this->assertFalse( $input->is_open );
+		$this->assertTrue( $input->is_open );
 		$this->assertTrue( $input->has_target );
-		$this->assertSame( 2500, $input->target_amount );
+		$this->assertSame( 1000, $input->target_amount );
+		$this->assertSame( 'New title', $input->title );
+		$this->assertSame( 'new-slug', $input->slug );
 	}
 
 	#[Test]
-	public function constructor_assigns_null_values_when_omitted(): void {
+	public function constructor_allows_null_title_and_slug(): void {
 
-		$input = new AdminWordPressCampaignPartialInput( id: 7 );
+		$input = new AdminWordPressCampaignPartialInput(
+			id: 7,
+			is_open: false,
+			has_target: false,
+			target_amount: 0,
+			title: null,
+			slug: null,
+		);
 
 		$this->assertSame( 7, $input->id );
+		$this->assertFalse( $input->is_open );
+		$this->assertFalse( $input->has_target );
+		$this->assertSame( 0, $input->target_amount );
 		$this->assertNull( $input->title );
 		$this->assertNull( $input->slug );
-		$this->assertNull( $input->is_enabled );
-		$this->assertNull( $input->is_open );
-		$this->assertNull( $input->has_target );
-		$this->assertNull( $input->target_amount );
 	}
 }

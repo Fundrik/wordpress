@@ -98,6 +98,11 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 		$input_data = [
 			'id'    => 123,
 			'title' => 'Valid Campaign',
+			'meta'  => [
+				'is_open'       => true,
+				'has_target'    => true,
+				'target_amount' => 100,
+			],
 		];
 
 		$request->shouldReceive( 'get_params' )
@@ -123,6 +128,11 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 		$input_data = [
 			'id'    => 456,
 			'title' => 'Invalid Campaign',
+			'meta'  => [
+				'is_open'       => true,
+				'has_target'    => false,
+				'target_amount' => 100,
+			],
 		];
 
 		$request->shouldReceive( 'get_params' )
@@ -153,15 +163,21 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 		$post->ID         = 123;
 		$post->post_title = 'Test Campaign';
 		$post->post_type  = $this->post_type->get_type();
+		$post->meta       = [
+			'is_open'       => true,
+			'has_target'    => true,
+			'target_amount' => 100,
+		];
 
 		$this->mapper
 			->shouldReceive( 'to_array_from_post' )
 			->once()
-			->with( Mockery::type( 'WP_Post' ) )
+			->with( $post )
 			->andReturn(
 				[
 					'id'    => $post->ID,
 					'title' => $post->post_title,
+					'meta'  => $post->meta,
 				]
 			);
 
@@ -180,15 +196,21 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 		$post->ID         = 123;
 		$post->post_title = 'Test Campaign';
 		$post->post_type  = $this->post_type->get_type();
+		$post->meta       = [
+			'is_open'       => true,
+			'has_target'    => true,
+			'target_amount' => 0,
+		];
 
 		$this->mapper
 			->shouldReceive( 'to_array_from_post' )
 			->once()
-			->with( Mockery::type( 'WP_Post' ) )
+			->with( $post )
 			->andReturn(
 				[
 					'id'    => $post->ID,
 					'title' => $post->post_title,
+					'meta'  => $post->meta,
 				]
 			);
 
