@@ -11,6 +11,7 @@ use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInputFac
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInputFactory;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
+use Fundrik\WordPress\Application\Validation\Interfaces\ValidationErrorTransformerInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
@@ -35,10 +36,11 @@ use WP_REST_Request;
 #[UsesClass( AdminWordPressCampaignInput::class )]
 class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
+	private WordPressCampaignPostType&MockInterface $post_type;
 	private WordPressCampaignPostMapperInterface&MockInterface $mapper;
 	private WordPressCampaignServiceInterface&MockInterface $service;
+	private ValidationErrorTransformerInterface&MockInterface $error_transformer;
 
-	private WordPressCampaignPostType $post_type;
 	private AdminWordPressCampaignInputFactory $input_factory;
 	private AdminWordPressCampaignPartialInputFactory $partial_input_factory;
 	private WordPressCampaignSyncListener $listener;
@@ -47,10 +49,11 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
 		parent::setUp();
 
-		$this->mapper  = Mockery::mock( WordPressCampaignPostMapperInterface::class );
-		$this->service = Mockery::mock( WordPressCampaignServiceInterface::class );
+		$this->post_type         = Mockery::mock( WordPressCampaignPostType::class );
+		$this->mapper            = Mockery::mock( WordPressCampaignPostMapperInterface::class );
+		$this->service           = Mockery::mock( WordPressCampaignServiceInterface::class );
+		$this->error_transformer = Mockery::mock( ValidationErrorTransformerInterface::class );
 
-		$this->post_type             = new WordPressCampaignPostType();
 		$this->input_factory         = new AdminWordPressCampaignInputFactory( $this->mapper );
 		$this->partial_input_factory = new AdminWordPressCampaignPartialInputFactory();
 
@@ -58,18 +61,26 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 			$this->post_type,
 			$this->input_factory,
 			$this->partial_input_factory,
-			$this->service
+			$this->service,
+			$this->error_transformer,
 		);
 	}
 
 	#[Test]
 	public function it_registers_hooks(): void {
 
+		$post_type = 'campaign';
+
+		$this->post_type
+			->shouldReceive( 'get_type' )
+			->once()
+			->andReturn( $post_type );
+
 		$this->listener->register();
 
 		self::assertNotFalse(
 			has_filter(
-				'rest_pre_insert_' . $this->post_type->get_type(),
+				"rest_pre_insert_{$post_type}",
 				$this->listener->validate( ... )
 			)
 		);
@@ -144,11 +155,19 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 			->shouldReceive( 'count' )
 			->andReturn( 1 );
 
+		$exception = new ValidationFailedException( [], $mock_violation_list );
+
 		$this->service
 			->shouldReceive( 'validate_input' )
 			->once()
 			->with( Mockery::type( AdminWordPressCampaignPartialInput::class ) )
-			->andThrow( new ValidationFailedException( [], $mock_violation_list ) );
+			->andThrow( $exception );
+
+		$this->error_transformer
+			->shouldReceive( 'to_string' )
+			->once()
+			->with( $this->identicalTo( $exception ) )
+			->andReturn( 'validation failed error' );
 
 		$result = $this->listener->validate( $prepared_post, $request );
 
@@ -159,20 +178,27 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 	#[Test]
 	public function sync_calls_save_campaign_on_service(): void {
 
+		$post_type = 'campaign';
+
 		$post             = Mockery::mock( 'WP_Post' );
 		$post->ID         = 123;
 		$post->post_title = 'Test Campaign';
-		$post->post_type  = $this->post_type->get_type();
+		$post->post_type  = $post_type;
 		$post->meta       = [
 			'is_open'       => true,
 			'has_target'    => true,
 			'target_amount' => 100,
 		];
 
+		$this->post_type
+			->shouldReceive( 'get_type' )
+			->once()
+			->andReturn( $post_type );
+
 		$this->mapper
 			->shouldReceive( 'to_array_from_post' )
 			->once()
-			->with( $post )
+			->with( $this->identicalTo( $post ) )
 			->andReturn(
 				[
 					'id'    => $post->ID,
@@ -192,20 +218,27 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 	#[Test]
 	public function sync_logs_error_when_validation_exception_thrown(): void {
 
+		$post_type = 'campaign';
+
 		$post             = Mockery::mock( 'WP_Post' );
 		$post->ID         = 123;
 		$post->post_title = 'Test Campaign';
-		$post->post_type  = $this->post_type->get_type();
+		$post->post_type  = $post_type;
 		$post->meta       = [
 			'is_open'       => true,
 			'has_target'    => true,
 			'target_amount' => 0,
 		];
 
+		$this->post_type
+			->shouldReceive( 'get_type' )
+			->once()
+			->andReturn( $post_type );
+
 		$this->mapper
 			->shouldReceive( 'to_array_from_post' )
 			->once()
-			->with( $post )
+			->with( $this->identicalTo( $post ) )
 			->andReturn(
 				[
 					'id'    => $post->ID,
@@ -231,6 +264,11 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 	#[Test]
 	public function sync_does_nothing_if_post_type_is_not_campaign(): void {
 
+		$this->post_type
+			->shouldReceive( 'get_type' )
+			->once()
+			->andReturn( 'campaign' );
+
 		$post             = Mockery::mock( 'WP_Post' );
 		$post->ID         = 123;
 		$post->post_title = 'Irrelevant Post';
@@ -248,9 +286,16 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 	#[Test]
 	public function delete_calls_delete_campaign_on_service(): void {
 
+		$post_type = 'campaign';
+
 		$post            = Mockery::mock( 'WP_Post' );
 		$post->ID        = 42;
-		$post->post_type = $this->post_type->get_type();
+		$post->post_type = $post_type;
+
+		$this->post_type
+			->shouldReceive( 'get_type' )
+			->once()
+			->andReturn( $post_type );
 
 		$this->service
 			->shouldReceive( 'delete_campaign' )
@@ -266,6 +311,11 @@ class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 		$post            = Mockery::mock( 'WP_Post' );
 		$post->ID        = 42;
 		$post->post_type = 'not_campaign';
+
+		$this->post_type
+			->shouldReceive( 'get_type' )
+			->once()
+			->andReturn( 'campaign' );
 
 		$this->service
 			->shouldNotReceive( 'delete_campaign' );

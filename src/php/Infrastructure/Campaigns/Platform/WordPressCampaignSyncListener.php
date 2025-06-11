@@ -13,6 +13,7 @@ use Fundrik\Core\Domain\EntityId;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInputFactory;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInputFactory;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
+use Fundrik\WordPress\Application\Validation\Interfaces\ValidationErrorTransformerInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignSyncListenerInterface;
 use stdClass;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -36,12 +37,14 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 	 * @param AdminWordPressCampaignInputFactory        $input_factory         Factory to create full input DTOs.
 	 * @param AdminWordPressCampaignPartialInputFactory $partial_input_factory Factory to create partial input DTOs.
 	 * @param WordPressCampaignServiceInterface         $service               Service to manage WordPress campaign entities.
+	 * @param ValidationErrorTransformerInterface       $error_transformer     Transforms validation exceptions into readable formats.
 	 */
 	public function __construct(
 		private WordPressCampaignPostType $post_type,
 		private AdminWordPressCampaignInputFactory $input_factory,
 		private AdminWordPressCampaignPartialInputFactory $partial_input_factory,
-		private WordPressCampaignServiceInterface $service
+		private WordPressCampaignServiceInterface $service,
+		private ValidationErrorTransformerInterface $error_transformer
 	) {
 	}
 
@@ -94,7 +97,7 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 		} catch ( ValidationFailedException $e ) {
 			return new WP_Error(
 				'campaign_validation_failed',
-				$e->getMessage(),
+				$this->error_transformer->to_string( $e ),
 				[ 'status' => 400 ]
 			);
 		}

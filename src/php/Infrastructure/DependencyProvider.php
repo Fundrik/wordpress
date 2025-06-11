@@ -12,6 +12,8 @@ namespace Fundrik\WordPress\Infrastructure;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignService;
+use Fundrik\WordPress\Application\Validation\Interfaces\ValidationErrorTransformerInterface;
+use Fundrik\WordPress\Application\Validation\ValidationErrorTransformer;
 use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
 use Fundrik\WordPress\Infrastructure\Persistence\WpdbQueryExecutor;
 use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbWordPressCampaignRepository;
@@ -65,6 +67,7 @@ class DependencyProvider {
 					WordPressCampaignServiceInterface::class => WordPressCampaignService::class,
 					WordPressCampaignPostMapperInterface::class => WordPressCampaignPostMapper::class,
 
+					ValidationErrorTransformerInterface::class => ValidationErrorTransformer::class,
 					ValidatorInterface::class     => fn() => Validation::createValidatorBuilder()
 						->enableAttributeMapping()
 						->getValidator(),
