@@ -27,6 +27,15 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass( WordPressCampaignDto::class )]
 class WordPressCampaignDtoFactoryTest extends FundrikTestCase {
 
+	private WordPressCampaignDtoFactory $dto_factory;
+
+	protected function setUp(): void {
+
+		parent::setUp();
+
+		$this->dto_factory = new WordPressCampaignDtoFactory();
+	}
+
 	#[Test]
 	public function creates_dto_from_array(): void {
 
@@ -40,7 +49,7 @@ class WordPressCampaignDtoFactoryTest extends FundrikTestCase {
 			'target_amount' => 1500,
 		];
 
-		$dto = ( new WordPressCampaignDtoFactory() )->from_array( $data );
+		$dto = $this->dto_factory->from_array( $data );
 
 		$this->assertInstanceOf( WordPressCampaignDto::class, $dto );
 		$this->assertSame( 123, $dto->id );
@@ -66,7 +75,7 @@ class WordPressCampaignDtoFactoryTest extends FundrikTestCase {
 			slug: WordPressCampaignSlug::create( 'domain-campaign' ),
 		);
 
-		$dto = ( new WordPressCampaignDtoFactory() )->from_campaign( $campaign );
+		$dto = $this->dto_factory->from_campaign( $campaign );
 
 		$this->assertInstanceOf( WordPressCampaignDto::class, $dto );
 		$this->assertSame( 456, $dto->id );
@@ -91,7 +100,7 @@ class WordPressCampaignDtoFactoryTest extends FundrikTestCase {
 			target_amount: 3000,
 		);
 
-		$dto = ( new WordPressCampaignDtoFactory() )->from_input( $input );
+		$dto = $this->dto_factory->from_input( $input );
 
 		$this->assertInstanceOf( WordPressCampaignDto::class, $dto );
 		$this->assertSame( 789, $dto->id );

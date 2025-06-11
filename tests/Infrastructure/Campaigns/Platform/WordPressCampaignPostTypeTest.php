@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Platform;
 
-use Brain\Monkey\Functions;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;

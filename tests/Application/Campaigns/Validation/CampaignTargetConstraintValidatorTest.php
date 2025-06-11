@@ -11,7 +11,6 @@ use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialI
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInputFactory;
 use Fundrik\WordPress\Application\Campaigns\Validation\CampaignTargetConstraint;
 use Fundrik\WordPress\Application\Campaigns\Validation\CampaignTargetConstraintValidator;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -28,8 +27,7 @@ use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 #[UsesClass( CampaignTargetConstraint::class )]
 class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTestCase {
 
-	private AdminWordPressCampaignInputFactory $factory;
-	private AdminWordPressCampaignPartialInputFactory $factory_partial;
+	private CampaignTargetConstraint $campaign_constraint;
 
 	protected function setUp(): void {
 
@@ -40,10 +38,7 @@ class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTestCase 
 		Monkey\Functions\stubEscapeFunctions();
 		Monkey\Functions\stubTranslationFunctions();
 
-		$mapper_mock = $this->createMock( WordPressCampaignPostMapperInterface::class );
-
-		$this->factory         = new AdminWordPressCampaignInputFactory( $mapper_mock );
-		$this->factory_partial = new AdminWordPressCampaignPartialInputFactory();
+		$this->campaign_constraint = new CampaignTargetConstraint();
 	}
 
 	protected function tearDown(): void {
@@ -61,15 +56,12 @@ class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTestCase 
 	#[Test]
 	public function valid_with_target(): void {
 
-		$data = [
-			'id'            => 42,
-			'has_target'    => true,
-			'target_amount' => 500,
-		];
+		$input = $this->create_campaign_input(
+			has_target: true,
+			target_amount: 500,
+		);
 
-		$input = $this->factory->from_array( $data );
-
-		$this->validator->validate( $input, new CampaignTargetConstraint() );
+		$this->validator->validate( $input, $this->campaign_constraint );
 
 		$this->assertNoViolation();
 	}
@@ -77,15 +69,12 @@ class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTestCase 
 	#[Test]
 	public function valid_without_target(): void {
 
-		$data = [
-			'id'            => 42,
-			'has_target'    => false,
-			'target_amount' => 0,
-		];
+		$input = $this->create_campaign_input(
+			has_target: false,
+			target_amount: 0,
+		);
 
-		$input = $this->factory->from_array( $data );
-
-		$this->validator->validate( $input, new CampaignTargetConstraint() );
+		$this->validator->validate( $input, $this->campaign_constraint );
 
 		$this->assertNoViolation();
 	}
@@ -93,15 +82,12 @@ class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTestCase 
 	#[Test]
 	public function invalid_with_target_and_zero_amount(): void {
 
-		$data = [
-			'id'            => 42,
-			'has_target'    => true,
-			'target_amount' => 0,
-		];
+		$input = $this->create_campaign_input(
+			has_target: true,
+			target_amount: 0,
+		);
 
-		$input = $this->factory->from_array( $data );
-
-		$this->validator->validate( $input, new CampaignTargetConstraint() );
+		$this->validator->validate( $input, $this->campaign_constraint );
 
 		$this
 			->buildViolation( 'Target amount must be greater than zero when targeting is enabled.' )
@@ -112,15 +98,12 @@ class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTestCase 
 	#[Test]
 	public function invalid_without_target_and_nonzero_amount(): void {
 
-		$data = [
-			'id'            => 42,
-			'has_target'    => false,
-			'target_amount' => 100,
-		];
+		$input = $this->create_campaign_input(
+			has_target: false,
+			target_amount: 100,
+		);
 
-		$input = $this->factory->from_array( $data );
-
-		$this->validator->validate( $input, new CampaignTargetConstraint() );
+		$this->validator->validate( $input, $this->campaign_constraint );
 
 		$this
 			->buildViolation( 'Target amount must be zero when targeting is disabled.' )
@@ -131,18 +114,14 @@ class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTestCase 
 	#[Test]
 	public function valid_partial_input_does_not_raise_violation(): void {
 
-		$data = [
-			'id'   => 42,
-			'meta' => [
-				'is_open'       => true,
-				'has_target'    => false,
-				'target_amount' => 0,
-			],
-		];
+		$input = new AdminWordPressCampaignPartialInput(
+			id: 42,
+			is_open: true,
+			has_target: false,
+			target_amount: 0,
+		);
 
-		$input = $this->factory_partial->from_array( $data );
-
-		$this->validator->validate( $input, new CampaignTargetConstraint() );
+		$this->validator->validate( $input, $this->campaign_constraint );
 
 		$this->assertNoViolation();
 	}
@@ -151,24 +130,20 @@ class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTestCase 
 	public function throws_exception_for_invalid_input_type(): void {
 
 		$invalid_input = new stdClass();
-		$constraint    = new CampaignTargetConstraint();
 
 		$this->expectException( UnexpectedValueException::class );
 		$this->expectExceptionMessage( stdClass::class );
 
-		$this->validator->validate( $invalid_input, $constraint );
+		$this->validator->validate( $invalid_input, $this->campaign_constraint );
 	}
 
 	#[Test]
 	public function throws_exception_for_invalid_constraint_type_with_valid_input(): void {
 
-		$data = [
-			'id'            => 42,
-			'has_target'    => true,
-			'target_amount' => 100,
-		];
-
-		$input = $this->factory->from_array( $data );
+		$input = $this->create_campaign_input(
+			has_target: true,
+			target_amount: 100,
+		);
 
 		$invalid_constraint = new class() extends Constraint {};
 
@@ -176,5 +151,26 @@ class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTestCase 
 		$this->expectExceptionMessage( get_class( $invalid_constraint ) );
 
 		$this->validator->validate( $input, $invalid_constraint );
+	}
+
+	private function create_campaign_input(
+		int $id = 42,
+		string $title = 'Test Campaign',
+		string $slug = 'test-campaign',
+		bool $is_enabled = true,
+		bool $is_open = true,
+		bool $has_target = false,
+		int $target_amount = 0
+	): AdminWordPressCampaignInput {
+
+		return new AdminWordPressCampaignInput(
+			id: $id,
+			title: $title,
+			slug: $slug,
+			is_enabled: $is_enabled,
+			is_open: $is_open,
+			has_target: $has_target,
+			target_amount: $target_amount,
+		);
 	}
 }

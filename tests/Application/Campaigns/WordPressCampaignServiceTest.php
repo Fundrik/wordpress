@@ -158,7 +158,7 @@ class WordPressCampaignServiceTest extends FundrikTestCase {
 		$this->validator
 			->shouldReceive( 'validate' )
 			->once()
-			->with( $input )
+			->with( $this->identicalTo( $input ) )
 			->andReturn( $mock_violation_list );
 
 		$this->repository
@@ -199,7 +199,7 @@ class WordPressCampaignServiceTest extends FundrikTestCase {
 		$this->validator
 			->shouldReceive( 'validate' )
 			->once()
-			->with( $input )
+			->with( $this->identicalTo( $input ) )
 			->andReturn( $mock_violation_list );
 
 		$this->repository
@@ -240,7 +240,7 @@ class WordPressCampaignServiceTest extends FundrikTestCase {
 		$this->validator
 			->shouldReceive( 'validate' )
 			->once()
-			->with( $input )
+			->with( $this->identicalTo( $input ) )
 			->andReturn( $mock_violation_list );
 
 		$this->expectException( ValidationFailedException::class );
@@ -302,7 +302,7 @@ class WordPressCampaignServiceTest extends FundrikTestCase {
 		$this->validator
 			->shouldReceive( 'validate' )
 			->once()
-			->with( $input )
+			->with( $this->identicalTo( $input ) )
 			->andReturn( $mock_violation_list );
 
 		$this->service->validate_input( $input );
@@ -332,7 +332,7 @@ class WordPressCampaignServiceTest extends FundrikTestCase {
 		$this->validator
 			->shouldReceive( 'validate' )
 			->once()
-			->with( $input )
+			->with( $this->identicalTo( $input ) )
 			->andReturn( $mock_violation_list );
 
 		$this->expectException( ValidationFailedException::class );

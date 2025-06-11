@@ -69,8 +69,6 @@ final class AdminWordPressCampaignPartialInputTest extends FundrikTestCase {
 			is_open: false,
 			has_target: false,
 			target_amount: 0,
-			title: null,
-			slug: null,
 		);
 
 		$this->assertSame( 7, $input->id );

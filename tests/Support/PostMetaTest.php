@@ -20,7 +20,11 @@ class PostMetaTest extends FundrikTestCase {
 		$meta_key = 'some_key';
 
 		Functions\expect( 'get_post_meta' )
-			->with( $post_id, $meta_key, true )
+			->with(
+				$this->identicalTo( $post_id ),
+				$this->identicalTo( $meta_key ),
+				true
+			)
 			->andReturn( 'true' );
 
 		$result = PostMeta::get_bool( $post_id, $meta_key );
@@ -35,7 +39,11 @@ class PostMetaTest extends FundrikTestCase {
 		$meta_key = 'some_key';
 
 		Functions\expect( 'get_post_meta' )
-			->with( $post_id, $meta_key, true )
+			->with(
+				$this->identicalTo( $post_id ),
+				$this->identicalTo( $meta_key ),
+				true
+			)
 			->andReturn( 'off' );
 
 		$result = PostMeta::get_bool( $post_id, $meta_key );
@@ -50,7 +58,11 @@ class PostMetaTest extends FundrikTestCase {
 		$meta_key = 'some_key';
 
 		Functions\expect( 'get_post_meta' )
-			->with( $post_id, $meta_key, true )
+			->with(
+				$this->identicalTo( $post_id ),
+				$this->identicalTo( $meta_key ),
+				true
+			)
 			->andReturn( '' );
 
 		$result = PostMeta::get_bool( $post_id, $meta_key );
@@ -65,7 +77,11 @@ class PostMetaTest extends FundrikTestCase {
 		$meta_key = 'some_key';
 
 		Functions\expect( 'get_post_meta' )
-			->with( $post_id, $meta_key, true )
+			->with(
+				$this->identicalTo( $post_id ),
+				$this->identicalTo( $meta_key ),
+				true
+			)
 			->andReturn( '42' );
 
 		$result = PostMeta::get_int( $post_id, $meta_key );
@@ -80,7 +96,11 @@ class PostMetaTest extends FundrikTestCase {
 		$meta_key = 'some_key';
 
 		Functions\expect( 'get_post_meta' )
-			->with( $post_id, $meta_key, true )
+			->with(
+				$this->identicalTo( $post_id ),
+				$this->identicalTo( $meta_key ),
+				true
+			)
 			->andReturn( 'some string' );
 
 		$result = PostMeta::get_int( $post_id, $meta_key );
@@ -95,7 +115,11 @@ class PostMetaTest extends FundrikTestCase {
 		$meta_key = 'some_key';
 
 		Functions\expect( 'get_post_meta' )
-			->with( $post_id, $meta_key, true )
+			->with(
+				$this->identicalTo( $post_id ),
+				$this->identicalTo( $meta_key ),
+				true
+			)
 			->andReturn( '' );
 
 		$result = PostMeta::get_int( $post_id, $meta_key );

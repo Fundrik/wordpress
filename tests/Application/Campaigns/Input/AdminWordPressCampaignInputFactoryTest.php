@@ -79,7 +79,7 @@ final class AdminWordPressCampaignInputFactoryTest extends FundrikTestCase {
 		$this->mapper
 			->shouldReceive( 'to_array_from_post' )
 			->once()
-			->with( $post )
+			->with( $this->identicalTo( $post ) )
 			->andReturn(
 				[
 					'id'            => 42,
