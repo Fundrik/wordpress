@@ -186,8 +186,8 @@ class WordPressPlatformTest extends FundrikTestCase {
 		Functions\expect( 'wp_register_block_types_from_metadata_collection' )
 			->once()
 			->with(
-				Path::blocks(),
-				Path::blocks_manifest()
+				$this->identicalTo( Path::Blocks->get() ),
+				$this->identicalTo( Path::BlocksManifest->get() )
 			);
 
 		$this->platform->register_blocks();

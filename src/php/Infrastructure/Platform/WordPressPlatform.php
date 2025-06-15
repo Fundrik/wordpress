@@ -106,8 +106,8 @@ final readonly class WordPressPlatform implements PlatformInterface {
 	public function register_blocks(): void {
 
 		wp_register_block_types_from_metadata_collection(
-			Path::blocks(),
-			Path::blocks_manifest()
+			Path::Blocks->get(),
+			Path::BlocksManifest->get()
 		);
 	}
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Path class.
+ * Path enum.
  *
  * @since 1.0.0
  */
@@ -10,33 +10,29 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Support;
 
 /**
- * A utility class for resolving paths within the Fundrik plugin.
+ * Enum representing various paths used within the Fundrik plugin.
  *
  * @since 1.0.0
  */
-final readonly class Path {
+enum Path: string {
+
+	const BASE = FUNDRIK_PATH;
+
+	case Blocks         = 'assets/js/blocks/';
+	case BlocksManifest = self::Blocks->value . 'blocks-manifest.php';
+
+	case Migrations = 'src/Infrastructure/Migrations/';
 
 	/**
-	 * Returns the path to the blocks directory.
+	 * Returns the full filesystem path by prepending the plugin base directory.
 	 *
-	 * @since 1.0.0
-	 *
-	 * @return string The absolute path to the blocks directory.
+	 * @return string Full path including plugin base directory.
 	 */
-	public static function blocks(): string {
+	public function get(): string {
 
-		return FUNDRIK_PATH . 'assets/js/blocks/';
-	}
+		$base   = self::BASE;
+		$target = $this->value;
 
-	/**
-	 * Returns the path to the blocks manifest file.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return string The absolute path to the blocks manifest file.
-	 */
-	public static function blocks_manifest(): string {
-
-		return self::blocks() . 'blocks-manifest.php';
+		return "{$base}/{$target}";
 	}
 }
