@@ -113,7 +113,7 @@ final readonly class WpdbWordPressCampaignRepository implements WordPressCampaig
 
 		$dto = $this->dto_factory->from_campaign( $campaign );
 
-		return $this->query_executor->insert( self::TABLE, (array) $dto );
+		return $this->query_executor->insert( self::TABLE, $dto->to_array() );
 	}
 
 	/**
@@ -131,7 +131,7 @@ final readonly class WpdbWordPressCampaignRepository implements WordPressCampaig
 
 		return $this->query_executor->update(
 			self::TABLE,
-			(array) $dto,
+			$dto->to_array(),
 			$campaign->get_id()
 		);
 	}

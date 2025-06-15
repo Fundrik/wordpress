@@ -57,4 +57,30 @@ final class WordPressCampaignDtoTest extends FundrikTestCase {
 		$this->assertFalse( $dto->has_target );
 		$this->assertSame( 0, $dto->target_amount );
 	}
+
+	#[Test]
+	public function to_array_returns_correct_structure(): void {
+
+		$dto = new WordPressCampaignDto(
+			id: 42,
+			title: 'Array Test',
+			slug: 'array-test',
+			is_enabled: true,
+			is_open: true,
+			has_target: true,
+			target_amount: 1000,
+		);
+
+		$expected = [
+			'id'            => 42,
+			'title'         => 'Array Test',
+			'slug'          => 'array-test',
+			'is_enabled'    => true,
+			'is_open'       => true,
+			'has_target'    => true,
+			'target_amount' => 1000,
+		];
+
+		$this->assertSame( $expected, $dto->to_array() );
+	}
 }

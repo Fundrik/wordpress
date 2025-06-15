@@ -39,4 +39,16 @@ final readonly class WordPressCampaignDto {
 		public int $target_amount,
 	) {
 	}
+
+	/**
+	 * Converts the DTO properties to an associative array.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array<string, mixed> The DTO data as a key-value array.
+	 */
+	public function to_array(): array {
+
+		return get_object_vars( $this );
+	}
 }

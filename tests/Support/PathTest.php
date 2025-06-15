@@ -15,21 +15,27 @@ class PathTest extends FundrikTestCase {
 	#[Test]
 	public function blocks_returns_correct_path(): void {
 
-		$expected = FUNDRIK_PATH . '/assets/js/blocks/';
-		$this->assertSame( $expected, Path::Blocks->get() );
+		$this->assertSame(
+			FUNDRIK_PATH . '/assets/js/blocks/',
+			Path::Blocks->get()
+		);
 	}
 
 	#[Test]
 	public function blocks_manifest_returns_correct_path(): void {
 
-		$expected = FUNDRIK_PATH . '/assets/js/blocks/blocks-manifest.php';
-		$this->assertSame( $expected, Path::BlocksManifest->get() );
+		$this->assertSame(
+			FUNDRIK_PATH . '/assets/js/blocks/blocks-manifest.php',
+			Path::BlocksManifest->get()
+		);
 	}
 
 	#[Test]
 	public function migrations_returns_correct_path(): void {
 
-		$expected = FUNDRIK_PATH . '/src/Infrastructure/Migrations/';
-		$this->assertSame( $expected, Path::Migrations->get() );
+		$this->assertSame(
+			FUNDRIK_PATH . '/src/Infrastructure/Migrations/',
+			Path::Migrations->get()
+		);
 	}
 }
