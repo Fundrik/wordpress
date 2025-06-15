@@ -36,8 +36,10 @@ final readonly class AdminWordPressCampaignPartialInput extends AbstractAdminWor
 		bool $is_open,
 		bool $has_target,
 		int $target_amount,
+		// @todo Translate message.
 		#[Assert\NotBlank( allowNull: true, message: 'Title must not be blank' )]
 		public ?string $title = null,
+		// @todo Translate message.
 		#[Assert\NotBlank( allowNull: true, message: 'Slug must not be blank' )]
 		public ?string $slug = null,
 	) {

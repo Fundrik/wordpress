@@ -34,8 +34,10 @@ final readonly class AdminWordPressCampaignInput extends AbstractAdminWordPressC
 	 */
 	public function __construct(
 		int $id,
+		// @todo Translate message.
 		#[Assert\NotBlank( message: 'Title must not be blank' )]
 		public string $title,
+		// @todo Translate message.
 		#[Assert\NotBlank( message: 'Slug must not be blank' )]
 		public string $slug,
 		public bool $is_enabled,

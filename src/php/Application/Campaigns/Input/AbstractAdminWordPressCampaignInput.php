@@ -35,6 +35,7 @@ abstract readonly class AbstractAdminWordPressCampaignInput {
 	 * @param int  $target_amount Target amount.
 	 */
 	public function __construct(
+		// @todo Translate message.
 		#[Assert\Positive( message: 'ID must be a positive' )]
 		public int $id,
 		public bool $is_open,
