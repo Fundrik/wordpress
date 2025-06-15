@@ -72,12 +72,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Fundrik/core.git",
-                "reference": "7dabab315c78d08e031ac600b59e4c7350b2184a"
+                "reference": "7bc9cfecf5e0bb30d7500f0d6d08c8740148acb4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Fundrik/core/zipball/7dabab315c78d08e031ac600b59e4c7350b2184a",
-                "reference": "7dabab315c78d08e031ac600b59e4c7350b2184a",
+                "url": "https://api.github.com/repos/Fundrik/core/zipball/7bc9cfecf5e0bb30d7500f0d6d08c8740148acb4",
+                "reference": "7bc9cfecf5e0bb30d7500f0d6d08c8740148acb4",
                 "shasum": ""
             },
             "require": {
@@ -128,7 +128,7 @@
                 "issues": "https://github.com/Fundrik/core/issues",
                 "source": "https://github.com/Fundrik/core"
             },
-            "time": "2025-06-08T15:20:18+00:00"
+            "time": "2025-06-15T14:14:43+00:00"
         },
         {
             "name": "illuminate/container",
