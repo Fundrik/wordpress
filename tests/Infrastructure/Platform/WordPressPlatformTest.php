@@ -28,6 +28,7 @@ use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
+use RuntimeException;
 use stdClass;
 
 #[CoversClass( WordPressPlatform::class )]
@@ -181,6 +182,20 @@ class WordPressPlatformTest extends FundrikTestCase {
 	}
 
 	#[Test]
+	public function it_throws_if_get_post_types_fails(): void {
+
+		$this->dependency_provider
+			->shouldReceive( 'get_bindings' )
+			->once()
+			->with( 'post_types' )
+			->andReturn( [ stdClass::class ] );
+
+		$this->expectException( RuntimeException::class );
+
+		$this->platform->register_post_types();
+	}
+
+	#[Test]
 	public function register_blocks_registers_all_blocks(): void {
 
 		Functions\expect( 'wp_register_block_types_from_metadata_collection' )
@@ -298,6 +313,29 @@ class WordPressPlatformTest extends FundrikTestCase {
 		$this->platform->init();
 
 		ContainerManager::reset();
+	}
+
+	#[Test]
+	public function it_throws_if_get_listeners_fails(): void {
+
+		// WordPressPlatform::init() internally calls get_bindings() with no arguments,
+		// so even though this is not the focus of the current test,
+		// we need to mock it to avoid unexpected calls and test failures.
+		$this->dependency_provider
+			->shouldReceive( 'get_bindings' )
+			->once()
+			->withNoArgs()
+			->andReturn( [] );
+
+		$this->dependency_provider
+			->shouldReceive( 'get_bindings' )
+			->once()
+			->with( 'listeners' )
+			->andReturn( [ stdClass::class ] );
+
+		$this->expectException( RuntimeException::class );
+
+		$this->platform->init();
 	}
 
 	private function assertSingletonBinding(

@@ -14,6 +14,7 @@ use Fundrik\WordPress\Infrastructure\DependencyProvider;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\ListenerInterface;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
 use Fundrik\WordPress\Support\Path;
+use RuntimeException;
 use WP_Block_Editor_Context;
 
 /**
@@ -176,9 +177,11 @@ final readonly class WordPressPlatform implements PlatformInterface {
 	/**
 	 * Retrieves all post type instances.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @return PostTypeInterface[] Array of post type instances.
 	 *
-	 * @since 1.0.0
+	 * @throws RuntimeException If a resolved class is not an instance of PostTypeInterface.
 	 */
 	private function get_post_types(): array {
 
@@ -189,9 +192,16 @@ final readonly class WordPressPlatform implements PlatformInterface {
 
 			$post_type = fundrik()->get( $class );
 
-			if ( $post_type instanceof PostTypeInterface ) {
-				$post_types[] = $post_type;
+			if ( ! $post_type instanceof PostTypeInterface ) {
+				// @todo Escaping
+				// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped
+				throw new RuntimeException(
+					'Expected instance of PostTypeInterface, got ' . get_debug_type( $post_type ) . " for class {$class}"
+				);
+				// phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			}
+
+			$post_types[] = $post_type;
 		}
 
 		return $post_types;
@@ -200,22 +210,31 @@ final readonly class WordPressPlatform implements PlatformInterface {
 	/**
 	 * Retrieves all listener instances.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @return ListenerInterface[] Array of listener instances.
 	 *
-	 * @since 1.0.0
+	 * @throws RuntimeException If a resolved class is not an instance of PostTypeInterface.
 	 */
 	private function get_listeners(): array {
 
-		$listeners_classes = $this->dependency_provider->get_bindings( 'listeners' );
-		$listeners         = [];
+		$listener_classes = $this->dependency_provider->get_bindings( 'listeners' );
+		$listeners        = [];
 
-		foreach ( $listeners_classes as $class ) {
+		foreach ( $listener_classes as $class ) {
 
 			$listener = fundrik()->get( $class );
 
-			if ( $listener instanceof ListenerInterface ) {
-				$listeners[] = $listener;
+			if ( ! $listener instanceof ListenerInterface ) {
+				// @todo Escaping
+				// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped
+				throw new RuntimeException(
+					'Expected instance of ListenerInterface, got ' . get_debug_type( $listener ) . " for class {$class}"
+				);
+				// phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			}
+
+			$listeners[] = $listener;
 		}
 
 		return $listeners;
