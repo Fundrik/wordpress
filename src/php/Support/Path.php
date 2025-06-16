@@ -10,29 +10,38 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Support;
 
 /**
- * Enum representing various paths used within the Fundrik plugin.
+ * Represents various paths used within the Fundrik plugin.
  *
  * @since 1.0.0
  */
 enum Path: string {
 
-	const BASE = FUNDRIK_PATH;
+	public const BASE     = FUNDRIK_PATH;
+	public const PHP_BASE = self::BASE . 'src/php/';
 
 	case Blocks         = 'assets/js/blocks/';
 	case BlocksManifest = self::Blocks->value . 'blocks-manifest.php';
 
-	case Migrations = 'src/Infrastructure/Migrations/';
+	case MigrationFiles = 'Infrastructure/Migrations/Files/';
 
 	/**
 	 * Returns the full filesystem path by prepending the plugin base directory.
 	 *
+	 * @param string $suffix Optional suffix to append to the path (e.g. filename or subdirectory).
+	 *
 	 * @return string Full path including plugin base directory.
 	 */
-	public function get(): string {
+	public function get_full_path( string $suffix = '' ): string {
 
-		$base   = self::BASE;
+		$base   = str_starts_with( $this->value, 'assets' ) ? self::BASE : self::PHP_BASE;
 		$target = $this->value;
 
-		return "{$base}/{$target}";
+		$path = "{$base}{$target}";
+
+		if ( $suffix ) {
+			$path .= $suffix;
+		}
+
+		return $path;
 	}
 }

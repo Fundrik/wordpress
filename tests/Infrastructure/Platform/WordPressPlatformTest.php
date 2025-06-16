@@ -43,7 +43,7 @@ use stdClass;
 #[UsesClass( WordPressCampaignPostType::class )]
 #[UsesClass( Path::class )]
 #[UsesClass( AllowedBlockTypesFilter::class )]
-class WordPressPlatformTest extends FundrikTestCase {
+final class WordPressPlatformTest extends FundrikTestCase {
 
 	private WordPressPlatform $platform;
 	private DependencyProvider&MockInterface $dependency_provider;
@@ -201,8 +201,8 @@ class WordPressPlatformTest extends FundrikTestCase {
 		Functions\expect( 'wp_register_block_types_from_metadata_collection' )
 			->once()
 			->with(
-				$this->identicalTo( Path::Blocks->get() ),
-				$this->identicalTo( Path::BlocksManifest->get() )
+				$this->identicalTo( Path::Blocks->get_full_path() ),
+				$this->identicalTo( Path::BlocksManifest->get_full_path() )
 			);
 
 		$this->platform->register_blocks();
