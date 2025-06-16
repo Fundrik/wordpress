@@ -25,7 +25,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass( AbstractAdminWordPressCampaignInput::class )]
 #[UsesClass( AdminWordPressCampaignInput::class )]
 #[UsesClass( WordPressCampaignDto::class )]
-class WordPressCampaignDtoFactoryTest extends FundrikTestCase {
+final class WordPressCampaignDtoFactoryTest extends FundrikTestCase {
 
 	private WordPressCampaignDtoFactory $dto_factory;
 

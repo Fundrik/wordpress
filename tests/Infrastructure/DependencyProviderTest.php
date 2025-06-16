@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use wpdb;
 
 #[CoversClass( DependencyProvider::class )]
-class DependencyProviderTest extends FundrikTestCase {
+final class DependencyProviderTest extends FundrikTestCase {
 
 	private DependencyProvider $provider;
 

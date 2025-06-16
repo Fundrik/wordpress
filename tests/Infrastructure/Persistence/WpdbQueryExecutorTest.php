@@ -14,7 +14,7 @@ use PHPUnit\Framework\Attributes\Test;
 use wpdb;
 
 #[CoversClass( WpdbQueryExecutor::class )]
-class WpdbQueryExecutorTest extends FundrikTestCase {
+final class WpdbQueryExecutorTest extends FundrikTestCase {
 
 	private const TABLE = 'campaigns';
 

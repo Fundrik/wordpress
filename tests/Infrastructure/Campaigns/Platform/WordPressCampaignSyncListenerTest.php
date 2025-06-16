@@ -34,7 +34,7 @@ use WP_REST_Request;
 #[UsesClass( AdminWordPressCampaignPartialInput::class )]
 #[UsesClass( AdminWordPressCampaignPartialInputFactory::class )]
 #[UsesClass( AdminWordPressCampaignInput::class )]
-class WordPressCampaignSyncListenerTest extends FundrikTestCase {
+final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
 	private WordPressCampaignPostType&MockInterface $post_type;
 	private WordPressCampaignPostMapperInterface&MockInterface $mapper;

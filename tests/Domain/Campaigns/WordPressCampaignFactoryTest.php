@@ -20,7 +20,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass( WordPressCampaign::class )]
 #[UsesClass( WordPressCampaignSlug::class )]
 #[UsesClass( WordPressCampaignDto::class )]
-class WordPressCampaignFactoryTest extends FundrikTestCase {
+final class WordPressCampaignFactoryTest extends FundrikTestCase {
 
 	private WordPressCampaignFactory $factory;
 

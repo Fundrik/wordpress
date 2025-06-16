@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 #[UsesClass( AdminWordPressCampaignPartialInput::class )]
 #[UsesClass( AdminWordPressCampaignPartialInputFactory::class )]
 #[UsesClass( CampaignTargetConstraint::class )]
-class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTestCase {
+final class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTestCase {
 
 	private CampaignTargetConstraint $campaign_constraint;
 

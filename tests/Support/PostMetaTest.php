@@ -11,7 +11,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass( PostMeta::class )]
-class PostMetaTest extends FundrikTestCase {
+final class PostMetaTest extends FundrikTestCase {
 
 	#[Test]
 	public function get_bool_returns_true_when_value_is_true(): void {

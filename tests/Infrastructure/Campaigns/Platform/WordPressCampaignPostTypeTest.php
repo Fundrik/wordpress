@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass( WordPressCampaignPostType::class )]
-class WordPressCampaignPostTypeTest extends FundrikTestCase {
+final class WordPressCampaignPostTypeTest extends FundrikTestCase {
 
 	private WordPressCampaignPostType $post_type;
 
@@ -27,6 +27,8 @@ class WordPressCampaignPostTypeTest extends FundrikTestCase {
 		self::assertSame( 'is_open', WordPressCampaignPostType::META_IS_OPEN );
 		self::assertSame( 'has_target', WordPressCampaignPostType::META_HAS_TARGET );
 		self::assertSame( 'target_amount', WordPressCampaignPostType::META_TARGET_AMOUNT );
+
+		self::assertSame( 'fundrik/campaign-settings', WordPressCampaignPostType::CAMPAIGN_SETTINGS_BLOCK );
 	}
 
 	#[Test]
@@ -88,27 +90,31 @@ class WordPressCampaignPostTypeTest extends FundrikTestCase {
 
 		$meta_fields = $this->post_type->get_meta_fields();
 
+		$meta_is_open       = WordPressCampaignPostType::META_IS_OPEN;
+		$meta_has_target    = WordPressCampaignPostType::META_HAS_TARGET;
+		$meta_target_amount = WordPressCampaignPostType::META_TARGET_AMOUNT;
+
 		self::assertIsArray( $meta_fields );
-		self::assertArrayHasKey( 'is_open', $meta_fields );
-		self::assertArrayHasKey( 'has_target', $meta_fields );
-		self::assertArrayHasKey( 'target_amount', $meta_fields );
+		self::assertArrayHasKey( $meta_is_open, $meta_fields );
+		self::assertArrayHasKey( $meta_has_target, $meta_fields );
+		self::assertArrayHasKey( $meta_target_amount, $meta_fields );
 
 		self::assertSame(
 			[
 				'type'    => 'boolean',
 				'default' => true,
 			],
-			$meta_fields['is_open']
+			$meta_fields[ $meta_is_open ]
 		);
 
 		self::assertSame(
 			[ 'type' => 'boolean' ],
-			$meta_fields['has_target']
+			$meta_fields[ $meta_has_target ]
 		);
 
 		self::assertSame(
 			[ 'type' => 'string' ],
-			$meta_fields['target_amount']
+			$meta_fields[ $meta_target_amount ]
 		);
 	}
 
@@ -120,7 +126,7 @@ class WordPressCampaignPostTypeTest extends FundrikTestCase {
 		self::assertIsArray( $template_blocks );
 		self::assertCount( 1, $template_blocks );
 		self::assertSame(
-			[ 'fundrik/campaign-settings' ],
+			[ WordPressCampaignPostType::CAMPAIGN_SETTINGS_BLOCK ],
 			$template_blocks[0]
 		);
 	}
@@ -131,7 +137,7 @@ class WordPressCampaignPostTypeTest extends FundrikTestCase {
 		$blocks = $this->post_type->get_specific_blocks();
 
 		self::assertIsArray( $blocks );
-		self::assertContains( 'fundrik/campaign-settings', $blocks );
+		self::assertContains( WordPressCampaignPostType::CAMPAIGN_SETTINGS_BLOCK, $blocks );
 		self::assertCount( 1, $blocks );
 	}
 }

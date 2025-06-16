@@ -26,7 +26,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass( WordPressCampaignDtoFactory::class )]
 #[UsesClass( WordPressCampaign::class )]
 #[UsesClass( WordPressCampaignSlug::class )]
-class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
+final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 
 	private const TABLE = 'fundrik_campaigns';
 

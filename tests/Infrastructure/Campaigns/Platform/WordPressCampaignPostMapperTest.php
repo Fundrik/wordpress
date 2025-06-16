@@ -17,7 +17,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[CoversClass( WordPressCampaignPostMapper::class )]
 #[UsesClass( WordPressCampaignDtoFactory::class )]
 #[UsesClass( PostMeta::class )]
-class WordPressCampaignPostMapperTest extends FundrikTestCase {
+final class WordPressCampaignPostMapperTest extends FundrikTestCase {
 
 	private WordPressCampaignPostMapper $mapper;
 

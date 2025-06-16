@@ -34,7 +34,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[UsesClass( AdminWordPressCampaignInput::class )]
 #[UsesClass( WordPressCampaignDtoFactory::class )]
 #[UsesClass( WordPressCampaignDto::class )]
-class WordPressCampaignServiceTest extends FundrikTestCase {
+final class WordPressCampaignServiceTest extends FundrikTestCase {
 
 	private WordPressCampaignRepositoryInterface&MockInterface $repository;
 	private ValidatorInterface&MockInterface $validator;

@@ -11,7 +11,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Validator\Constraint;
 
 #[CoversClass( CampaignTargetConstraint::class )]
-class CampaignTargetConstraintTest extends FundrikTestCase {
+final class CampaignTargetConstraintTest extends FundrikTestCase {
 
 	private CampaignTargetConstraint $constraint;
 
