@@ -384,4 +384,36 @@ class WpdbQueryExecutorTest extends FundrikTestCase {
 
 		$this->assertFalse( $this->executor->delete( self::TABLE, $id ) );
 	}
+
+	#[Test]
+	public function query_returns_true_on_success(): void {
+
+		$sql = "DELETE FROM {$this->table_name} WHERE id = 123";
+
+		$this->wpdb
+			->shouldReceive( 'query' )
+			->once()
+			->with( $this->identicalTo( $sql ) )
+			->andReturn( 1 );
+
+		$result = $this->executor->query( $sql );
+
+		$this->assertTrue( $result );
+	}
+
+	#[Test]
+	public function query_returns_false_on_failure(): void {
+
+		$sql = 'INVALID SQL SYNTAX';
+
+		$this->wpdb
+			->shouldReceive( 'query' )
+			->once()
+			->with( $this->identicalTo( $sql ) )
+			->andReturn( false );
+
+		$result = $this->executor->query( $sql );
+
+		$this->assertFalse( $result );
+	}
 }

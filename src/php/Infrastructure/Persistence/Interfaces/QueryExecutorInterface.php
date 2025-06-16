@@ -95,4 +95,15 @@ interface QueryExecutorInterface {
 	 * @return bool True on success, false on failure.
 	 */
 	public function delete( string $table, int|string $id ): bool;
+
+	/**
+	 * Executes a raw SQL query.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $sql The SQL query string.
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function query( string $sql ): bool;
 }

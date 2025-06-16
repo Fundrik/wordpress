@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Persistence;
 
+use Fundrik\Core\Support\TypeCaster;
 use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
 use wpdb;
 
@@ -82,7 +83,7 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 		$sql   = "SELECT 1 FROM %i WHERE id = {$placeholder} LIMIT 1";
 		$query = $this->db->prepare( $sql, $table, $id );
 
-		return (bool) $this->db->get_var( $query );
+		return TypeCaster::to_bool( $this->db->get_var( $query ) );
 	}
 
 	/**
@@ -105,7 +106,7 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 		$sql   = "SELECT 1 FROM %i WHERE {$column_escaped} = {$placeholder} LIMIT 1";
 		$query = $this->db->prepare( $sql, $table, $value );
 
-		return (bool) $this->db->get_var( $query );
+		return TypeCaster::to_bool( $this->db->get_var( $query ) );
 	}
 
 
@@ -121,9 +122,11 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 	 */
 	public function insert( string $table, array $data ): bool {
 
-		return (bool) $this->db->insert(
-			$table,
-			$data,
+		return TypeCaster::to_bool(
+			$this->db->insert(
+				$table,
+				$data,
+			)
 		);
 	}
 
@@ -161,9 +164,27 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 	 */
 	public function delete( string $table, int|string $id ): bool {
 
-		return (bool) $this->db->delete(
-			$table,
-			[ 'id' => $id ]
+		return TypeCaster::to_bool(
+			$this->db->delete(
+				$table,
+				[ 'id' => $id ]
+			)
 		);
+	}
+
+	/**
+	 * Executes a raw SQL query.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $sql The SQL query string.
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function query( string $sql ): bool {
+
+		$result = $this->db->query( $sql );
+
+		return false === $result ? false : true;
 	}
 }
