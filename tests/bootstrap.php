@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-define( 'FUNDRIK_MAIN_FILE', __DIR__ . '../fundrik.php' );
+define( 'FUNDRIK_MAIN_FILE', realpath( __DIR__ . '/../fundrik.php' ) );
 
-define( 'FUNDRIK_PATH', dirname( FUNDRIK_MAIN_FILE ) );
+define( 'FUNDRIK_PATH', realpath( dirname( FUNDRIK_MAIN_FILE ) ) . '/' );
 
 if ( ! class_exists( 'WP_Error' ) ) {
 

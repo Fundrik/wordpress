@@ -12,6 +12,7 @@ use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCamp
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignSyncListenerInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
+use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
 use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -42,6 +43,7 @@ final class DependencyProviderTest extends FundrikTestCase {
 			WordPressCampaignRepositoryInterface::class,
 			WordPressCampaignServiceInterface::class,
 			WordPressCampaignPostMapperInterface::class,
+			MigrationReferenceFactoryInterface::class,
 			ValidationErrorTransformerInterface::class,
 			ValidatorInterface::class,
 			WordPressCampaignPostType::class,
