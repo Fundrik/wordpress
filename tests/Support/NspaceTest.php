@@ -20,11 +20,11 @@ final class NspaceTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function get_full_class_name_by_path_returns_full_class_name_for_valid_path(): void {
+	public function resolve_class_name_by_path_returns_expected_class_name_for_valid_path(): void {
 
 		$full_path = Path::PHP_BASE . 'Infrastructure/Migrations/FooBar.php';
 
-		$result = Nspace::get_full_class_name_by_path( $full_path );
+		$result = Nspace::resolve_class_name_by_path( $full_path );
 
 		$expected = Nspace::BASE . '\Infrastructure\Migrations\FooBar';
 
@@ -32,12 +32,48 @@ final class NspaceTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function get_full_class_name_by_path_returns_null_for_path_without_base(): void {
+	public function resolve_class_name_by_path_returns_null_for_invalid_path(): void {
 
 		$path = '/var/www/html/other_dir/SomeClass.php';
 
-		$result = Nspace::get_full_class_name_by_path( $path );
+		$result = Nspace::resolve_class_name_by_path( $path );
 
 		$this->assertNull( $result );
+	}
+
+	#[Test]
+	public function resolve_class_name_by_path_normalizes_path_with_dot_segments(): void {
+
+		$full_path = Path::PHP_BASE . 'Infrastructure/../Domain/./ValueObject/Foo.php';
+
+		$result = Nspace::resolve_class_name_by_path( $full_path );
+
+		$expected = Nspace::BASE . '\Domain\ValueObject\Foo';
+
+		$this->assertSame( $expected, $result );
+	}
+
+	#[Test]
+	public function resolve_class_name_by_path_removes_extra_slashes(): void {
+
+		$full_path = Path::PHP_BASE . 'Infrastructure//Domain///Foo.php';
+
+		$result = Nspace::resolve_class_name_by_path( $full_path );
+
+		$expected = Nspace::BASE . '\Infrastructure\Domain\Foo';
+
+		$this->assertSame( $expected, $result );
+	}
+
+	#[Test]
+	public function resolve_class_name_by_path_handles_tests_subpath_case_insensitively(): void {
+
+		$full_path = Path::PHP_BASE . 'infrastructure/tests/ExampleTest.php';
+
+		$result = Nspace::resolve_class_name_by_path( $full_path );
+
+		$expected = Nspace::BASE . '\Infrastructure\Tests\ExampleTest';
+
+		$this->assertSame( $expected, $result );
 	}
 }
