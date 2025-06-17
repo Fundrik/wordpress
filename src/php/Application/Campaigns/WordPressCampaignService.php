@@ -129,7 +129,8 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 		$errors = $this->validator->validate( $input );
 
 		if ( count( $errors ) > 0 ) {
-			// phpcs:ignore.
+			// @todo Escaping
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw new ValidationFailedException( $input, $errors );
 		}
 	}
