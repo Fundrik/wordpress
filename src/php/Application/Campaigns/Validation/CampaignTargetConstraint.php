@@ -1,9 +1,4 @@
 <?php
-/**
- * CampaignTargetConstraint class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -45,7 +40,7 @@ final class CampaignTargetConstraint extends Constraint {
 	public string $disabled_invalid;
 
 	/**
-	 * CampaignTargetConstraint constructor.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *

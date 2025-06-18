@@ -1,9 +1,4 @@
 <?php
-/**
- * AdminWordPressCampaignPartialInput class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -22,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 final readonly class AdminWordPressCampaignPartialInput extends AbstractAdminWordPressCampaignInput {
 
 	/**
-	 * AdminWordPressCampaignPartialInput constructor.
+	 * Constructor.
 	 *
 	 * @param int         $id            Campaign identifier provided by WordPress.
 	 * @param bool        $is_open       Flag for open state.

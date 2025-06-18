@@ -1,9 +1,4 @@
 <?php
-/**
- * Defines an interface for mapping WordPress WP_Post objects.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -11,6 +6,11 @@ namespace Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces;
 
 use WP_Post;
 
+/**
+ * Interface for mapping WordPress WP_Post objects.
+ *
+ * @since 1.0.0
+ */
 interface WordPressCampaignPostMapperInterface {
 
 	/**

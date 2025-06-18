@@ -1,9 +1,4 @@
 <?php
-/**
- * MigrationReferenceFactory class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -12,7 +7,7 @@ namespace Fundrik\WordPress\Infrastructure\Migrations;
 use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
 
 /**
- * Factory class for creating migration references from PHP files in the filesystem.
+ * Factory for creating migration references from PHP files in the filesystem.
  *
  * @since 1.0.0
  *
@@ -21,7 +16,7 @@ use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFac
 final readonly class MigrationReferenceFactory implements MigrationReferenceFactoryInterface {
 
 	/**
-	 * MigrationReferenceFactory constructor.
+	 * Constructor.
 	 *
 	 * @param MigrationValidator $validator Validates migration file structure and extracts metadata.
 	 */

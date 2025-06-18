@@ -1,9 +1,4 @@
 <?php
-/**
- * AdminWordPressCampaignInput class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -22,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 final readonly class AdminWordPressCampaignInput extends AbstractAdminWordPressCampaignInput {
 
 	/**
-	 * AdminWordPressCampaignInput constructor.
+	 * Constructor.
 	 *
 	 * @param int    $id Campaign identifier provided by WordPress. Must not be blank.
 	 * @param string $title Campaign title. Must not be blank.

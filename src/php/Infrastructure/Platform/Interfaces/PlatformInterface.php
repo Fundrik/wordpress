@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Infrastructure\Platform\Interfaces;
 
 /**
- * Defines the interface for platform integration within Fundrik.
+ * Interface for platform integration within Fundrik.
  *
  * Implementations are responsible for platform-specific initialization,
  * activation hooks, and registration logic (e.g., post types, blocks, listeners).

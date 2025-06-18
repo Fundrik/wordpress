@@ -1,12 +1,4 @@
 <?php
-/**
- * Provides the application-level service for managing campaign retrieval.
- *
- * Acts as a bridge between the core logic and WordPress-specific repositories,
- * coordinating access and transformation of campaign data.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -22,14 +14,14 @@ use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Application service for coordinating access to WordPress-specific campaign data and behavior.
+ * Service for coordinating access to WordPress-specific campaign data and behavior.
  *
  * @since 1.0.0
  */
 final readonly class WordPressCampaignService implements WordPressCampaignServiceInterface {
 
 	/**
-	 * WordPressCampaignService constructor.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *

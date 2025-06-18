@@ -1,9 +1,4 @@
 <?php
-/**
- * Defines interface for working with WordPressCampaign entities using WordPress infrastructure.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -13,6 +8,11 @@ use Fundrik\Core\Domain\EntityId;
 use Fundrik\WordPress\Application\Campaigns\Input\AbstractAdminWordPressCampaignInput;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 
+/**
+ * Interface for working with WordPressCampaign entities using WordPress infrastructure.
+ *
+ * @since 1.0.0
+ */
 interface WordPressCampaignServiceInterface {
 
 	/**

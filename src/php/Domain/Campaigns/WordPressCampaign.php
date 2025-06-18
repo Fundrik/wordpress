@@ -1,9 +1,4 @@
 <?php
-/**
- * WordPress-specific Campaign wrapper.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -15,7 +10,7 @@ use Fundrik\Core\Domain\Campaigns\Campaign;
  * Represents a WordPress-specific campaign entity.
  *
  * This class wraps the core Campaign entity and adds platform-specific
- * attributes or behaviors.
+ * attributes and behaviors.
  *
  * @since 1.0.0
  */

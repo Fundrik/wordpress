@@ -1,9 +1,4 @@
 <?php
-/**
- * WpdbWordPressCampaignRepository class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -26,7 +21,7 @@ final readonly class WpdbWordPressCampaignRepository implements WordPressCampaig
 	private const TABLE = 'fundrik_campaigns';
 
 	/**
-	 * WpdbCampaignRepository constructor.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *

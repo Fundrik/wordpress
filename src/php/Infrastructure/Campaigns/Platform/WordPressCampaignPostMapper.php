@@ -1,15 +1,9 @@
 <?php
-/**
- * CampaignPostToCampaignDtoMapper class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Campaigns\Platform;
 
-use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use WP_Post;
 use Fundrik\WordPress\Support\PostMeta;
@@ -25,7 +19,7 @@ use Fundrik\WordPress\Support\PostMeta;
 final readonly class WordPressCampaignPostMapper implements WordPressCampaignPostMapperInterface {
 
 	/**
-	 * WordPressCampaignPostMapper constructor.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *

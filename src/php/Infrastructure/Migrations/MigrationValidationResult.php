@@ -1,9 +1,4 @@
 <?php
-/**
- * MigrationValidationResult class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -19,7 +14,7 @@ namespace Fundrik\WordPress\Infrastructure\Migrations;
 final readonly class MigrationValidationResult {
 
 	/**
-	 * MigrationValidationResult constructor.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *

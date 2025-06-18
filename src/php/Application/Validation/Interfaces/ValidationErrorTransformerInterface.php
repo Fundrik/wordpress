@@ -1,9 +1,4 @@
 <?php
-/**
- * Defines interface to transform validation exceptions into structured or human-readable formats.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -11,6 +6,11 @@ namespace Fundrik\WordPress\Application\Validation\Interfaces;
 
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 
+/**
+ * Interface to transform validation exceptions into structured or human-readable formats.
+ *
+ * @since 1.0.0
+ */
 interface ValidationErrorTransformerInterface {
 
 	/**

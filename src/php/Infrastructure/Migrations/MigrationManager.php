@@ -1,9 +1,4 @@
 <?php
-/**
- * MigrationManager class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -27,7 +22,7 @@ final readonly class MigrationManager {
 	private const OPTION_KEY = 'fundrik_migration_version';
 
 	/**
-	 * MigrationManager constructor.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *

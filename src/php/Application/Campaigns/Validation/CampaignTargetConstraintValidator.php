@@ -1,17 +1,10 @@
 <?php
-/**
- * CampaignTargetConstraintValidator class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
 namespace Fundrik\WordPress\Application\Campaigns\Validation;
 
 use Fundrik\WordPress\Application\Campaigns\Input\AbstractAdminWordPressCampaignInput;
-use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
-use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;

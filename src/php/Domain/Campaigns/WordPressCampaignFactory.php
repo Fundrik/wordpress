@@ -1,9 +1,4 @@
 <?php
-/**
- * Factory class for creating WordPressCampaign instances.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -14,7 +9,7 @@ use Fundrik\Core\Domain\Campaigns\CampaignFactory;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
 
 /**
- * Responsible for creating WordPressCampaign instances.
+ * Factory for creating WordPressCampaign instances.
  *
  * It validates input data and ensures that the WordPressCampaign is correctly initialized.
  *
@@ -23,7 +18,7 @@ use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
 final readonly class WordPressCampaignFactory {
 
 	/**
-	 * WordPressCampaignFactory constructor.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *

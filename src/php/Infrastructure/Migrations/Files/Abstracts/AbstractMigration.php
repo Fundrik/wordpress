@@ -1,9 +1,4 @@
 <?php
-/**
- * AbstractMigration class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -12,7 +7,7 @@ namespace Fundrik\WordPress\Infrastructure\Migrations\Files\Abstracts;
 use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
 
 /**
- * Abstract base class for file-based database migrations.
+ * Abstract base class for database migrations.
  *
  * @since 1.0.0
  *
@@ -21,7 +16,7 @@ use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterfa
 abstract readonly class AbstractMigration {
 
 	/**
-	 * AbstractMigration constructor.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *

@@ -1,9 +1,4 @@
 <?php
-/**
- * WordPressPlatform class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -26,7 +21,7 @@ use WP_Block_Editor_Context;
 final readonly class WordPressPlatform implements PlatformInterface {
 
 	/**
-	 * Constructs the WordPress platform integration.
+	 * Constructor.
 	 *
 	 * @param DependencyProvider      $dependency_provider Provides all necessary bindings
 	 *                                                     for dependency injection within the platform.

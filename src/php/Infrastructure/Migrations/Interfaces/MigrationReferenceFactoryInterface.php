@@ -1,11 +1,4 @@
 <?php
-/**
- * Interface for factory that creates migration references.
- *
- * @since 1.0.0
- *
- * @internal
- */
 
 declare(strict_types=1);
 
@@ -13,6 +6,13 @@ namespace Fundrik\WordPress\Infrastructure\Migrations\Interfaces;
 
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationReference;
 
+/**
+ * Interface for factory that creates migration references.
+ *
+ * @since 1.0.0
+ *
+ * @internal
+ */
 interface MigrationReferenceFactoryInterface {
 
 	/**

@@ -1,9 +1,4 @@
 <?php
-/**
- * AdminWordPressCampaignInputFactory class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -21,7 +16,7 @@ use WP_Post;
 final readonly class AdminWordPressCampaignInputFactory {
 
 	/**
-	 * AdminWordPressCampaignInputFactory constructor.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *

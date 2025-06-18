@@ -1,9 +1,4 @@
 <?php
-/**
- * WordPressCampaignSyncListener class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -29,7 +24,7 @@ use WP_REST_Request;
 final readonly class WordPressCampaignSyncListener implements WordPressCampaignSyncListenerInterface {
 
 	/**
-	 * WordPressCampaignSyncListener constructor.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *

@@ -1,12 +1,4 @@
 <?php
-/**
- * Interface for the WordPress-specific campaign repository.
- *
- * Defines methods for interacting with campaign data in the WordPress environment,
- * using WordPress-specific DTOs and entities.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -16,6 +8,11 @@ use Fundrik\Core\Domain\EntityId;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 
+/**
+ * Interface for the WordPress-specific campaign repository.
+ *
+ * @since 1.0.0
+ */
 interface WordPressCampaignRepositoryInterface {
 
 	/**

@@ -1,9 +1,4 @@
 <?php
-/**
- * WordPressCampaignSlug value object.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -21,7 +16,7 @@ use InvalidArgumentException;
 final readonly class WordPressCampaignSlug {
 
 	/**
-	 * WordPressCampaignSlug constructor.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *

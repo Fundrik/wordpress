@@ -1,9 +1,4 @@
 <?php
-/**
- * AbstractAdminWordPressCampaignInput class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -27,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 abstract readonly class AbstractAdminWordPressCampaignInput {
 
 	/**
-	 * AbstractAdminWordPressCampaignInput constructor.
+	 * Constructor.
 	 *
 	 * @param int  $id Campaign identifier.
 	 * @param bool $is_open Whether the campaign is open.

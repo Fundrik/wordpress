@@ -1,9 +1,4 @@
 <?php
-/**
- * AllowedBlockTypesFilter class.
- *
- * @since 1.0.0
- */
 
 namespace Fundrik\WordPress\Infrastructure\Platform;
 
@@ -17,7 +12,7 @@ use WP_Block_Type_Registry;
 final readonly class AllowedBlockTypesFilter {
 
 	/**
-	 * AllowedBlockTypesFilter constructor.
+	 * Constructor.
 	 *
 	 * @param string[]|null $all_registered_blocks Optional list of all registered block names
 	 *                                             for test injection or override.

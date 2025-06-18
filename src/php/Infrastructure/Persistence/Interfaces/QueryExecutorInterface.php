@@ -1,14 +1,14 @@
 <?php
-/**
- * Interface for executing safe SQL queries using WordPress's wpdb instance.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Persistence\Interfaces;
 
+/**
+ * Interface for executing safe SQL queries using WordPress's wpdb instance.
+ *
+ * @since 1.0.0
+ */
 interface QueryExecutorInterface {
 
 	/**

@@ -1,9 +1,4 @@
 <?php
-/**
- * Data Transfer Object for WordPress-specific campaign data.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
@@ -17,7 +12,7 @@ namespace Fundrik\WordPress\Application\Campaigns;
 final readonly class WordPressCampaignDto {
 
 	/**
-	 * WordPressCampaignDto constructor.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *

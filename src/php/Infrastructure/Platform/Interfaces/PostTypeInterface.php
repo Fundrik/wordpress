@@ -1,14 +1,14 @@
 <?php
-/**
- * Interface for providing constants and configuration for the custom post type.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Platform\Interfaces;
 
+/**
+ * Interface for providing constants and configuration for the custom post type.
+ *
+ * @since 1.0.0
+ */
 interface PostTypeInterface {
 
 	/**
