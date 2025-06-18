@@ -20,9 +20,11 @@
 
 declare(strict_types=1);
 
+use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
 use Fundrik\WordPress\App;
-use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface;
-use Fundrik\WordPress\Infrastructure\Platform\WordPressPlatform;
+use Fundrik\WordPress\Infrastructure\Container;
+use Fundrik\WordPress\Infrastructure\ContainerRegistry;
+use Fundrik\WordPress\Infrastructure\DependencyProvider;
 
 defined( 'ABSPATH' ) || die;
 
@@ -40,6 +42,10 @@ function fundrik_init(): void {
 
 	require_once FUNDRIK_PATH . 'vendor/autoload.php';
 
+	ContainerRegistry::set( new Container( new \Illuminate\Container\Container() ) );
+
+	fundrik()->singleton( DependencyProviderInterface::class, DependencyProvider::class );
+
 	fundrik()->get( App::class )->run();
 }
 
@@ -53,6 +59,10 @@ add_action( 'plugins_loaded', fundrik_init( ... ) );
 function fundrik_activate(): void {
 
 	require_once FUNDRIK_PATH . 'vendor/autoload.php';
+
+	ContainerRegistry::set( new Container( new \Illuminate\Container\Container() ) );
+
+	fundrik()->singleton( DependencyProviderInterface::class, DependencyProvider::class );
 
 	fundrik()->get( App::class )->activate();
 }

@@ -5,20 +5,11 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure\Platform;
 
 use Brain\Monkey\Functions;
-use Closure;
-use Fundrik\Core\Infrastructure\Internal\Container;
-use Fundrik\Core\Infrastructure\Internal\ContainerManager;
-use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInputFactory;
-use Fundrik\WordPress\Application\Campaigns\WordPressCampaignService;
-use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignFactory;
-use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbWordPressCampaignRepository;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostMapper;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
+use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
+use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
-use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationManager;
-use Fundrik\WordPress\Infrastructure\Persistence\WpdbQueryExecutor;
+use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
 use Fundrik\WordPress\Infrastructure\Platform\AllowedBlockTypesFilter;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\ListenerInterface;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
@@ -30,35 +21,29 @@ use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
+use PHPUnit\Framework\Attributes\UsesFunction;
 use RuntimeException;
 use stdClass;
 
 #[CoversClass( WordPressPlatform::class )]
-#[UsesClass( WordPressCampaignService::class )]
-#[UsesClass( WordPressCampaignFactory::class )]
-#[UsesClass( WpdbWordPressCampaignRepository::class )]
-#[UsesClass( WordPressCampaignPostMapper::class )]
-#[UsesClass( WordPressCampaignSyncListener::class )]
-#[UsesClass( DependencyProvider::class )]
-#[UsesClass( WpdbQueryExecutor::class )]
-#[UsesClass( AdminWordPressCampaignInputFactory::class )]
-#[UsesClass( WordPressCampaignPostType::class )]
-#[UsesClass( Path::class )]
-#[UsesClass( AllowedBlockTypesFilter::class )]
+#[UsesClass( ContainerRegistry::class )]
 #[UsesClass( MigrationManager::class )]
+#[UsesClass( AllowedBlockTypesFilter::class )]
+#[UsesClass( Path::class )]
+#[UsesFunction( 'fundrik' )]
 final class WordPressPlatformTest extends FundrikTestCase {
 
 	private WordPressPlatform $platform;
 	private DependencyProvider&MockInterface $dependency_provider;
+	private ContainerInterface&MockInterface $container;
 
 	protected function setUp(): void {
-
 		parent::setUp();
 
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		$GLOBALS['wpdb'] = Mockery::mock( 'wpdb' );
-
 		$this->dependency_provider = Mockery::mock( DependencyProvider::class );
+		$this->container           = Mockery::mock( ContainerInterface::class );
+
+		ContainerRegistry::set( $this->container );
 
 		$allowed_block_types_filter = new AllowedBlockTypesFilter(
 			[ 'core/paragraph', 'core/image', 'core/quote' ]
@@ -68,7 +53,7 @@ final class WordPressPlatformTest extends FundrikTestCase {
 			$this->dependency_provider,
 			$allowed_block_types_filter,
 			new MigrationManager(
-				$GLOBALS['wpdb'],
+				Mockery::mock( 'wpdb' ),
 				Mockery::mock( MigrationReferenceFactoryInterface::class )
 			)
 		);
@@ -86,17 +71,11 @@ final class WordPressPlatformTest extends FundrikTestCase {
 		$this->platform->init();
 
 		self::assertNotFalse(
-			has_action(
-				'init',
-				$this->platform->register_post_types( ... )
-			)
+			has_action( 'init', $this->platform->register_post_types( ... ) )
 		);
 
 		self::assertNotFalse(
-			has_action(
-				'init',
-				$this->platform->register_blocks( ... )
-			)
+			has_action( 'init', $this->platform->register_blocks( ... ) )
 		);
 
 		self::assertNotFalse(
@@ -109,8 +88,6 @@ final class WordPressPlatformTest extends FundrikTestCase {
 
 	#[Test]
 	public function register_post_types_registers_post_types(): void {
-
-		$container = ContainerManager::get_fresh();
 
 		$post_type_mock_1 = Mockery::mock( PostTypeInterface::class );
 		$post_type_mock_1->shouldReceive( 'get_type' )->twice()->andReturn( 'type_1' );
@@ -134,14 +111,20 @@ final class WordPressPlatformTest extends FundrikTestCase {
 			]
 		);
 
-		$container->singleton( 'PostType1', fn() => $post_type_mock_1 );
-		$container->singleton( 'PostType2', fn() => $post_type_mock_2 );
-
 		$this->dependency_provider
 			->shouldReceive( 'get_bindings' )
 			->once()
 			->with( 'post_types' )
 			->andReturn( [ 'PostType1', 'PostType2' ] );
+
+		$this->container
+			->shouldReceive( 'get' )
+			->with( 'PostType1' )
+			->andReturn( $post_type_mock_1 );
+		$this->container
+			->shouldReceive( 'get' )
+			->with( 'PostType2' )
+			->andReturn( $post_type_mock_2 );
 
 		Functions\expect( 'register_post_type' )
 			->twice()
@@ -174,8 +157,6 @@ final class WordPressPlatformTest extends FundrikTestCase {
 			);
 
 		$this->platform->register_post_types();
-
-		ContainerManager::reset();
 	}
 
 	#[Test]
@@ -187,9 +168,46 @@ final class WordPressPlatformTest extends FundrikTestCase {
 			->with( 'post_types' )
 			->andReturn( [ stdClass::class ] );
 
+		$this->container
+			->shouldReceive( 'get' )
+			->with( $this->identicalTo( stdClass::class ) )
+			->andReturn( new stdClass() );
+
 		$this->expectException( RuntimeException::class );
 
 		$this->platform->register_post_types();
+	}
+
+	#[Test]
+	public function on_activate_calls_migration_manager_migrate(): void {
+
+		Functions\when( 'get_option' )->justReturn( '0000_00_00_00' );
+		Functions\when( 'update_option' )->justReturn( true );
+
+		$wpdb_mock = Mockery::mock( 'wpdb' );
+		$wpdb_mock
+			->shouldReceive( 'get_charset_collate' )
+			->andReturn( 'charset_collate' );
+
+		$reference_factory_mock = Mockery::mock( MigrationReferenceFactoryInterface::class );
+		$reference_factory_mock
+			->shouldReceive( 'create_all' )
+			->andReturn( [] );
+
+		$migration_manager = new MigrationManager(
+			$wpdb_mock,
+			$reference_factory_mock,
+		);
+
+		$platform = new WordPressPlatform(
+			$this->dependency_provider,
+			new AllowedBlockTypesFilter( [] ),
+			$migration_manager
+		);
+
+		$platform->on_activate();
+
+		$this->addToAssertionCount( 1 );
 	}
 
 	#[Test]
@@ -234,16 +252,11 @@ final class WordPressPlatformTest extends FundrikTestCase {
 	#[Test]
 	public function register_listeners_registers_all_listeners(): void {
 
-		$container = ContainerManager::get_fresh();
-
 		$listener_mock_1 = Mockery::mock( ListenerInterface::class );
 		$listener_mock_1->shouldReceive( 'register' )->once();
 
 		$listener_mock_2 = Mockery::mock( ListenerInterface::class );
 		$listener_mock_2->shouldReceive( 'register' )->once();
-
-		$container->singleton( 'Listener1', fn() => $listener_mock_1 );
-		$container->singleton( 'Listener2', fn() => $listener_mock_2 );
 
 		$this->dependency_provider
 			->shouldReceive( 'get_bindings' )
@@ -251,9 +264,16 @@ final class WordPressPlatformTest extends FundrikTestCase {
 			->with( 'listeners' )
 			->andReturn( [ 'Listener1', 'Listener2' ] );
 
-		$this->platform->init();
+		$this->container
+			->shouldReceive( 'get' )
+			->with( 'Listener1' )
+			->andReturn( $listener_mock_1 );
+		$this->container
+			->shouldReceive( 'get' )
+			->with( 'Listener2' )
+			->andReturn( $listener_mock_2 );
 
-		ContainerManager::reset();
+		$this->platform->init();
 	}
 
 	#[Test]
@@ -264,6 +284,11 @@ final class WordPressPlatformTest extends FundrikTestCase {
 			->once()
 			->with( 'listeners' )
 			->andReturn( [ stdClass::class ] );
+
+		$this->container
+			->shouldReceive( 'get' )
+			->with( $this->identicalTo( stdClass::class ) )
+			->andReturn( new stdClass() );
 
 		$this->expectException( RuntimeException::class );
 

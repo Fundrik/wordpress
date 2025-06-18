@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Platform;
 
+use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationManager;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\ListenerInterface;
@@ -23,15 +24,15 @@ final readonly class WordPressPlatform implements PlatformInterface {
 	/**
 	 * Constructor.
 	 *
-	 * @param DependencyProvider      $dependency_provider Provides all necessary bindings
-	 *                                                     for dependency injection within the platform.
-	 * @param AllowedBlockTypesFilter $allowed_block_types_filter Handles filtering of allowed block types.
-	 * @param MigrationManager        $migration_manager Manages and executes plugin database migrations.
+	 * @param DependencyProviderInterface $dependency_provider Provides all necessary bindings
+	 *                                                for dependency injection within the platform.
+	 * @param AllowedBlockTypesFilter     $allowed_block_types_filter Handles filtering of allowed block types.
+	 * @param MigrationManager            $migration_manager Manages and executes plugin database migrations.
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct(
-		private DependencyProvider $dependency_provider,
+		private DependencyProviderInterface $dependency_provider,
 		private AllowedBlockTypesFilter $allowed_block_types_filter,
 		private MigrationManager $migration_manager,
 	) {}

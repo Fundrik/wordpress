@@ -4,64 +4,82 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Tests;
 
-use Fundrik\Core\App as CoreApp;
-use Fundrik\Core\Infrastructure\Internal\ContainerManager;
+use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
+use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
 use Fundrik\WordPress\App;
-use Fundrik\WordPress\Infrastructure\DependencyProvider;
+use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use stdClass;
 
 #[CoversClass( App::class )]
+#[UsesClass( ContainerRegistry::class )]
 final class AppTest extends FundrikTestCase {
 
+	private ContainerInterface&MockInterface $container;
+	private DependencyProviderInterface&MockInterface $provider;
 	private PlatformInterface&MockInterface $platform;
-	private DependencyProvider&MockInterface $provider;
-
-	private CoreApp $core;
 	private App $app;
 
 	protected function setUp(): void {
 
 		parent::setUp();
 
-		$this->core = new CoreApp();
+		$this->container = Mockery::mock( ContainerInterface::class );
+		$this->provider  = Mockery::mock( DependencyProviderInterface::class );
+		$this->platform  = Mockery::mock( PlatformInterface::class );
 
-		$this->platform = Mockery::mock( PlatformInterface::class );
-		$this->provider = Mockery::mock( DependencyProvider::class );
+		ContainerRegistry::set( $this->container );
 
-		ContainerManager::get_fresh();
-		fundrik()->singleton( PlatformInterface::class, fn() => $this->platform );
+		$this->container
+			->shouldReceive( 'get' )
+			->with( PlatformInterface::class )
+			->andReturn( $this->platform );
 
-		$this->app = new App(
-			$this->core,
-			$this->provider
-		);
+		$this->app = new App( $this->provider );
 	}
 
 	#[Test]
 	public function it_registers_bindings_and_initializes_platform_on_run(): void {
 
+		$bindings = [
+			'SomeInterface' => fn() => new stdClass(),
+			'Grouped'       => [
+				'Nested1' => 'NestedImpl1',
+				'Nested2' => 'NestedImpl2',
+			],
+		];
+
 		$this->provider
 			->shouldReceive( 'get_bindings' )
-			->andReturn(
-				[
-					'abstract1' => fn() => new stdClass(),
-				]
-			);
+			->once()
+			->with( '' )
+			->andReturn( $bindings );
+
+		$this->container
+			->shouldReceive( 'singleton' )
+			->once()
+			->with( 'SomeInterface', Mockery::type( 'callable' ) );
+
+		$this->container
+			->shouldReceive( 'singleton' )
+			->once()
+			->with( 'Nested1', 'NestedImpl1' );
+
+		$this->container
+			->shouldReceive( 'singleton' )
+			->once()
+			->with( 'Nested2', 'NestedImpl2' );
 
 		$this->platform
 			->shouldReceive( 'init' )
 			->once();
 
 		$this->app->run();
-
-		$container = $this->app->container();
-
-		$this->assertInstanceOf( stdClass::class, $container->get( 'abstract1' ) );
 	}
 
 	#[Test]
@@ -69,7 +87,13 @@ final class AppTest extends FundrikTestCase {
 
 		$this->provider
 			->shouldReceive( 'get_bindings' )
+			->once()
+			->with( '' )
 			->andReturn( [] );
+
+		$this->container
+			->shouldReceive( 'singleton' )
+			->never();
 
 		$this->platform
 			->shouldReceive( 'init' )
@@ -83,7 +107,90 @@ final class AppTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function it_returns_core_container(): void {
-		$this->assertSame( $this->core->container(), $this->app->container() );
+	public function it_returns_container_from_registry(): void {
+
+		$this->assertSame( $this->container, $this->app->container() );
+	}
+
+	#[Test]
+	public function register_bindings_registers_singletons(): void {
+
+		$bindings = [
+			'abstract1' => fn () => (object) [ 'tag' => 'stdClass1' ],
+			'group'     => [
+				'abstract2a' => fn () => (object) [ 'tag' => 'stdClass2a' ],
+				'abstract2b' => fn () => (object) [ 'tag' => 'stdClass2b' ],
+			],
+		];
+
+		$this->provider
+			->shouldReceive( 'get_bindings' )
+			->once()
+			->with( '' )
+			->andReturn( $bindings );
+
+		$this->container
+		->shouldReceive( 'singleton' )
+		->with(
+			'abstract1',
+			Mockery::on(
+				function ( $func ) {
+					$result = $func();
+					return is_object( $result ) && 'stdClass1' === $result->tag;
+				}
+			)
+		)
+		->once();
+
+		$this->container
+		->shouldReceive( 'singleton' )
+		->with(
+			'abstract2a',
+			Mockery::on(
+				function ( $func ) {
+					$result = $func();
+					return is_object( $result ) && 'stdClass2a' === $result->tag;
+				}
+			)
+		)
+		->once();
+
+		$this->container
+		->shouldReceive( 'singleton' )
+		->with(
+			'abstract2b',
+			Mockery::on(
+				function ( $func ) {
+					$result = $func();
+					return is_object( $result ) && 'stdClass2b' === $result->tag;
+				}
+			)
+		)
+		->once();
+
+		$this->app->register_bindings( $this->provider );
+	}
+
+	#[Test]
+	public function register_bindings_passes_category_to_provider(): void {
+
+		$category = 'platform';
+
+		$bindings = [
+			'some.abstract' => fn () => new stdClass(),
+		];
+
+		$this->provider
+			->shouldReceive( 'get_bindings' )
+			->once()
+			->with( $category )
+			->andReturn( $bindings );
+
+		$this->container
+			->shouldReceive( 'singleton' )
+			->once()
+			->with( 'some.abstract', Mockery::type( 'callable' ) );
+
+		$this->app->register_bindings( $this->provider, $category );
 	}
 }

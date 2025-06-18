@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure\Migrations;
 
 use Brain\Monkey\Functions;
-use Fundrik\Core\Infrastructure\Internal\ContainerManager;
+use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
+use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationManager;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationReference;
 use Fundrik\WordPress\Infrastructure\Migrations\Files\Abstracts\AbstractMigration;
@@ -17,13 +18,16 @@ use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
+use PHPUnit\Framework\Attributes\UsesFunction;
 use RuntimeException;
 use stdClass;
 use wpdb;
 
 #[CoversClass( MigrationManager::class )]
+#[UsesClass( ContainerRegistry::class )]
 #[UsesClass( MigrationReference::class )]
 #[UsesClass( Path::class )]
+#[UsesFunction( 'fundrik' )]
 final class MigrationManagerTest extends FundrikTestCase {
 
 	private const OPTION_KEY                = 'fundrik_migration_version';
@@ -32,6 +36,7 @@ final class MigrationManagerTest extends FundrikTestCase {
 
 	private wpdb&MockInterface $wpdb;
 	private MigrationReferenceFactoryInterface&MockInterface $reference_factory;
+	private ContainerInterface&MockInterface $container;
 
 	private MigrationManager $manager;
 
@@ -41,6 +46,9 @@ final class MigrationManagerTest extends FundrikTestCase {
 
 		$this->wpdb              = Mockery::mock( wpdb::class );
 		$this->reference_factory = Mockery::mock( MigrationReferenceFactoryInterface::class );
+		$this->container         = Mockery::mock( ContainerInterface::class );
+
+		ContainerRegistry::set( $this->container );
 
 		$this->manager = new MigrationManager(
 			$this->wpdb,
@@ -55,8 +63,6 @@ final class MigrationManagerTest extends FundrikTestCase {
 
 	#[Test]
 	public function it_applies_new_migration_and_updates_version(): void {
-
-		$container = ContainerManager::get_fresh();
 
 		$current_version = '2025_01_01_00';
 
@@ -78,14 +84,19 @@ final class MigrationManagerTest extends FundrikTestCase {
 			->andReturn( [ $reference1, $reference2 ] );
 
 		// @todo Replace with Mockery::mock() once https://github.com/mockery/mockery/pull/1319 is fixed.
-		$migration = $this->createMock( AbstractMigration::class );
-		$migration
+		$migration_old = $this->createMock( AbstractMigration::class );
+		$migration_new = $this->createMock( AbstractMigration::class );
+		$migration_new
 			->expects( $this->once() )
 			->method( 'apply' )
 			->with( $this->identicalTo( self::CHARSET_COLLATE ) );
 
-		$container->singleton( 'MigrationOld', fn() => Mockery::mock( AbstractMigration::class ) );
-		$container->singleton( 'MigrationNew', fn() => $migration );
+		$this->container->shouldReceive( 'get' )
+			->with( 'MigrationOld' )
+			->andReturn( $migration_old );
+		$this->container->shouldReceive( 'get' )
+			->with( 'MigrationNew' )
+			->andReturn( $migration_new );
 
 		Functions\expect( 'update_option' )
 			->once()
@@ -97,10 +108,7 @@ final class MigrationManagerTest extends FundrikTestCase {
 			->andReturnTrue();
 
 		$this->manager->migrate();
-
-		ContainerManager::reset();
 	}
-
 
 	#[Test]
 	public function it_skips_migrations_with_version_less_or_equal_to_current(): void {
@@ -132,9 +140,7 @@ final class MigrationManagerTest extends FundrikTestCase {
 	#[Test]
 	public function it_throws_if_migration_is_not_instance_of_abstract_migration(): void {
 
-		$container = ContainerManager::get_fresh();
-
-		$current_version = '0000_00_00_00';
+		$current_version = self::DEFAULT_MIGRATION_VERSION;
 		$reference       = new MigrationReference( '2025_06_16_00', 'MigrationNew' );
 
 		Functions\expect( 'get_option' )
@@ -151,12 +157,12 @@ final class MigrationManagerTest extends FundrikTestCase {
 			->with( Mockery::type( 'string' ) )
 			->andReturn( [ $reference ] );
 
-		$container->singleton( 'MigrationNew', fn() => new stdClass() );
+		$this->container->shouldReceive( 'get' )
+			->with( 'MigrationNew' )
+			->andReturn( new stdClass() );
 
 		$this->expectException( RuntimeException::class );
 
 		$this->manager->migrate();
-
-		ContainerManager::reset();
 	}
 }

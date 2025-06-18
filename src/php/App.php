@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress;
 
-use Fundrik\Core\App as CoreApp;
-use Fundrik\Core\Infrastructure\Internal\Container;
-use Fundrik\WordPress\Infrastructure\DependencyProvider;
+use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
+use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
+use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface;
 
 /**
@@ -21,22 +21,22 @@ final readonly class App {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param CoreApp            $core     The core application instance.
-	 * @param DependencyProvider $provider Dependency provider.
+	 * @param DependencyProviderInterface $provider Dependency provider.
 	 */
 	public function __construct(
-		private CoreApp $core,
-		private DependencyProvider $provider,
+		private DependencyProviderInterface $provider,
 	) {}
 
 	/**
 	 * Runs the application.
 	 *
+	 * Registers container bindings and initializes the platform.
+	 *
 	 * @since 1.0.0
 	 */
 	public function run(): void {
 
-		$this->core->register_bindings( $this->provider );
+		$this->register_bindings( $this->provider );
 
 		$this->platform()->init();
 	}
@@ -46,7 +46,7 @@ final readonly class App {
 	 *
 	 * @since 1.0.0
 	 */
-	public function activate() {
+	public function activate(): void {
 
 		$this->run();
 
@@ -58,11 +58,11 @@ final readonly class App {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return Container The instance of the Fundrik container.
+	 * @return ContainerInterface The instance of the Fundrik container.
 	 */
-	public function container(): Container {
+	public function container(): ContainerInterface {
 
-		return $this->core->container();
+		return ContainerRegistry::get();
 	}
 
 	/**
@@ -75,5 +75,30 @@ final readonly class App {
 	public function platform(): PlatformInterface {
 
 		return $this->container()->get( PlatformInterface::class );
+	}
+
+	/**
+	 * Registers bindings from a dependency provider into the container.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param DependencyProviderInterface $provider The dependency provider.
+	 * @param string                      $category Optional category of bindings.
+	 */
+	public function register_bindings( DependencyProviderInterface $provider, string $category = '' ): void {
+
+		$bindings = $provider->get_bindings( $category );
+
+		foreach ( $bindings as $abstract => $concrete ) {
+
+			if ( is_array( $concrete ) ) {
+
+				foreach ( $concrete as $a => $c ) {
+					$this->container()->singleton( $a, $c );
+				}
+			} else {
+				$this->container()->singleton( $abstract, $concrete );
+			}
+		}
 	}
 }
