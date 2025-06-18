@@ -162,6 +162,7 @@ final class MigrationManagerTest extends FundrikTestCase {
 			->andReturn( new stdClass() );
 
 		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage( 'Expected migration of AbstractMigration, got stdClass for class MigrationNew' );
 
 		$this->manager->migrate();
 	}

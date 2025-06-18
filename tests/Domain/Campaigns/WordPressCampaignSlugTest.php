@@ -33,6 +33,7 @@ final class WordPressCampaignSlugTest extends FundrikTestCase {
 	public function throws_when_slug_is_empty_string(): void {
 
 		$this->expectException( InvalidArgumentException::class );
+		$this->expectExceptionMessage( 'Campaign slug cannot be empty or whitespace.' );
 
 		WordPressCampaignSlug::create( '' );
 	}
@@ -41,6 +42,7 @@ final class WordPressCampaignSlugTest extends FundrikTestCase {
 	public function throws_when_slug_is_only_spaces(): void {
 
 		$this->expectException( InvalidArgumentException::class );
+		$this->expectExceptionMessage( 'Campaign slug cannot be empty or whitespace.' );
 
 		WordPressCampaignSlug::create( '   ' );
 	}
@@ -49,6 +51,7 @@ final class WordPressCampaignSlugTest extends FundrikTestCase {
 	public function throws_when_slug_is_only_tabs_and_newlines(): void {
 
 		$this->expectException( InvalidArgumentException::class );
+		$this->expectExceptionMessage( 'Campaign slug cannot be empty or whitespace.' );
 
 		WordPressCampaignSlug::create( "\t\n" );
 	}

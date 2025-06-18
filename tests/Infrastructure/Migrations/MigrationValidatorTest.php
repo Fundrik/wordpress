@@ -47,6 +47,7 @@ final class MigrationValidatorTest extends TestCase {
 		$filepath = '/path/to/invalid_name.php';
 
 		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage( "Invalid migration file name format: expected 'YYYY_MM_DD_XX_name', got 'invalid_name'" );
 
 		$this->validator->validate_by_filepath( $filepath );
 	}
@@ -68,6 +69,7 @@ final class MigrationValidatorTest extends TestCase {
 		$filepath = Path::PHP_BASE . '../../tests/Fixtures/2025_06_15_00_test_migration_failed_extend.php';
 
 		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage( "Migration class 'TestMigrationFailedExtend' must extend AbstractMigration" );
 
 		$this->validator->validate_by_filepath( $filepath );
 	}

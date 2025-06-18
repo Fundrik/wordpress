@@ -148,7 +148,7 @@ final class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTes
 		$invalid_constraint = new class() extends Constraint {};
 
 		$this->expectException( UnexpectedValueException::class );
-		$this->expectExceptionMessage( get_class( $invalid_constraint ) );
+		$this->expectExceptionMessage( $invalid_constraint::class );
 
 		$this->validator->validate( $input, $invalid_constraint );
 	}

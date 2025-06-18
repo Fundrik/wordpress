@@ -174,6 +174,7 @@ final class WordPressPlatformTest extends FundrikTestCase {
 			->andReturn( new stdClass() );
 
 		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage( 'Expected instance of PostTypeInterface, got stdClass for class stdClass' );
 
 		$this->platform->register_post_types();
 	}
@@ -291,6 +292,7 @@ final class WordPressPlatformTest extends FundrikTestCase {
 			->andReturn( new stdClass() );
 
 		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage( 'Expected instance of ListenerInterface, got stdClass for class stdClass' );
 
 		$this->platform->init();
 	}

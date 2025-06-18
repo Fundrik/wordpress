@@ -88,6 +88,7 @@ final class WordPressCampaignFactoryTest extends FundrikTestCase {
 	public function throws_when_campaign_target_is_invalid(): void {
 
 		$this->expectException( InvalidArgumentException::class );
+		$this->expectExceptionMessage( 'Target amount must be positive when targeting is enabled, given 0' );
 
 		$this->factory->create(
 			new WordPressCampaignDto(
@@ -106,6 +107,7 @@ final class WordPressCampaignFactoryTest extends FundrikTestCase {
 	public function throws_when_entity_id_is_invalid(): void {
 
 		$this->expectException( InvalidArgumentException::class );
+		$this->expectExceptionMessage( 'EntityId must be a positive, given: -1' );
 
 		$this->factory->create(
 			new WordPressCampaignDto(
