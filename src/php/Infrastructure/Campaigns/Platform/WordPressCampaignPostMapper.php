@@ -29,10 +29,11 @@ final readonly class WordPressCampaignPostMapper implements WordPressCampaignPos
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WordPressCampaignDtoFactory $dto_factory A factory to create WordPressCampaignDto objects.
+	 * @param WordPressCampaignPostType $post_type Provides metadata keys and configuration
+	 *                                             for mapping campaign-related post data.
 	 */
 	public function __construct(
-		private WordPressCampaignDtoFactory $dto_factory
+		private WordPressCampaignPostType $post_type
 	) {
 	}
 
@@ -47,7 +48,7 @@ final readonly class WordPressCampaignPostMapper implements WordPressCampaignPos
 	 */
 	public function to_array_from_post( WP_Post $post ): array {
 
-		$post_type_class = fundrik()->get( WordPressCampaignPostType::class )::class;
+		$post_type_class = $this->post_type::class;
 
 		return [
 			'id'            => $post->ID,

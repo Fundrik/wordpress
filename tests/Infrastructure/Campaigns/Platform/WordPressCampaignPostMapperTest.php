@@ -7,6 +7,7 @@ namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Platform;
 use Brain\Monkey\Functions;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostMapper;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Support\PostMeta;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
@@ -26,7 +27,7 @@ final class WordPressCampaignPostMapperTest extends FundrikTestCase {
 		parent::setUp();
 
 		$this->mapper = new WordPressCampaignPostMapper(
-			new WordPressCampaignDtoFactory()
+			Mockery::mock( WordPressCampaignPostType::class )
 		);
 	}
 

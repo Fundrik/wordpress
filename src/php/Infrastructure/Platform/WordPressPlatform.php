@@ -9,9 +9,10 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Platform;
 
-use Fundrik\Core\Application\Platform\Interfaces\PlatformInterface;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationManager;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\ListenerInterface;
+use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
 use Fundrik\WordPress\Support\Path;
 use RuntimeException;
@@ -30,12 +31,14 @@ final readonly class WordPressPlatform implements PlatformInterface {
 	 * @param DependencyProvider      $dependency_provider Provides all necessary bindings
 	 *                                                     for dependency injection within the platform.
 	 * @param AllowedBlockTypesFilter $allowed_block_types_filter Handles filtering of allowed block types.
+	 * @param MigrationManager        $migration_manager Manages and executes plugin database migrations.
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct(
 		private DependencyProvider $dependency_provider,
 		private AllowedBlockTypesFilter $allowed_block_types_filter,
+		private MigrationManager $migration_manager,
 	) {}
 
 	/**
@@ -45,7 +48,6 @@ final readonly class WordPressPlatform implements PlatformInterface {
 	 */
 	public function init(): void {
 
-		$this->register_bindings();
 		$this->register_listeners();
 
 		add_action( 'init', $this->register_post_types( ... ) );
@@ -138,27 +140,13 @@ final readonly class WordPressPlatform implements PlatformInterface {
 	}
 
 	/**
-	 * Registers all dependency bindings into the container
+	 * Handles actions that must occur once upon plugin activation.
 	 *
 	 * @since 1.0.0
 	 */
-	private function register_bindings(): void {
+	public function on_activate(): void {
 
-		$fundrik_container = fundrik();
-
-		foreach ( $this->dependency_provider->get_bindings() as $abstract => $concrete ) {
-
-			if ( is_array( $concrete ) ) {
-
-				foreach ( $concrete as $a => $c ) {
-					$fundrik_container->singleton( $a, $c );
-				}
-
-				continue;
-			}
-
-			$fundrik_container->singleton( $abstract, $concrete );
-		}
+		$this->migration_manager->migrate();
 	}
 
 	/**

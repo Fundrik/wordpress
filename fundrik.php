@@ -20,6 +20,10 @@
 
 declare(strict_types=1);
 
+use Fundrik\WordPress\App;
+use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface;
+use Fundrik\WordPress\Infrastructure\Platform\WordPressPlatform;
+
 defined( 'ABSPATH' ) || die;
 
 define( 'FUNDRIK_URL', plugin_dir_url( __FILE__ ) );
@@ -36,7 +40,31 @@ function fundrik_init(): void {
 
 	require_once FUNDRIK_PATH . 'vendor/autoload.php';
 
-	require_once FUNDRIK_PATH . 'bootstrap/init.php';
+	fundrik()->get( App::class )->run();
 }
 
 add_action( 'plugins_loaded', fundrik_init( ... ) );
+
+/**
+ * Handles plugin activation logic.
+ *
+ * @since 1.0.0
+ */
+function fundrik_activate(): void {
+
+	require_once FUNDRIK_PATH . 'vendor/autoload.php';
+
+	fundrik()->get( App::class )->activate();
+}
+
+/**
+ * Register activation hook.
+ *
+ * WordPress requires this to be at the top level.
+ *
+ * @see https://developer.wordpress.org/plugins/plugin-basics/activation-deactivation-hooks/
+ */
+register_activation_hook(
+	__FILE__,
+	fundrik_activate( ... )
+);

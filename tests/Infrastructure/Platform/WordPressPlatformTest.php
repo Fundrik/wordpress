@@ -16,6 +16,8 @@ use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostMap
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
+use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationManager;
 use Fundrik\WordPress\Infrastructure\Persistence\WpdbQueryExecutor;
 use Fundrik\WordPress\Infrastructure\Platform\AllowedBlockTypesFilter;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\ListenerInterface;
@@ -43,6 +45,7 @@ use stdClass;
 #[UsesClass( WordPressCampaignPostType::class )]
 #[UsesClass( Path::class )]
 #[UsesClass( AllowedBlockTypesFilter::class )]
+#[UsesClass( MigrationManager::class )]
 final class WordPressPlatformTest extends FundrikTestCase {
 
 	private WordPressPlatform $platform;
@@ -64,21 +67,15 @@ final class WordPressPlatformTest extends FundrikTestCase {
 		$this->platform = new WordPressPlatform(
 			$this->dependency_provider,
 			$allowed_block_types_filter,
+			new MigrationManager(
+				$GLOBALS['wpdb'],
+				Mockery::mock( MigrationReferenceFactoryInterface::class )
+			)
 		);
 	}
 
 	#[Test]
 	public function init_registers_init_hooks(): void {
-
-		// WordPressPlatform::init() internally calls get_bindings() with no arguments
-		// and get_bindings() with 'listeners' argument,
-		// so even though this is not the focus of the current test,
-		// we need to mock it to avoid unexpected calls and test failures.
-		$this->dependency_provider
-			->shouldReceive( 'get_bindings' )
-			->once()
-			->withNoArgs()
-			->andReturn( [] );
 
 		$this->dependency_provider
 			->shouldReceive( 'get_bindings' )
@@ -235,63 +232,7 @@ final class WordPressPlatformTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function register_bindings_registers_dependencies(): void {
-
-		$container = ContainerManager::get_fresh();
-
-		$bindings = [
-			'Some\Simple\Interface' => stdClass::class,
-			'grouped'               => [
-				'Some\Grouped\Interface1' => stdClass::class,
-				'Some\Grouped\Interface2' => stdClass::class,
-			],
-		];
-
-		// WordPressPlatform::init() internally calls get_bindings() with 'listeners' argument,
-		// so even though this is not the focus of the current test,
-		// we need to mock it to avoid unexpected calls and test failures.
-		$this->dependency_provider
-			->shouldReceive( 'get_bindings' )
-			->once()
-			->with( 'listeners' )
-			->andReturn( [] );
-
-		$this->dependency_provider
-			->shouldReceive( 'get_bindings' )
-			->once()
-			->withNoArgs()
-			->andReturn( $bindings );
-
-		$this->platform->init();
-
-		foreach ( $bindings as $abstract => $concrete ) {
-
-			if ( is_array( $concrete ) ) {
-
-				foreach ( $concrete as $a => $c ) {
-					$this->assertSingletonBinding( $container, $a, $c );
-				}
-
-				continue;
-			}
-
-			$this->assertSingletonBinding( $container, $abstract, $concrete );
-		}
-
-		ContainerManager::reset();
-	}
-
-	#[Test]
 	public function register_listeners_registers_all_listeners(): void {
-
-		// WordPressPlatform::init() internally calls get_bindings() with no arguments,
-		// so even though this is not the focus of the current test,
-		// we need to mock it to avoid unexpected calls and test failures.
-		$this->dependency_provider
-			->shouldReceive( 'get_bindings' )
-			->once()
-			->withNoArgs()
-			->andReturn( [] );
 
 		$container = ContainerManager::get_fresh();
 
@@ -318,15 +259,6 @@ final class WordPressPlatformTest extends FundrikTestCase {
 	#[Test]
 	public function it_throws_if_get_listeners_fails(): void {
 
-		// WordPressPlatform::init() internally calls get_bindings() with no arguments,
-		// so even though this is not the focus of the current test,
-		// we need to mock it to avoid unexpected calls and test failures.
-		$this->dependency_provider
-			->shouldReceive( 'get_bindings' )
-			->once()
-			->withNoArgs()
-			->andReturn( [] );
-
 		$this->dependency_provider
 			->shouldReceive( 'get_bindings' )
 			->once()
@@ -336,29 +268,5 @@ final class WordPressPlatformTest extends FundrikTestCase {
 		$this->expectException( RuntimeException::class );
 
 		$this->platform->init();
-	}
-
-	private function assertSingletonBinding(
-		Container $container,
-		string|int $abstract_name,
-		string|Closure $concrete,
-	): void {
-
-		if ( is_callable( $concrete ) ) {
-			$concrete = $concrete()::class;
-		}
-
-		if ( is_int( $abstract_name ) ) {
-
-			$instance1 = $container->get( $concrete );
-			$this->assertInstanceOf( $concrete, $instance1 );
-		} else {
-
-			$instance1 = $container->get( $abstract_name );
-			$this->assertInstanceOf( $concrete, $instance1 );
-
-			$instance2 = $container->get( $abstract_name );
-			$this->assertSame( $instance1, $instance2 );
-		}
 	}
 }

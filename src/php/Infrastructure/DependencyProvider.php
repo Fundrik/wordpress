@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure;
 
+use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignService;
@@ -24,6 +25,8 @@ use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostTyp
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
 use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationReferenceFactory;
+use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface;
+use Fundrik\WordPress\Infrastructure\Platform\WordPressPlatform;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use wpdb;
@@ -33,7 +36,7 @@ use wpdb;
  *
  * @since 1.0.0
  */
-class DependencyProvider {
+class DependencyProvider implements DependencyProviderInterface {
 
 	/**
 	 * Returns all the bindings for dependencies.
@@ -45,7 +48,7 @@ class DependencyProvider {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array<string, string|array<string, string>> The array of bindings for dependencies.
+	 * @return array<string, string|callable|array<string, string|callable>> The array of bindings for dependencies.
 	 */
 	public function get_bindings( string $category = '' ): array {
 
@@ -75,6 +78,8 @@ class DependencyProvider {
 					ValidatorInterface::class     => fn() => Validation::createValidatorBuilder()
 						->enableAttributeMapping()
 						->getValidator(),
+
+					PlatformInterface::class      => WordPressPlatform::class,
 				],
 				'post_types' => [
 					WordPressCampaignPostType::class => WordPressCampaignPostType::class,
