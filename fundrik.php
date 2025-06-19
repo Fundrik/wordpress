@@ -22,8 +22,8 @@ declare(strict_types=1);
 
 use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
 use Fundrik\WordPress\App;
-use Fundrik\WordPress\Infrastructure\Container;
-use Fundrik\WordPress\Infrastructure\ContainerRegistry;
+use Fundrik\WordPress\Infrastructure\Container\Container;
+use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
 
 defined( 'ABSPATH' ) || die;
