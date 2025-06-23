@@ -22,7 +22,7 @@ final readonly class WordPressCampaignFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param CampaignFactory    $core_factory     Factory to create core Campaign entities.
+	 * @param CampaignFactory $core_factory Factory to create core Campaign entities.
 	 * @param CampaignDtoFactory $core_dto_factory Factory to convert raw data into core Campaign DTOs.
 	 */
 	public function __construct(
@@ -47,13 +47,13 @@ final readonly class WordPressCampaignFactory {
 
 		$core_dto = $this->core_dto_factory->from_array(
 			[
-				'id'            => $dto->id,
-				'title'         => $dto->title,
-				'is_enabled'    => $dto->is_enabled,
-				'is_open'       => $dto->is_open,
-				'has_target'    => $dto->has_target,
+				'id' => $dto->id,
+				'title' => $dto->title,
+				'is_enabled' => $dto->is_enabled,
+				'is_open' => $dto->is_open,
+				'has_target' => $dto->has_target,
 				'target_amount' => $dto->target_amount,
-			]
+			],
 		);
 
 		$campaign = $this->core_factory->create( $core_dto );

@@ -90,8 +90,8 @@ final class WordPressCampaignPostTypeTest extends FundrikTestCase {
 
 		$meta_fields = $this->post_type->get_meta_fields();
 
-		$meta_is_open       = WordPressCampaignPostType::META_IS_OPEN;
-		$meta_has_target    = WordPressCampaignPostType::META_HAS_TARGET;
+		$meta_is_open = WordPressCampaignPostType::META_IS_OPEN;
+		$meta_has_target = WordPressCampaignPostType::META_HAS_TARGET;
 		$meta_target_amount = WordPressCampaignPostType::META_TARGET_AMOUNT;
 
 		self::assertIsArray( $meta_fields );
@@ -101,20 +101,20 @@ final class WordPressCampaignPostTypeTest extends FundrikTestCase {
 
 		self::assertSame(
 			[
-				'type'    => 'boolean',
+				'type' => 'boolean',
 				'default' => true,
 			],
-			$meta_fields[ $meta_is_open ]
+			$meta_fields[ $meta_is_open ],
 		);
 
 		self::assertSame(
 			[ 'type' => 'boolean' ],
-			$meta_fields[ $meta_has_target ]
+			$meta_fields[ $meta_has_target ],
 		);
 
 		self::assertSame(
 			[ 'type' => 'string' ],
-			$meta_fields[ $meta_target_amount ]
+			$meta_fields[ $meta_target_amount ],
 		);
 	}
 
@@ -127,7 +127,7 @@ final class WordPressCampaignPostTypeTest extends FundrikTestCase {
 		self::assertCount( 1, $template_blocks );
 		self::assertSame(
 			[ WordPressCampaignPostType::CAMPAIGN_SETTINGS_BLOCK ],
-			$template_blocks[0]
+			$template_blocks[0],
 		);
 	}
 

@@ -18,30 +18,32 @@ final readonly class PostMeta {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int    $post_id The ID of the post.
-	 * @param string $key     The metadata key.
+	 * @param int $post_id The ID of the post.
+	 * @param string $key The metadata key.
 	 *
 	 * @return bool The boolean value of the metadata.
 	 */
 	public static function get_bool( int $post_id, string $key ): bool {
 
 		return TypeCaster::to_bool(
-			get_post_meta( $post_id, $key, true )
+			get_post_meta( $post_id, $key, true ),
 		);
 	}
 
 	/**
 	 * Retrieves an integer value from post metadata.
 	 *
-	 * @param int    $post_id The ID of the post.
-	 * @param string $key     The metadata key.
+	 * @since 1.0.0
+	 *
+	 * @param int $post_id The ID of the post.
+	 * @param string $key The metadata key.
 	 *
 	 * @return int The integer value of the metadata.
 	 */
 	public static function get_int( int $post_id, string $key ): int {
 
 		return TypeCaster::to_int(
-			get_post_meta( $post_id, $key, true )
+			get_post_meta( $post_id, $key, true ),
 		);
 	}
 }

@@ -49,12 +49,12 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
 		parent::setUp();
 
-		$this->post_type         = Mockery::mock( WordPressCampaignPostType::class );
-		$this->mapper            = Mockery::mock( WordPressCampaignPostMapperInterface::class );
-		$this->service           = Mockery::mock( WordPressCampaignServiceInterface::class );
+		$this->post_type = Mockery::mock( WordPressCampaignPostType::class );
+		$this->mapper = Mockery::mock( WordPressCampaignPostMapperInterface::class );
+		$this->service = Mockery::mock( WordPressCampaignServiceInterface::class );
 		$this->error_transformer = Mockery::mock( ValidationErrorTransformerInterface::class );
 
-		$this->input_factory         = new AdminWordPressCampaignInputFactory( $this->mapper );
+		$this->input_factory = new AdminWordPressCampaignInputFactory( $this->mapper );
 		$this->partial_input_factory = new AdminWordPressCampaignPartialInputFactory();
 
 		$this->listener = new WordPressCampaignSyncListener(
@@ -81,22 +81,22 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 		self::assertNotFalse(
 			has_filter(
 				"rest_pre_insert_{$post_type}",
-				$this->listener->validate( ... )
-			)
+				$this->listener->validate( ... ),
+			),
 		);
 
 		self::assertNotFalse(
 			has_action(
 				'wp_insert_post',
-				$this->listener->sync( ... )
-			)
+				$this->listener->sync( ... ),
+			),
 		);
 
 		self::assertNotFalse(
 			has_action(
 				'delete_post',
-				$this->listener->delete( ... )
-			)
+				$this->listener->delete( ... ),
+			),
 		);
 	}
 
@@ -104,14 +104,14 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 	public function validate_returns_post_when_validation_successful(): void {
 
 		$prepared_post = new stdClass();
-		$request       = Mockery::mock( WP_REST_Request::class );
+		$request = Mockery::mock( WP_REST_Request::class );
 
 		$input_data = [
-			'id'    => 123,
+			'id' => 123,
 			'title' => 'Valid Campaign',
-			'meta'  => [
-				'is_open'       => true,
-				'has_target'    => true,
+			'meta' => [
+				'is_open' => true,
+				'has_target' => true,
 				'target_amount' => 100,
 			],
 		];
@@ -134,14 +134,14 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 	public function validate_returns_wp_error_when_validation_fails(): void {
 
 		$prepared_post = new stdClass();
-		$request       = Mockery::mock( WP_REST_Request::class );
+		$request = Mockery::mock( WP_REST_Request::class );
 
 		$input_data = [
-			'id'    => 456,
+			'id' => 456,
 			'title' => 'Invalid Campaign',
-			'meta'  => [
-				'is_open'       => true,
-				'has_target'    => false,
+			'meta' => [
+				'is_open' => true,
+				'has_target' => false,
 				'target_amount' => 100,
 			],
 		];
@@ -180,13 +180,13 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
 		$post_type = 'campaign';
 
-		$post             = Mockery::mock( 'WP_Post' );
-		$post->ID         = 123;
+		$post = Mockery::mock( 'WP_Post' );
+		$post->ID = 123;
 		$post->post_title = 'Test Campaign';
-		$post->post_type  = $post_type;
-		$post->meta       = [
-			'is_open'       => true,
-			'has_target'    => true,
+		$post->post_type = $post_type;
+		$post->meta = [
+			'is_open' => true,
+			'has_target' => true,
 			'target_amount' => 100,
 		];
 
@@ -201,10 +201,10 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 			->with( $this->identicalTo( $post ) )
 			->andReturn(
 				[
-					'id'    => $post->ID,
+					'id' => $post->ID,
 					'title' => $post->post_title,
-					'meta'  => $post->meta,
-				]
+					'meta' => $post->meta,
+				],
 			);
 
 		$this->service
@@ -220,13 +220,13 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
 		$post_type = 'campaign';
 
-		$post             = Mockery::mock( 'WP_Post' );
-		$post->ID         = 123;
+		$post = Mockery::mock( 'WP_Post' );
+		$post->ID = 123;
 		$post->post_title = 'Test Campaign';
-		$post->post_type  = $post_type;
-		$post->meta       = [
-			'is_open'       => true,
-			'has_target'    => true,
+		$post->post_type = $post_type;
+		$post->meta = [
+			'is_open' => true,
+			'has_target' => true,
 			'target_amount' => 0,
 		];
 
@@ -241,10 +241,10 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 			->with( $this->identicalTo( $post ) )
 			->andReturn(
 				[
-					'id'    => $post->ID,
+					'id' => $post->ID,
 					'title' => $post->post_title,
-					'meta'  => $post->meta,
-				]
+					'meta' => $post->meta,
+				],
 			);
 
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
@@ -269,10 +269,10 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 			->once()
 			->andReturn( 'campaign' );
 
-		$post             = Mockery::mock( 'WP_Post' );
-		$post->ID         = 123;
+		$post = Mockery::mock( 'WP_Post' );
+		$post->ID = 123;
 		$post->post_title = 'Irrelevant Post';
-		$post->post_type  = 'other_post_type';
+		$post->post_type = 'other_post_type';
 
 		$this->mapper
 			->shouldNotReceive( 'to_array_from_post' );
@@ -288,8 +288,8 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
 		$post_type = 'campaign';
 
-		$post            = Mockery::mock( 'WP_Post' );
-		$post->ID        = 42;
+		$post = Mockery::mock( 'WP_Post' );
+		$post->ID = 42;
 		$post->post_type = $post_type;
 
 		$this->post_type
@@ -300,7 +300,7 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 		$this->service
 			->shouldReceive( 'delete_campaign' )
 			->once()
-			->with( Mockery::on( fn ( EntityId $id ) => 42 === $id->value ) );
+			->with( Mockery::on( static fn ( EntityId $id ) => $id->value === 42 ) );
 
 		$this->listener->delete( $post->ID, $post );
 	}
@@ -308,8 +308,8 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 	#[Test]
 	public function delete_does_nothing_if_post_type_is_not_campaign(): void {
 
-		$post            = Mockery::mock( 'WP_Post' );
-		$post->ID        = 42;
+		$post = Mockery::mock( 'WP_Post' );
+		$post->ID = 42;
 		$post->post_type = 'not_campaign';
 
 		$this->post_type

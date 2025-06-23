@@ -16,14 +16,14 @@ final class PostMetaTest extends FundrikTestCase {
 	#[Test]
 	public function get_bool_returns_true_when_value_is_true(): void {
 
-		$post_id  = 123;
+		$post_id = 123;
 		$meta_key = 'some_key';
 
 		Functions\expect( 'get_post_meta' )
 			->with(
 				$this->identicalTo( $post_id ),
 				$this->identicalTo( $meta_key ),
-				true
+				true,
 			)
 			->andReturn( 'true' );
 
@@ -35,14 +35,14 @@ final class PostMetaTest extends FundrikTestCase {
 	#[Test]
 	public function get_bool_returns_false_when_value_is_false(): void {
 
-		$post_id  = 123;
+		$post_id = 123;
 		$meta_key = 'some_key';
 
 		Functions\expect( 'get_post_meta' )
 			->with(
 				$this->identicalTo( $post_id ),
 				$this->identicalTo( $meta_key ),
-				true
+				true,
 			)
 			->andReturn( 'off' );
 
@@ -54,14 +54,14 @@ final class PostMetaTest extends FundrikTestCase {
 	#[Test]
 	public function get_bool_returns_false_when_value_is_empty(): void {
 
-		$post_id  = 123;
+		$post_id = 123;
 		$meta_key = 'some_key';
 
 		Functions\expect( 'get_post_meta' )
 			->with(
 				$this->identicalTo( $post_id ),
 				$this->identicalTo( $meta_key ),
-				true
+				true,
 			)
 			->andReturn( '' );
 
@@ -73,14 +73,14 @@ final class PostMetaTest extends FundrikTestCase {
 	#[Test]
 	public function get_int_returns_integer_value(): void {
 
-		$post_id  = 123;
+		$post_id = 123;
 		$meta_key = 'some_key';
 
 		Functions\expect( 'get_post_meta' )
 			->with(
 				$this->identicalTo( $post_id ),
 				$this->identicalTo( $meta_key ),
-				true
+				true,
 			)
 			->andReturn( '42' );
 
@@ -92,14 +92,14 @@ final class PostMetaTest extends FundrikTestCase {
 	#[Test]
 	public function get_int_returns_zero_for_non_integer_value(): void {
 
-		$post_id  = 123;
+		$post_id = 123;
 		$meta_key = 'some_key';
 
 		Functions\expect( 'get_post_meta' )
 			->with(
 				$this->identicalTo( $post_id ),
 				$this->identicalTo( $meta_key ),
-				true
+				true,
 			)
 			->andReturn( 'some string' );
 
@@ -111,14 +111,14 @@ final class PostMetaTest extends FundrikTestCase {
 	#[Test]
 	public function get_int_returns_zero_when_value_is_empty(): void {
 
-		$post_id  = 123;
+		$post_id = 123;
 		$meta_key = 'some_key';
 
 		Functions\expect( 'get_post_meta' )
 			->with(
 				$this->identicalTo( $post_id ),
 				$this->identicalTo( $meta_key ),
-				true
+				true,
 			)
 			->andReturn( '' );
 

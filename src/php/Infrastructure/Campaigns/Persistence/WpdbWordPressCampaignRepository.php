@@ -25,12 +25,13 @@ final readonly class WpdbWordPressCampaignRepository implements WordPressCampaig
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WordPressCampaignDtoFactory $dto_factory The factory to create WordPressCampaignDto objects from database data.
-	 * @param QueryExecutorInterface      $query_executor The query executor interface for interacting with the database.
+	 * @param WordPressCampaignDtoFactory $dto_factory The factory to create WordPressCampaignDto objects
+	 *                                                 from database data.
+	 * @param QueryExecutorInterface $query_executor The query executor interface for interacting with the database.
 	 */
 	public function __construct(
 		private WordPressCampaignDtoFactory $dto_factory,
-		private QueryExecutorInterface $query_executor
+		private QueryExecutorInterface $query_executor,
 	) {
 	}
 
@@ -55,15 +56,15 @@ final readonly class WpdbWordPressCampaignRepository implements WordPressCampaig
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return WordPressCampaignDto[] An array of campaign DTOs.
+	 * @return array<WordPressCampaignDto> An array of campaign DTOs.
 	 */
 	public function get_all(): array {
 
 		$data = $this->query_executor->get_all( self::TABLE );
 
 		return array_map(
-			fn( $item ): WordPressCampaignDto => $this->dto_factory->from_array( $item ),
-			$data
+			fn ( $item ): WordPressCampaignDto => $this->dto_factory->from_array( $item ),
+			$data,
 		);
 	}
 
@@ -127,7 +128,7 @@ final readonly class WpdbWordPressCampaignRepository implements WordPressCampaig
 		return $this->query_executor->update(
 			self::TABLE,
 			$dto->to_array(),
-			$campaign->get_id()
+			$campaign->get_id(),
 		);
 	}
 

@@ -19,12 +19,14 @@ final readonly class AdminWordPressCampaignPartialInput extends AbstractAdminWor
 	/**
 	 * Constructor.
 	 *
-	 * @param int         $id            Campaign identifier provided by WordPress.
-	 * @param bool        $is_open       Flag for open state.
-	 * @param bool        $has_target    Flag for whether campaign has a target.
-	 * @param int         $target_amount Target amount.
-	 * @param string|null $title         Campaign title (optional).
-	 * @param string|null $slug          Campaign slug (optional).
+	 * @since 1.0.0
+	 *
+	 * @param int $id Campaign identifier provided by WordPress.
+	 * @param bool $is_open Flag for open state.
+	 * @param bool $has_target Flag for whether campaign has a target.
+	 * @param int $target_amount Target amount.
+	 * @param string|null $title Campaign title (optional).
+	 * @param string|null $slug Campaign slug (optional).
 	 */
 	public function __construct(
 		int $id,
@@ -38,6 +40,7 @@ final readonly class AdminWordPressCampaignPartialInput extends AbstractAdminWor
 		#[Assert\NotBlank( allowNull: true, message: 'Slug must not be blank' )]
 		public ?string $slug = null,
 	) {
+
 		parent::__construct( $id, $is_open, $has_target, $target_amount );
 	}
 }

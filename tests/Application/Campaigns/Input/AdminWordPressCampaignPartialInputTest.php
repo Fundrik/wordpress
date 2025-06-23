@@ -22,8 +22,8 @@ final class AdminWordPressCampaignPartialInputTest extends FundrikTestCase {
 			NotBlank::class,
 			[
 				'allowNull' => true,
-				'message'   => 'Title must not be blank',
-			]
+				'message' => 'Title must not be blank',
+			],
 		);
 	}
 
@@ -36,8 +36,8 @@ final class AdminWordPressCampaignPartialInputTest extends FundrikTestCase {
 			NotBlank::class,
 			[
 				'allowNull' => true,
-				'message'   => 'Slug must not be blank',
-			]
+				'message' => 'Slug must not be blank',
+			],
 		);
 	}
 
@@ -48,7 +48,7 @@ final class AdminWordPressCampaignPartialInputTest extends FundrikTestCase {
 			id: 42,
 			is_open: true,
 			has_target: true,
-			target_amount: 1000,
+			target_amount: 1_000,
 			title: 'New title',
 			slug: 'new-slug',
 		);
@@ -56,7 +56,7 @@ final class AdminWordPressCampaignPartialInputTest extends FundrikTestCase {
 		$this->assertSame( 42, $input->id );
 		$this->assertTrue( $input->is_open );
 		$this->assertTrue( $input->has_target );
-		$this->assertSame( 1000, $input->target_amount );
+		$this->assertSame( 1_000, $input->target_amount );
 		$this->assertSame( 'New title', $input->title );
 		$this->assertSame( 'new-slug', $input->slug );
 	}
@@ -64,12 +64,7 @@ final class AdminWordPressCampaignPartialInputTest extends FundrikTestCase {
 	#[Test]
 	public function constructor_allows_null_title_and_slug(): void {
 
-		$input = new AdminWordPressCampaignPartialInput(
-			id: 7,
-			is_open: false,
-			has_target: false,
-			target_amount: 0,
-		);
+		$input = new AdminWordPressCampaignPartialInput( id: 7, is_open: false, has_target: false, target_amount: 0 );
 
 		$this->assertSame( 7, $input->id );
 		$this->assertFalse( $input->is_open );

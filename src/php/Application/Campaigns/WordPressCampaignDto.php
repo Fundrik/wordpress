@@ -16,13 +16,13 @@ final readonly class WordPressCampaignDto {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|string $id            The campaign ID (integer or UUID).
-	 * @param string     $title         The title of the campaign.
-	 * @param string     $slug          URL-friendly slug used in WordPress permalinks.
-	 * @param bool       $is_enabled    Whether the campaign is currently enabled (visible and accessible).
-	 * @param bool       $is_open       Whether the campaign is currently open.
-	 * @param bool       $has_target    Whether the campaign has a target goal.
-	 * @param int        $target_amount The target amount (if any) for the campaign.
+	 * @param int|string $id The campaign ID (integer or UUID).
+	 * @param string $title The title of the campaign.
+	 * @param string $slug URL-friendly slug used in WordPress permalinks.
+	 * @param bool $is_enabled Whether the campaign is currently enabled (visible and accessible).
+	 * @param bool $is_open Whether the campaign is currently open.
+	 * @param bool $has_target Whether the campaign has a target goal.
+	 * @param int $target_amount The target amount (if any) for the campaign.
 	 */
 	public function __construct(
 		public int|string $id,
@@ -40,7 +40,7 @@ final readonly class WordPressCampaignDto {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array<string, mixed> The DTO data as a key-value array.
+	 * @return array<string, int|string|bool> The DTO data as a key-value array.
 	 */
 	public function to_array(): array {
 

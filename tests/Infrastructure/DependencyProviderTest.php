@@ -35,8 +35,8 @@ final class DependencyProviderTest extends FundrikTestCase {
 	#[Test]
 	public function get_bindings_contains_all_required_keys(): void {
 
-		$bindings      = $this->provider->get_bindings();
-		$all_keys      = $this->collect_keys_recursively( $bindings );
+		$bindings = $this->provider->get_bindings();
+		$all_keys = $this->collect_keys_recursively( $bindings );
 		$required_keys = [
 			wpdb::class,
 			QueryExecutorInterface::class,
@@ -84,7 +84,7 @@ final class DependencyProviderTest extends FundrikTestCase {
 				static function ( array $bindings ): array {
 					$bindings['custom_binding'] = 'CustomClass';
 					return $bindings;
-				}
+				},
 			);
 
 		$bindings = $this->provider->get_bindings();
@@ -100,9 +100,11 @@ final class DependencyProviderTest extends FundrikTestCase {
 		foreach ( $items as $key => $value ) {
 			$keys[] = $key;
 
-			if ( is_array( $value ) ) {
-				$keys = array_merge( $keys, $this->collect_keys_recursively( $value ) );
+			if ( ! is_array( $value ) ) {
+				continue;
 			}
+
+			$keys = array_merge( $keys, $this->collect_keys_recursively( $value ) );
 		}
 
 		return $keys;

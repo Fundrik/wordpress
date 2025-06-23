@@ -22,7 +22,7 @@ final class AllowedBlockTypesFilterTest extends FundrikTestCase {
 		$result = $filter->filter(
 			false,
 			'post',
-			[]
+			[],
 		);
 
 		$this->assertSame( [], $result );
@@ -32,13 +32,13 @@ final class AllowedBlockTypesFilterTest extends FundrikTestCase {
 	public function returns_all_blocks_when_allowed_blocks_is_true_and_no_specific_blocks(): void {
 
 		$filter = new AllowedBlockTypesFilter(
-			[ 'core/paragraph', 'core/image', 'core/quote' ]
+			[ 'core/paragraph', 'core/image', 'core/quote' ],
 		);
 
 		$result = $filter->filter(
 			true,
 			'post',
-			[]
+			[],
 		);
 
 		$this->assertContains( 'core/paragraph', $result );
@@ -63,7 +63,7 @@ final class AllowedBlockTypesFilterTest extends FundrikTestCase {
 		$result = $filter->filter(
 			$allowed_blocks,
 			'custom_post',
-			[ $post_type_custom, $post_type_other ]
+			[ $post_type_custom, $post_type_other ],
 		);
 
 		$this->assertSame( [ 'core/paragraph' ], $result );
@@ -83,7 +83,7 @@ final class AllowedBlockTypesFilterTest extends FundrikTestCase {
 		$result = $filter->filter(
 			$allowed_blocks,
 			'post', // current post type not allowed for core/paragraph.
-			[ $post_type_mock ]
+			[ $post_type_mock ],
 		);
 
 		// core/paragraph is restricted to 'page' only, core/quote allowed by default (not restricted).

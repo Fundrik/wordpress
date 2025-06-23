@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fundrik\WordPress\Tests\Helpers;
+namespace Fundrik\WordPress\Tests\Support;
 
 use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
 use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
@@ -11,7 +11,6 @@ use Mockery;
 use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
-
 use function fundrik;
 
 #[CoversFunction( 'fundrik' )]

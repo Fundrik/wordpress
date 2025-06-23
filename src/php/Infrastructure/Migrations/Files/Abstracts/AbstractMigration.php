@@ -23,7 +23,7 @@ abstract readonly class AbstractMigration {
 	 * @param QueryExecutorInterface $query_executor Query executor for running SQL queries.
 	 */
 	public function __construct(
-		protected QueryExecutorInterface $query_executor
+		protected QueryExecutorInterface $query_executor,
 	) {}
 
 	/**

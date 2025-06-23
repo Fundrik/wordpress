@@ -30,7 +30,7 @@ final class WordPressCampaignTest extends FundrikTestCase {
 				title: CampaignTitle::create( 'Test Campaign' ),
 				is_enabled: true,
 				is_open: false,
-				target: CampaignTarget::create( true, 1000 ),
+				target: CampaignTarget::create( true, 1_000 ),
 			),
 			slug: WordPressCampaignSlug::create( 'test-campaign' ),
 		);
@@ -41,6 +41,6 @@ final class WordPressCampaignTest extends FundrikTestCase {
 		$this->assertTrue( $campaign->is_enabled() );
 		$this->assertFalse( $campaign->is_open() );
 		$this->assertTrue( $campaign->has_target() );
-		$this->assertSame( 1000, $campaign->get_target_amount() );
+		$this->assertSame( 1_000, $campaign->get_target_amount() );
 	}
 }

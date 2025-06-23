@@ -47,8 +47,8 @@ final class WordPressCampaignFactoryTest extends FundrikTestCase {
 				is_enabled: true,
 				is_open: false,
 				has_target: true,
-				target_amount: 1000,
-			)
+				target_amount: 1_000,
+			),
 		);
 
 		$this->assertInstanceOf( WordPressCampaign::class, $campaign );
@@ -59,7 +59,7 @@ final class WordPressCampaignFactoryTest extends FundrikTestCase {
 		$this->assertSame( true, $campaign->is_enabled() );
 		$this->assertSame( false, $campaign->is_open() );
 		$this->assertSame( true, $campaign->has_target() );
-		$this->assertSame( 1000, $campaign->get_target_amount() );
+		$this->assertSame( 1_000, $campaign->get_target_amount() );
 	}
 
 	#[Test]
@@ -76,7 +76,7 @@ final class WordPressCampaignFactoryTest extends FundrikTestCase {
 				is_open: true,
 				has_target: false,
 				target_amount: 0,
-			)
+			),
 		);
 
 		$this->assertInstanceOf( WordPressCampaign::class, $campaign );
@@ -99,7 +99,7 @@ final class WordPressCampaignFactoryTest extends FundrikTestCase {
 				is_open: true,
 				has_target: true,
 				target_amount: 0,
-			)
+			),
 		);
 	}
 
@@ -118,7 +118,7 @@ final class WordPressCampaignFactoryTest extends FundrikTestCase {
 				is_open: true,
 				has_target: false,
 				target_amount: 0,
-			)
+			),
 		);
 	}
 }

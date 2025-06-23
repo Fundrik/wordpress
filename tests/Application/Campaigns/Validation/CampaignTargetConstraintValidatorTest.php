@@ -56,10 +56,7 @@ final class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTes
 	#[Test]
 	public function valid_with_target(): void {
 
-		$input = $this->create_campaign_input(
-			has_target: true,
-			target_amount: 500,
-		);
+		$input = $this->create_campaign_input( has_target: true, target_amount: 500 );
 
 		$this->validator->validate( $input, $this->campaign_constraint );
 
@@ -69,10 +66,7 @@ final class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTes
 	#[Test]
 	public function valid_without_target(): void {
 
-		$input = $this->create_campaign_input(
-			has_target: false,
-			target_amount: 0,
-		);
+		$input = $this->create_campaign_input( has_target: false, target_amount: 0 );
 
 		$this->validator->validate( $input, $this->campaign_constraint );
 
@@ -82,10 +76,7 @@ final class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTes
 	#[Test]
 	public function invalid_with_target_and_zero_amount(): void {
 
-		$input = $this->create_campaign_input(
-			has_target: true,
-			target_amount: 0,
-		);
+		$input = $this->create_campaign_input( has_target: true, target_amount: 0 );
 
 		$this->validator->validate( $input, $this->campaign_constraint );
 
@@ -98,10 +89,7 @@ final class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTes
 	#[Test]
 	public function invalid_without_target_and_nonzero_amount(): void {
 
-		$input = $this->create_campaign_input(
-			has_target: false,
-			target_amount: 100,
-		);
+		$input = $this->create_campaign_input( has_target: false, target_amount: 100 );
 
 		$this->validator->validate( $input, $this->campaign_constraint );
 
@@ -114,12 +102,7 @@ final class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTes
 	#[Test]
 	public function valid_partial_input_does_not_raise_violation(): void {
 
-		$input = new AdminWordPressCampaignPartialInput(
-			id: 42,
-			is_open: true,
-			has_target: false,
-			target_amount: 0,
-		);
+		$input = new AdminWordPressCampaignPartialInput( id: 42, is_open: true, has_target: false, target_amount: 0 );
 
 		$this->validator->validate( $input, $this->campaign_constraint );
 
@@ -140,11 +123,9 @@ final class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTes
 	#[Test]
 	public function throws_exception_for_invalid_constraint_type_with_valid_input(): void {
 
-		$input = $this->create_campaign_input(
-			has_target: true,
-			target_amount: 100,
-		);
+		$input = $this->create_campaign_input( has_target: true, target_amount: 100 );
 
+		// phpcs:ignore SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces.MultipleEmptyLinesAfterOpeningBrace, SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces.IncorrectEmptyLinesBeforeClosingBrace
 		$invalid_constraint = new class() extends Constraint {};
 
 		$this->expectException( UnexpectedValueException::class );
@@ -160,7 +141,7 @@ final class CampaignTargetConstraintValidatorTest extends ConstraintValidatorTes
 		bool $is_enabled = true,
 		bool $is_open = true,
 		bool $has_target = false,
-		int $target_amount = 0
+		int $target_amount = 0,
 	): AdminWordPressCampaignInput {
 
 		return new AdminWordPressCampaignInput(

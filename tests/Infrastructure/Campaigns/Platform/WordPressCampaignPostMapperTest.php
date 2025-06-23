@@ -27,7 +27,7 @@ final class WordPressCampaignPostMapperTest extends FundrikTestCase {
 		parent::setUp();
 
 		$this->mapper = new WordPressCampaignPostMapper(
-			Mockery::mock( WordPressCampaignPostType::class )
+			Mockery::mock( WordPressCampaignPostType::class ),
 		);
 	}
 
@@ -36,37 +36,38 @@ final class WordPressCampaignPostMapperTest extends FundrikTestCase {
 
 		$id = 10;
 
-		$wp_post              = Mockery::mock( 'WP_Post' );
-		$wp_post->ID          = $id;
-		$wp_post->post_title  = 'Test Campaign';
-		$wp_post->post_name   = 'test-campaign';
+		$wp_post = Mockery::mock( 'WP_Post' );
+		$wp_post->ID = $id;
+		$wp_post->post_title = 'Test Campaign';
+		$wp_post->post_name = 'test-campaign';
 		$wp_post->post_status = 'publish';
 
 		Functions\when( 'get_post_meta' )->alias(
-			function ( $post_id, $key ) {
+			// phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
+			static function ( $post_id, $key ) {
 				$meta = [
-					'is_open'       => '1',
-					'has_target'    => '0',
+					'is_open' => '1',
+					'has_target' => '0',
 					'target_amount' => '500',
 				];
 
 				return $meta[ $key ] ?? '';
-			}
+			},
 		);
 
 		$result = $this->mapper->to_array_from_post( $wp_post );
 
 		$this->assertSame(
 			[
-				'id'            => $id,
-				'title'         => 'Test Campaign',
-				'slug'          => 'test-campaign',
-				'is_enabled'    => true,
-				'is_open'       => true,
-				'has_target'    => false,
+				'id' => $id,
+				'title' => 'Test Campaign',
+				'slug' => 'test-campaign',
+				'is_enabled' => true,
+				'is_open' => true,
+				'has_target' => false,
 				'target_amount' => 500,
 			],
-			$result
+			$result,
 		);
 	}
 
@@ -75,10 +76,10 @@ final class WordPressCampaignPostMapperTest extends FundrikTestCase {
 
 		$id = 20;
 
-		$wp_post              = Mockery::mock( 'WP_Post' );
-		$wp_post->ID          = $id;
-		$wp_post->post_title  = 'Campaign Without Meta';
-		$wp_post->post_name   = 'campaign-no-meta';
+		$wp_post = Mockery::mock( 'WP_Post' );
+		$wp_post->ID = $id;
+		$wp_post->post_title = 'Campaign Without Meta';
+		$wp_post->post_name = 'campaign-no-meta';
 		$wp_post->post_status = 'publish';
 
 		Functions\when( 'get_post_meta' )->justReturn( '' );
@@ -87,15 +88,15 @@ final class WordPressCampaignPostMapperTest extends FundrikTestCase {
 
 		$this->assertSame(
 			[
-				'id'            => $id,
-				'title'         => 'Campaign Without Meta',
-				'slug'          => 'campaign-no-meta',
-				'is_enabled'    => true,
-				'is_open'       => false,
-				'has_target'    => false,
+				'id' => $id,
+				'title' => 'Campaign Without Meta',
+				'slug' => 'campaign-no-meta',
+				'is_enabled' => true,
+				'is_open' => false,
+				'has_target' => false,
 				'target_amount' => 0,
 			],
-			$result
+			$result,
 		);
 	}
 
@@ -104,37 +105,38 @@ final class WordPressCampaignPostMapperTest extends FundrikTestCase {
 
 		$id = 30;
 
-		$wp_post              = Mockery::mock( 'WP_Post' );
-		$wp_post->ID          = $id;
-		$wp_post->post_title  = 'Draft Campaign';
-		$wp_post->post_name   = 'draft-campaign';
+		$wp_post = Mockery::mock( 'WP_Post' );
+		$wp_post->ID = $id;
+		$wp_post->post_title = 'Draft Campaign';
+		$wp_post->post_name = 'draft-campaign';
 		$wp_post->post_status = 'draft';
 
 		Functions\when( 'get_post_meta' )->alias(
-			function ( $post_id, $key ) {
+			// phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
+			static function ( $post_id, $key ) {
 				$meta = [
-					'is_open'       => '1',
-					'has_target'    => '1',
+					'is_open' => '1',
+					'has_target' => '1',
 					'target_amount' => '2000',
 				];
 
 				return $meta[ $key ] ?? '';
-			}
+			},
 		);
 
 		$result = $this->mapper->to_array_from_post( $wp_post );
 
 		$this->assertSame(
 			[
-				'id'            => $id,
-				'title'         => 'Draft Campaign',
-				'slug'          => 'draft-campaign',
-				'is_enabled'    => false,
-				'is_open'       => true,
-				'has_target'    => true,
-				'target_amount' => 2000,
+				'id' => $id,
+				'title' => 'Draft Campaign',
+				'slug' => 'draft-campaign',
+				'is_enabled' => false,
+				'is_open' => true,
+				'has_target' => true,
+				'target_amount' => 2_000,
 			],
-			$result
+			$result,
 		);
 	}
 }

@@ -25,8 +25,6 @@ final class CampaignTargetConstraint extends Constraint {
 	 * Error message when target amount is invalid while targeting is enabled.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @var string
 	 */
 	public string $enabled_invalid;
 
@@ -34,8 +32,6 @@ final class CampaignTargetConstraint extends Constraint {
 	 * Error message when target amount is invalid while targeting is disabled.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @var string
 	 */
 	public string $disabled_invalid;
 
@@ -44,13 +40,19 @@ final class CampaignTargetConstraint extends Constraint {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param mixed      $options Optional options for the constraint.
-	 * @param array|null $groups  Optional validation groups.
-	 * @param mixed      $payload Optional payload data.
+	 * @param array<string, mixed>|null $options Optional options for the constraint.
+	 * @param array<int, string>|null $groups Optional validation groups.
+	 * @param object|null $payload Optional payload data.
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
 	 */
-	public function __construct( mixed $options = null, ?array $groups = null, mixed $payload = null ) {
+	public function __construct(
+		?array $options = null,
+		?array $groups = null,
+		?object $payload = null,
+	) {
 
-		$this->enabled_invalid  = __( 'Target amount must be greater than zero when targeting is enabled.', 'fundrik' );
+		$this->enabled_invalid = __( 'Target amount must be greater than zero when targeting is enabled.', 'fundrik' );
 		$this->disabled_invalid = __( 'Target amount must be zero when targeting is disabled.', 'fundrik' );
 
 		parent::__construct( $options, $groups, $payload );

@@ -27,29 +27,31 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 
 		parent::setUp();
 
-		$this->wpdb         = Mockery::mock( 'wpdb' );
+		$this->wpdb = Mockery::mock( 'wpdb' );
 		$this->wpdb->prefix = 'wp_';
 
-		$this->executor   = new WpdbQueryExecutor( $this->wpdb );
+		$this->executor = new WpdbQueryExecutor( $this->wpdb );
 		$this->table_name = $this->wpdb->prefix . self::TABLE;
 
-		if ( ! defined( 'ARRAY_A' ) ) {
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
-			define( 'ARRAY_A', 'ARRAY_A' );
+		if ( defined( 'ARRAY_A' ) ) {
+			return;
 		}
+
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+		define( 'ARRAY_A', 'ARRAY_A' );
 	}
 
 	public static function id_provider(): array {
 
 		return [
-			'int_id'  => [ 123 ],
+			'int_id' => [ 123 ],
 			'uuid_id' => [ '0196a2f4-a700-7606-818a-00660fa2be0c' ],
 		];
 	}
 
 	#[Test]
 	#[DataProvider( 'id_provider' )]
-	public function returns_single_row_by_id( int|string $id ) {
+	public function returns_single_row_by_id( int|string $id ): void {
 
 		$placeholder = is_int( $id ) ? '%d' : '%s';
 
@@ -61,7 +63,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( "SELECT * FROM %i WHERE id = {$placeholder} LIMIT 1" ),
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $id )
+				$this->identicalTo( $id ),
 			)
 			->andReturn( $prepared_sql );
 
@@ -70,28 +72,28 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( $prepared_sql ),
-				$this->identicalTo( ARRAY_A )
+				$this->identicalTo( ARRAY_A ),
 			)
 			->andReturn(
 				[
-					'id'    => $id,
+					'id' => $id,
 					'title' => 'My Campaign',
-				]
+				],
 			);
 
 		$result = $this->executor->get_by_id( self::TABLE, $id );
 
 		$this->assertSame(
 			[
-				'id'    => $id,
+				'id' => $id,
 				'title' => 'My Campaign',
 			],
-			$result
+			$result,
 		);
 	}
 
 	#[Test]
-	public function returns_null_when_row_not_found() {
+	public function returns_null_when_row_not_found(): void {
 
 		$id = 999;
 
@@ -103,7 +105,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( 'SELECT * FROM %i WHERE id = %d LIMIT 1' ),
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $id )
+				$this->identicalTo( $id ),
 			)
 			->andReturn( $prepared_sql );
 
@@ -112,7 +114,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( $prepared_sql ),
-				$this->identicalTo( ARRAY_A )
+				$this->identicalTo( ARRAY_A ),
 			)
 			->andReturn( null );
 
@@ -122,7 +124,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function returns_all_rows_from_table() {
+	public function returns_all_rows_from_table(): void {
 
 		$prepared_sql = "SELECT * FROM {$this->table_name}";
 
@@ -140,19 +142,19 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( $prepared_sql ),
-				$this->identicalTo( ARRAY_A )
+				$this->identicalTo( ARRAY_A ),
 			)
 			->andReturn(
 				[
 					[
-						'id'    => 1,
+						'id' => 1,
 						'title' => 'First',
 					],
 					[
-						'id'    => 2,
+						'id' => 2,
 						'title' => 'Second',
 					],
-				]
+				],
 			);
 
 		$result = $this->executor->get_all( self::TABLE );
@@ -165,7 +167,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 	#[DataProvider( 'id_provider' )]
 	public function returns_true_if_record_exists( int|string $id ): void {
 
-		$placeholder  = is_int( $id ) ? '%d' : '%s';
+		$placeholder = is_int( $id ) ? '%d' : '%s';
 		$prepared_sql = "SELECT 1 FROM {$this->table_name} WHERE id = {$id} LIMIT 1";
 
 		$this->wpdb
@@ -174,7 +176,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( "SELECT 1 FROM %i WHERE id = {$placeholder} LIMIT 1" ),
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $id )
+				$this->identicalTo( $id ),
 			)
 			->andReturn( $prepared_sql );
 
@@ -191,7 +193,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 	#[DataProvider( 'id_provider' )]
 	public function returns_false_if_record_does_not_exist( int|string $id ): void {
 
-		$placeholder  = is_int( $id ) ? '%d' : '%s';
+		$placeholder = is_int( $id ) ? '%d' : '%s';
 		$prepared_sql = "SELECT 1 FROM {$this->table_name} WHERE id = {$id} LIMIT 1";
 
 		$this->wpdb
@@ -200,7 +202,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( "SELECT 1 FROM %i WHERE id = {$placeholder} LIMIT 1" ),
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $id )
+				$this->identicalTo( $id ),
 			)
 			->andReturn( $prepared_sql );
 
@@ -216,10 +218,10 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 	#[Test]
 	public function exists_by_column_returns_true_if_record_exists(): void {
 
-		$value  = 'test-campaign';
+		$value = 'test-campaign';
 		$column = 'slug';
 
-		$placeholder    = is_int( $value ) ? '%d' : '%s';
+		$placeholder = is_int( $value ) ? '%d' : '%s';
 		$column_escaped = esc_sql( $column );
 
 		$prepared_sql = "SELECT 1 FROM {$this->table_name} WHERE slug = {$value} LIMIT 1";
@@ -230,7 +232,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( "SELECT 1 FROM %i WHERE {$column_escaped} = {$placeholder} LIMIT 1" ),
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $value )
+				$this->identicalTo( $value ),
 			)
 			->andReturn( $prepared_sql );
 
@@ -246,10 +248,10 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 	#[Test]
 	public function exists_by_column_returns_false_if_record_does_not_exist(): void {
 
-		$value  = 'test-campaign';
+		$value = 'test-campaign';
 		$column = 'slug';
 
-		$placeholder    = is_int( $value ) ? '%d' : '%s';
+		$placeholder = is_int( $value ) ? '%d' : '%s';
 		$column_escaped = esc_sql( $column );
 
 		$prepared_sql = "SELECT 1 FROM {$this->table_name} WHERE slug = {$value} LIMIT 1";
@@ -260,7 +262,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( "SELECT 1 FROM %i WHERE {$column_escaped} = {$placeholder} LIMIT 1" ),
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $value )
+				$this->identicalTo( $value ),
 			)
 			->andReturn( $prepared_sql );
 
@@ -285,7 +287,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $data )
+				$this->identicalTo( $data ),
 			)
 			->andReturn( 1 );
 
@@ -304,7 +306,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $data )
+				$this->identicalTo( $data ),
 			)
 			->andReturn( false );
 
@@ -325,7 +327,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( self::TABLE ),
 				$this->identicalTo( $data ),
-				$this->identicalTo( [ 'id' => $id ] )
+				$this->identicalTo( [ 'id' => $id ] ),
 			)
 			->andReturn( 1 );
 
@@ -346,7 +348,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( self::TABLE ),
 				$this->identicalTo( $data ),
-				$this->identicalTo( [ 'id' => $id ] )
+				$this->identicalTo( [ 'id' => $id ] ),
 			)
 			->andReturn( false );
 
@@ -362,7 +364,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( [ 'id' => $id ] )
+				$this->identicalTo( [ 'id' => $id ] ),
 			)
 			->andReturn( 1 );
 
@@ -378,7 +380,7 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( [ 'id' => $id ] )
+				$this->identicalTo( [ 'id' => $id ] ),
 			)
 			->andReturn( false );
 

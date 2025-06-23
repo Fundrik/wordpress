@@ -37,7 +37,7 @@ final readonly class CreateFundrikCampaignsTable extends AbstractMigration {
 			`target_amount` int unsigned NOT NULL,
 			PRIMARY KEY (`id`),
 			KEY `slug` (`slug`(191))
-			) ENGINE=InnoDB {$charset_collate};"
+			) ENGINE=InnoDB {$charset_collate};",
 		);
 	}
 }

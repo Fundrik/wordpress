@@ -15,7 +15,7 @@ final class MigrationReferenceTest extends FundrikTestCase {
 	#[Test]
 	public function it_initializes_with_version_and_class_name(): void {
 
-		$version    = '2025_06_16_01';
+		$version = '2025_06_16_01';
 		$class_name = 'SomeMigrationClass';
 
 		$migration_reference = new MigrationReference( $version, $class_name );

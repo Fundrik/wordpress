@@ -26,8 +26,9 @@ final readonly class MigrationManager {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param wpdb                               $db The WordPress database access object.
-	 * @param MigrationReferenceFactoryInterface $reference_factory Resolves migration classes and versions from migration files.
+	 * @param wpdb $db The WordPress database access object.
+	 * @param MigrationReferenceFactoryInterface $reference_factory Resolves migration classes and versions
+	 *                                                              from migration files.
 	 */
 	public function __construct(
 		private wpdb $db,
@@ -38,8 +39,6 @@ final readonly class MigrationManager {
 	 * Applies all migration files with versions newer than the last applied one.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @throws RuntimeException If a migration class doesn't have an apply() method.
 	 */
 	public function migrate(): void {
 
@@ -58,11 +57,11 @@ final readonly class MigrationManager {
 
 			if ( ! $migration instanceof AbstractMigration ) {
 				// @todo Escaping
-				// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 				throw new RuntimeException(
-					'Expected migration of AbstractMigration, got ' . get_debug_type( $migration ) . " for class {$reference->class_name}"
+					'Expected migration of AbstractMigration, got ' . get_debug_type(
+						$migration,
+					) . " for class {$reference->class_name}",
 				);
-				// phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			}
 
 			$migration->apply( $charset_collate );

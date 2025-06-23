@@ -42,7 +42,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 
 		$this->repository = new WpdbWordPressCampaignRepository(
 			new WordPressCampaignDtoFactory(),
-			$this->query_executor
+			$this->query_executor,
 		);
 	}
 
@@ -54,13 +54,13 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 		$campaign_id = EntityId::create( $id );
 
 		$db_data = [
-			'id'            => $id,
-			'title'         => 'Test Campaign',
-			'slug'          => 'test-campaign',
-			'is_enabled'    => true,
-			'is_open'       => true,
-			'has_target'    => true,
-			'target_amount' => 1000,
+			'id' => $id,
+			'title' => 'Test Campaign',
+			'slug' => 'test-campaign',
+			'is_enabled' => true,
+			'is_open' => true,
+			'has_target' => true,
+			'target_amount' => 1_000,
 		];
 
 		$this->query_executor
@@ -68,7 +68,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $id )
+				$this->identicalTo( $id ),
 			)
 			->andReturn( $db_data );
 
@@ -91,7 +91,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $id )
+				$this->identicalTo( $id ),
 			)
 			->andReturn( null );
 
@@ -105,21 +105,21 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 
 		$db_data = [
 			[
-				'id'            => 123,
-				'title'         => 'Campaign 1',
-				'slug'          => 'campaign-1',
-				'is_enabled'    => true,
-				'is_open'       => true,
-				'has_target'    => true,
-				'target_amount' => 1000,
+				'id' => 123,
+				'title' => 'Campaign 1',
+				'slug' => 'campaign-1',
+				'is_enabled' => true,
+				'is_open' => true,
+				'has_target' => true,
+				'target_amount' => 1_000,
 			],
 			[
-				'id'            => 124,
-				'title'         => 'Campaign 2',
-				'slug'          => 'campaign-2',
-				'is_enabled'    => true,
-				'is_open'       => false,
-				'has_target'    => false,
+				'id' => 124,
+				'title' => 'Campaign 2',
+				'slug' => 'campaign-2',
+				'is_enabled' => true,
+				'is_open' => false,
+				'has_target' => false,
 				'target_amount' => 0,
 			],
 		];
@@ -159,7 +159,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 	#[Test]
 	public function exists_returns_true_when_campaign_exists(): void {
 
-		$id       = 123;
+		$id = 123;
 		$campaign = $this->create_fake_campaign_with_id( $id );
 
 		$this->query_executor
@@ -167,7 +167,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $id )
+				$this->identicalTo( $id ),
 			)
 			->andReturn( true );
 
@@ -176,11 +176,10 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 		$this->assertTrue( $result );
 	}
 
-
 	#[Test]
 	public function exists_returns_false_when_campaign_does_not_exist(): void {
 
-		$id       = 999;
+		$id = 999;
 		$campaign = $this->create_fake_campaign_with_id( $id );
 
 		$this->query_executor
@@ -188,7 +187,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $id )
+				$this->identicalTo( $id ),
 			)
 			->andReturn( false );
 
@@ -208,7 +207,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( self::TABLE ),
 				$this->identicalTo( 'slug' ),
-				$this->identicalTo( $slug )
+				$this->identicalTo( $slug ),
 			)
 			->andReturn( true );
 
@@ -228,7 +227,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( self::TABLE ),
 				$this->identicalTo( 'slug' ),
-				$this->identicalTo( $slug )
+				$this->identicalTo( $slug ),
 			)
 			->andReturn( false );
 
@@ -247,7 +246,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::TABLE ),
-				Mockery::type( 'array' )
+				Mockery::type( 'array' ),
 			)
 			->andReturn( true );
 
@@ -266,7 +265,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::TABLE ),
-				Mockery::type( 'array' )
+				Mockery::type( 'array' ),
 			)
 			->andReturn( false );
 
@@ -288,7 +287,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( self::TABLE ),
 				Mockery::type( 'array' ),
-				$this->identicalTo( $id )
+				$this->identicalTo( $id ),
 			)
 			->andReturn( true );
 
@@ -308,7 +307,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( self::TABLE ),
 				Mockery::type( 'array' ),
-				$this->identicalTo( 1 )
+				$this->identicalTo( 1 ),
 			)
 			->andReturn( false );
 
@@ -329,7 +328,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::TABLE ),
-				$this->identicalTo( $id )
+				$this->identicalTo( $id ),
 			)
 			->andReturn( true );
 
@@ -346,7 +345,7 @@ final class WpdbWordPressCampaignRepositoryTest extends FundrikTestCase {
 				title: CampaignTitle::create( 'title' ),
 				is_enabled: true,
 				is_open: true,
-				target: CampaignTarget::create( true, 1000 ),
+				target: CampaignTarget::create( true, 1_000 ),
 			),
 			slug: WordPressCampaignSlug::create( 'slug' ),
 		);

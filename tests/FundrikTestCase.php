@@ -38,12 +38,12 @@ abstract class FundrikTestCase extends PHPUnitTestCase {
 		string $target_name,
 		string $attribute_class,
 		?array $expected_values = null,
-		string $target_type = 'property'
+		string $target_type = 'property',
 	): void {
 
-		if ( 'property' === $target_type ) {
+		if ( $target_type === 'property' ) {
 			$reflection = new ReflectionProperty( $class_name, $target_name );
-		} elseif ( 'class' === $target_type ) {
+		} elseif ( $target_type === 'class' ) {
 			$reflection = new ReflectionClass( $class_name );
 		} else {
 			throw new InvalidArgumentException( 'Invalid target type. Use "property" or "class".' );
@@ -59,8 +59,8 @@ abstract class FundrikTestCase extends PHPUnitTestCase {
 				ucfirst( $target_type ),
 				$target_name,
 				$class_name,
-				$attribute_class
-			)
+				$attribute_class,
+			),
 		);
 
 		$instance = $attributes[0]->newInstance();
@@ -73,27 +73,28 @@ abstract class FundrikTestCase extends PHPUnitTestCase {
 				$attribute_class,
 				$target_type,
 				$target_name,
-				get_class( $instance )
-			)
+				$instance::class,
+			),
 		);
 
-		if ( $expected_values ) {
+		if ( ! $expected_values ) {
+			return;
+		}
 
-			foreach ( $expected_values as $property => $expected ) {
-				$actual = $instance->$property ?? null;
+		foreach ( $expected_values as $property => $expected ) {
+			$actual = $instance->$property ?? null;
 
-				Assert::assertSame(
+			Assert::assertSame(
+				$expected,
+				$actual,
+				sprintf(
+					'Expected value "%s" for property "%s" on attribute "%s", got "%s"',
 					$expected,
+					$property,
+					$attribute_class,
 					$actual,
-					sprintf(
-						'Expected value "%s" for property "%s" on attribute "%s", got "%s"',
-						$expected,
-						$property,
-						$attribute_class,
-						$actual
-					)
-				);
-			}
+				),
+			);
 		}
 	}
 
@@ -101,7 +102,7 @@ abstract class FundrikTestCase extends PHPUnitTestCase {
 		string $class_name,
 		string $property_name,
 		string $attribute_class,
-		?array $expected_values = null
+		?array $expected_values = null,
 	): void {
 
 		$this->assert_has_attribute_instance_of(
@@ -109,14 +110,14 @@ abstract class FundrikTestCase extends PHPUnitTestCase {
 			target_name: $property_name,
 			attribute_class: $attribute_class,
 			expected_values: $expected_values,
-			target_type: 'property'
+			target_type: 'property',
 		);
 	}
 
 	protected function assert_сlass_has_attribute(
 		string $class_name,
 		string $attribute_class,
-		?array $expected_values = null
+		?array $expected_values = null,
 	): void {
 
 		$this->assert_has_attribute_instance_of(
@@ -124,7 +125,7 @@ abstract class FundrikTestCase extends PHPUnitTestCase {
 			target_name: $class_name,
 			attribute_class: $attribute_class,
 			expected_values: $expected_values,
-			target_type: 'class'
+			target_type: 'class',
 		);
 	}
 }

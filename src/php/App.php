@@ -77,13 +77,14 @@ final readonly class App {
 		return $this->container()->get( PlatformInterface::class );
 	}
 
+	// phpcs:disable SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
 	/**
 	 * Registers bindings from a dependency provider into the container.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param DependencyProviderInterface $provider The dependency provider.
-	 * @param string                      $category Optional category of bindings.
+	 * @param string $category Optional category of bindings.
 	 */
 	public function register_bindings( DependencyProviderInterface $provider, string $category = '' ): void {
 
@@ -101,4 +102,5 @@ final readonly class App {
 			}
 		}
 	}
+	// phpcs:enable SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
 }

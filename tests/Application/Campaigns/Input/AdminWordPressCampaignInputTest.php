@@ -20,7 +20,7 @@ final class AdminWordPressCampaignInputTest extends FundrikTestCase {
 			AdminWordPressCampaignInput::class,
 			'title',
 			NotBlank::class,
-			[ 'message' => 'Title must not be blank' ]
+			[ 'message' => 'Title must not be blank' ],
 		);
 	}
 
@@ -31,7 +31,7 @@ final class AdminWordPressCampaignInputTest extends FundrikTestCase {
 			AdminWordPressCampaignInput::class,
 			'slug',
 			NotBlank::class,
-			[ 'message' => 'Slug must not be blank' ]
+			[ 'message' => 'Slug must not be blank' ],
 		);
 	}
 
@@ -45,7 +45,7 @@ final class AdminWordPressCampaignInputTest extends FundrikTestCase {
 			is_enabled: true,
 			is_open: false,
 			has_target: true,
-			target_amount: 10000,
+			target_amount: 10_000,
 		);
 
 		$this->assertSame( 123, $input->id );
@@ -54,6 +54,6 @@ final class AdminWordPressCampaignInputTest extends FundrikTestCase {
 		$this->assertTrue( $input->is_enabled );
 		$this->assertFalse( $input->is_open );
 		$this->assertTrue( $input->has_target );
-		$this->assertSame( 10000, $input->target_amount );
+		$this->assertSame( 10_000, $input->target_amount );
 	}
 }

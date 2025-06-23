@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @codeCoverageIgnore
  *
- * @todo Remove @codeCoverageIgnore after migrating to PHP 8.3+
+ * @todo Remove codeCoverageIgnore after migrating to PHP 8.3+
  */
 #[CampaignTargetConstraint]
 abstract readonly class AbstractAdminWordPressCampaignInput {
@@ -24,10 +24,12 @@ abstract readonly class AbstractAdminWordPressCampaignInput {
 	/**
 	 * Constructor.
 	 *
-	 * @param int  $id Campaign identifier.
+	 * @since 1.0.0
+	 *
+	 * @param int $id Campaign identifier.
 	 * @param bool $is_open Whether the campaign is open.
 	 * @param bool $has_target Whether the campaign has a target.
-	 * @param int  $target_amount Target amount.
+	 * @param int $target_amount Target amount.
 	 */
 	public function __construct(
 		// @todo Translate message.

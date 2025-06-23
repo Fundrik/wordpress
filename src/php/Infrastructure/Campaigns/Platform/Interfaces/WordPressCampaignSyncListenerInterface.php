@@ -20,7 +20,7 @@ interface WordPressCampaignSyncListenerInterface extends ListenerInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int     $post_id The ID of the post being synchronized.
+	 * @param int $post_id The ID of the post being synchronized.
 	 * @param WP_Post $post The post object being synchronized.
 	 */
 	public function sync( int $post_id, WP_Post $post ): void;
@@ -28,7 +28,9 @@ interface WordPressCampaignSyncListenerInterface extends ListenerInterface {
 	/**
 	 * Deletes the corresponding WordPressCampaign entity when the related post is deleted.
 	 *
-	 * @param int     $post_id The ID of the post being deleted.
+	 * @since 1.0.0
+	 *
+	 * @param int $post_id The ID of the post being deleted.
 	 * @param WP_Post $post The post object being deleted.
 	 */
 	public function delete( int $post_id, WP_Post $post ): void;

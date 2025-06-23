@@ -20,8 +20,6 @@ final class ContainerRegistry {
 
 	/**
 	 * The shared container instance.
-	 *
-	 * @var ContainerInterface|null
 	 */
 	private static ?ContainerInterface $container = null;
 
@@ -33,12 +31,10 @@ final class ContainerRegistry {
 	 * @since 1.0.0
 	 *
 	 * @return ContainerInterface The current shared container instance.
-	 *
-	 * @throws RuntimeException If container is not set.
 	 */
 	public static function get(): ContainerInterface {
 
-		if ( null === self::$container ) {
+		if ( self::$container === null ) {
 			throw new RuntimeException( 'Container instance is not set.' );
 		}
 

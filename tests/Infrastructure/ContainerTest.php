@@ -23,7 +23,7 @@ final class ContainerTest extends TestCase {
 
 		parent::setUp();
 
-		$this->inner     = Mockery::mock( IlluminateContainer::class );
+		$this->inner = Mockery::mock( IlluminateContainer::class );
 		$this->container = new Container( $this->inner );
 	}
 
@@ -60,14 +60,14 @@ final class ContainerTest extends TestCase {
 	#[Test]
 	public function singleton_registers_closure_binding(): void {
 
-		$closure = fn() => new stdClass();
+		$closure = static fn () => new stdClass();
 
 		$this->inner
 			->shouldReceive( 'singleton' )
 			->once()
 			->with(
 				'MyService',
-				$this->identicalTo( $closure )
+				$this->identicalTo( $closure ),
 			);
 
 		$this->container->singleton( 'MyService', $closure );

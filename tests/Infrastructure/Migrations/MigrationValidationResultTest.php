@@ -15,7 +15,7 @@ final class MigrationValidationResultTest extends FundrikTestCase {
 	#[Test]
 	public function it_initializes_with_version_and_class_name(): void {
 
-		$version    = '2025_06_16_01';
+		$version = '2025_06_16_01';
 		$class_name = 'Fundrik\WordPress\Infrastructure\Migrations\CreateFundrikCampaignsTable';
 
 		$result = new MigrationValidationResult( $version, $class_name );

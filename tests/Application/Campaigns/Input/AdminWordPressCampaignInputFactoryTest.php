@@ -26,7 +26,7 @@ final class AdminWordPressCampaignInputFactoryTest extends FundrikTestCase {
 
 		parent::setUp();
 
-		$this->mapper  = Mockery::mock( WordPressCampaignPostMapperInterface::class );
+		$this->mapper = Mockery::mock( WordPressCampaignPostMapperInterface::class );
 		$this->factory = new AdminWordPressCampaignInputFactory( $this->mapper );
 	}
 
@@ -34,12 +34,12 @@ final class AdminWordPressCampaignInputFactoryTest extends FundrikTestCase {
 	public function from_array_creates_input_correctly(): void {
 
 		$data = [
-			'id'            => '10',
-			'title'         => 'Sample Campaign',
-			'slug'          => 'sample-campaign',
-			'is_enabled'    => '1',
-			'is_open'       => true,
-			'has_target'    => true,
+			'id' => '10',
+			'title' => 'Sample Campaign',
+			'slug' => 'sample-campaign',
+			'is_enabled' => '1',
+			'is_open' => true,
+			'has_target' => true,
 			'target_amount' => '1500',
 		];
 
@@ -52,7 +52,7 @@ final class AdminWordPressCampaignInputFactoryTest extends FundrikTestCase {
 		$this->assertTrue( $input->is_enabled );
 		$this->assertTrue( $input->is_open );
 		$this->assertTrue( $input->has_target );
-		$this->assertSame( 1500, $input->target_amount );
+		$this->assertSame( 1_500, $input->target_amount );
 	}
 
 	#[Test]
@@ -82,14 +82,14 @@ final class AdminWordPressCampaignInputFactoryTest extends FundrikTestCase {
 			->with( $this->identicalTo( $post ) )
 			->andReturn(
 				[
-					'id'            => 42,
-					'title'         => 'Post Title',
-					'slug'          => 'post-title',
-					'is_enabled'    => true,
-					'is_open'       => false,
-					'has_target'    => true,
+					'id' => 42,
+					'title' => 'Post Title',
+					'slug' => 'post-title',
+					'is_enabled' => true,
+					'is_open' => false,
+					'has_target' => true,
 					'target_amount' => 500,
-				]
+				],
 			);
 
 		$input = $this->factory->from_wp_post( $post );

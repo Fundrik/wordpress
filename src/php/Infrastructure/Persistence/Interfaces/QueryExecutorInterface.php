@@ -16,10 +16,10 @@ interface QueryExecutorInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string     $table The name of the table.
-	 * @param int|string $id    The value of the primary key (integer or UUID).
+	 * @param string $table The name of the table.
+	 * @param int|string $id The value of the primary key (integer or UUID).
 	 *
-	 * @return array<string,mixed>|null The result as an associative array, or null if not found.
+	 * @return array<string,scalar|null>|null The result as an associative array, or null if not found.
 	 */
 	public function get_by_id( string $table, int|string $id ): ?array;
 
@@ -30,7 +30,7 @@ interface QueryExecutorInterface {
 	 *
 	 * @param string $table The name of the table.
 	 *
-	 * @return array<int,array<string,mixed>> An array of rows as associative arrays.
+	 * @return array<int,array<string,scalar|null>> An array of rows as associative arrays.
 	 */
 	public function get_all( string $table ): array;
 
@@ -39,8 +39,8 @@ interface QueryExecutorInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string     $table The name of the table.
-	 * @param int|string $id    The value of the primary key (integer or UUID).
+	 * @param string $table The name of the table.
+	 * @param int|string $id The value of the primary key (integer or UUID).
 	 *
 	 * @return bool True if the record exists, false otherwise.
 	 */
@@ -51,13 +51,13 @@ interface QueryExecutorInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $table  The name of the table.
+	 * @param string $table The name of the table.
 	 * @param string $column The column name.
-	 * @param mixed  $value  The value to check.
+	 * @param int|float|string|bool|null $value The value to check.
 	 *
 	 * @return bool True if the record exists, false otherwise.
 	 */
-	public function exists_by_column( string $table, string $column, mixed $value ): bool;
+	public function exists_by_column( string $table, string $column, int|float|string|bool|null $value ): bool;
 
 	/**
 	 * Inserts a new row into the given table.
@@ -65,7 +65,7 @@ interface QueryExecutorInterface {
 	 * @since 1.0.0
 	 *
 	 * @param string $table The name of the table.
-	 * @param array  $data  An associative array of column names and their values.
+	 * @param array<string,scalar|null> $data An associative array of column names and their values.
 	 *
 	 * @return bool True on success, false on failure.
 	 */
@@ -76,9 +76,9 @@ interface QueryExecutorInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string     $table The name of the table.
-	 * @param array      $data  An associative array of column names and their new values.
-	 * @param int|string $id    The value of the primary key (integer or UUID).
+	 * @param string $table The name of the table.
+	 * @param array<string,scalar|null> $data An associative array of column names and their new values.
+	 * @param int|string $id The value of the primary key (integer or UUID).
 	 *
 	 * @return bool True on success, false on failure.
 	 */
@@ -89,8 +89,8 @@ interface QueryExecutorInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string     $table The name of the table.
-	 * @param int|string $id    The value of the primary key (integer or UUID).
+	 * @param string $table The name of the table.
+	 * @param int|string $id The value of the primary key (integer or UUID).
 	 *
 	 * @return bool True on success, false on failure.
 	 */

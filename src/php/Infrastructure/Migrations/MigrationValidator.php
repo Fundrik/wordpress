@@ -31,10 +31,6 @@ final readonly class MigrationValidator {
 	 * @param string $filepath Full path to the migration PHP file.
 	 *
 	 * @return MigrationValidationResult The validated migration info.
-	 *
-	 * @throws RuntimeException If the file name format is invalid,
-	 *                          the migration class does not exist,
-	 *                          or the class does not extend AbstractMigration.
 	 */
 	public function validate_by_filepath( string $filepath ): MigrationValidationResult {
 
@@ -42,10 +38,7 @@ final readonly class MigrationValidator {
 
 		$full_class_name = $this->resolve_full_class_name( $filepath, $class_name );
 
-		return new MigrationValidationResult(
-			$version,
-			$full_class_name
-		);
+		return new MigrationValidationResult( $version, $full_class_name );
 	}
 
 	/**
@@ -56,8 +49,6 @@ final readonly class MigrationValidator {
 	 * @param string $basename Filename with extension.
 	 *
 	 * @return array{0:string,1:string} Array containing version and class name.
-	 *
-	 * @throws RuntimeException If filename format is invalid.
 	 */
 	private function parse_basename( string $basename ): array {
 
@@ -67,14 +58,15 @@ final readonly class MigrationValidator {
 
 		if ( count( $parts ) < 5 ) {
 			// @todo Escaping
-			// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw new RuntimeException(
-				"Invalid migration file name format: expected 'YYYY_MM_DD_XX_name', got '{$basename_without_extension}'"
+				sprintf(
+					"Invalid migration file name format: expected 'YYYY_MM_DD_XX_name', got '%s'",
+					$basename_without_extension,
+				),
 			);
-			// phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 
-		$version    = implode( '_', array_slice( $parts, 0, 4 ) );
+		$version = implode( '_', array_slice( $parts, 0, 4 ) );
 		$class_name = str_replace( '_', '', ucwords( array_pop( $parts ), '_' ) );
 
 		return [
@@ -92,29 +84,23 @@ final readonly class MigrationValidator {
 	 * @param string $class_name Class name parsed from filename.
 	 *
 	 * @return string Fully qualified migration class name.
-	 *
-	 * @throws RuntimeException If the class does not exist or doesn't extend AbstractMigration.
 	 */
 	private function resolve_full_class_name( string $filepath, string $class_name ): string {
 
 		require_once $filepath;
 
 		$full_class_name = Nspace::resolve_class_name_by_path(
-			dirname( $filepath ) . "/{$class_name}.php"
+			dirname( $filepath ) . "/{$class_name}.php",
 		);
 
 		if ( ! $full_class_name || ! class_exists( $full_class_name ) ) {
 			// @todo Escaping
-			// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw new RuntimeException( "Migration class '{$class_name}' does not exist in file '{$filepath}'" );
-			// phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 
 		if ( ! is_subclass_of( $full_class_name, AbstractMigration::class ) ) {
 			// @todo Escaping
-			// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw new RuntimeException( "Migration class '{$class_name}' must extend AbstractMigration" );
-			// phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 
 		return $full_class_name;

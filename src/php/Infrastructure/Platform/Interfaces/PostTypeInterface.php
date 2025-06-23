@@ -65,7 +65,7 @@ interface PostTypeInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return string[] List of block names allowed for the custom post type.
+	 * @return array<string> List of block names allowed for the custom post type.
 	 */
 	public function get_specific_blocks(): array;
 }

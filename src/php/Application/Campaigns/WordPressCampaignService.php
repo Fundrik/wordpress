@@ -25,10 +25,10 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WordPressCampaignFactory             $factory      Factory to create WordPressCampaign entities.
-	 * @param WordPressCampaignDtoFactory          $dto_factory  Factory for creating WordPressCampaignDto.
-	 * @param WordPressCampaignRepositoryInterface $repository   Repository that handles WordPress campaign data access.
-	 * @param ValidatorInterface                   $validator    Validator used to validate campaign input data.
+	 * @param WordPressCampaignFactory $factory Factory to create WordPressCampaign entities.
+	 * @param WordPressCampaignDtoFactory $dto_factory Factory for creating WordPressCampaignDto.
+	 * @param WordPressCampaignRepositoryInterface $repository Repository that handles WordPress campaign data access.
+	 * @param ValidatorInterface $validator Validator used to validate campaign input data.
 	 */
 	public function __construct(
 		private WordPressCampaignFactory $factory,
@@ -58,15 +58,15 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return WordPressCampaign[] An array of campaigns.
+	 * @return array<WordPressCampaign> An array of campaigns.
 	 */
 	public function get_all_campaigns(): array {
 
 		$dto_list = $this->repository->get_all();
 
 		return array_map(
-			fn( WordPressCampaignDto $dto ): WordPressCampaign => $this->factory->create( $dto ),
-			$dto_list
+			fn ( WordPressCampaignDto $dto ): WordPressCampaign => $this->factory->create( $dto ),
+			$dto_list,
 		);
 	}
 
@@ -83,7 +83,7 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 
 		$this->validate_input( $input );
 
-		$dto      = $this->dto_factory->from_input( $input );
+		$dto = $this->dto_factory->from_input( $input );
 		$campaign = $this->factory->create( $dto );
 
 		return $this->repository->exists( $campaign )
@@ -113,8 +113,6 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 	 * @since 1.0.0
 	 *
 	 * @param AbstractAdminWordPressCampaignInput $input The input data to validate.
-	 *
-	 * @throws ValidationFailedException If validation constraints are violated.
 	 */
 	public function validate_input( AbstractAdminWordPressCampaignInput $input ): void {
 
@@ -122,7 +120,6 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 
 		if ( count( $errors ) > 0 ) {
 			// @todo Escaping
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw new ValidationFailedException( $input, $errors );
 		}
 	}

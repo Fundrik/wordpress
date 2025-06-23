@@ -20,7 +20,7 @@ interface ValidationErrorTransformerInterface {
 	 *
 	 * @param ValidationFailedException $exception The exception thrown during validation.
 	 *
-	 * @return array<string, string[]> Associative array of field names to their respective error messages.
+	 * @return array<string, array<string>> Associative array of field names to their respective error messages.
 	 */
 	public function to_array( ValidationFailedException $exception ): array;
 

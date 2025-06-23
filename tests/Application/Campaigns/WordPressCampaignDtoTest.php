@@ -22,7 +22,7 @@ final class WordPressCampaignDtoTest extends FundrikTestCase {
 			is_enabled: true,
 			is_open: false,
 			has_target: true,
-			target_amount: 5000,
+			target_amount: 5_000,
 		);
 
 		$this->assertSame( 123, $dto->id );
@@ -31,7 +31,7 @@ final class WordPressCampaignDtoTest extends FundrikTestCase {
 		$this->assertTrue( $dto->is_enabled );
 		$this->assertFalse( $dto->is_open );
 		$this->assertTrue( $dto->has_target );
-		$this->assertSame( 5000, $dto->target_amount );
+		$this->assertSame( 5_000, $dto->target_amount );
 	}
 
 	#[Test]
@@ -68,17 +68,17 @@ final class WordPressCampaignDtoTest extends FundrikTestCase {
 			is_enabled: true,
 			is_open: true,
 			has_target: true,
-			target_amount: 1000,
+			target_amount: 1_000,
 		);
 
 		$expected = [
-			'id'            => 42,
-			'title'         => 'Array Test',
-			'slug'          => 'array-test',
-			'is_enabled'    => true,
-			'is_open'       => true,
-			'has_target'    => true,
-			'target_amount' => 1000,
+			'id' => 42,
+			'title' => 'Array Test',
+			'slug' => 'array-test',
+			'is_enabled' => true,
+			'is_open' => true,
+			'has_target' => true,
+			'target_amount' => 1_000,
 		];
 
 		$this->assertSame( $expected, $dto->to_array() );

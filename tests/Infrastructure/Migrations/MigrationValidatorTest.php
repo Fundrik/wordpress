@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Tests\Infrastructure\Migrations;
 
-use Fundrik\WordPress\Infrastructure\Migrations\MigrationValidator;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationValidationResult;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationValidator;
 use Fundrik\WordPress\Support\Nspace;
 use Fundrik\WordPress\Support\Path;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -22,6 +22,7 @@ final class MigrationValidatorTest extends TestCase {
 	private MigrationValidator $validator;
 
 	protected function setUp(): void {
+
 		$this->validator = new MigrationValidator();
 	}
 
@@ -34,12 +35,8 @@ final class MigrationValidatorTest extends TestCase {
 
 		$this->assertInstanceOf( MigrationValidationResult::class, $result );
 		$this->assertSame( '2025_06_15_00', $result->version );
-		$this->assertSame(
-			'Fundrik\WordPress\Tests\Fixtures\TestMigration',
-			$result->class_name
-		);
+		$this->assertSame( 'Fundrik\WordPress\Tests\Fixtures\TestMigration', $result->class_name );
 	}
-
 
 	#[Test]
 	public function it_throws_if_filename_format_is_invalid(): void {
@@ -47,11 +44,12 @@ final class MigrationValidatorTest extends TestCase {
 		$filepath = '/path/to/invalid_name.php';
 
 		$this->expectException( RuntimeException::class );
-		$this->expectExceptionMessage( "Invalid migration file name format: expected 'YYYY_MM_DD_XX_name', got 'invalid_name'" );
+		$this->expectExceptionMessage(
+			"Invalid migration file name format: expected 'YYYY_MM_DD_XX_name', got 'invalid_name'",
+		);
 
 		$this->validator->validate_by_filepath( $filepath );
 	}
-
 
 	#[Test]
 	public function it_throws_if_class_does_not_exist(): void {

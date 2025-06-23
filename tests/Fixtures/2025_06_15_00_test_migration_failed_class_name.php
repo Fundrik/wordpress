@@ -8,5 +8,6 @@ use Fundrik\WordPress\Infrastructure\Migrations\Files\Abstracts\AbstractMigratio
 
 final readonly class TestMigrationFClassName extends AbstractMigration {
 
+	// phpcs:ignore SlevomatCodingStandard.Functions.DisallowEmptyFunction.EmptyFunction, SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
 	public function apply( string $charset_collate ): void {}
 }

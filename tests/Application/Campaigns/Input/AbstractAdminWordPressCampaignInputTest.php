@@ -23,7 +23,7 @@ final class AbstractAdminWordPressCampaignInputTest extends FundrikTestCase {
 			AbstractAdminWordPressCampaignInput::class,
 			'id',
 			Positive::class,
-			[ 'message' => 'ID must be a positive' ]
+			[ 'message' => 'ID must be a positive' ],
 		);
 	}
 
@@ -32,7 +32,7 @@ final class AbstractAdminWordPressCampaignInputTest extends FundrikTestCase {
 
 		$this->assert_сlass_has_attribute(
 			AbstractAdminWordPressCampaignInput::class,
-			CampaignTargetConstraint::class
+			CampaignTargetConstraint::class,
 		);
 	}
 

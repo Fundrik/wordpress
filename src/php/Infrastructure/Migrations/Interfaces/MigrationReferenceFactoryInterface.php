@@ -18,14 +18,18 @@ interface MigrationReferenceFactoryInterface {
 	/**
 	 * Creates references for all valid migration files in the given directory.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param string $migrations_directory Absolute path to the directory containing migration files.
 	 *
-	 * @return MigrationReference[] Sorted array of migration references.
+	 * @return array<MigrationReference> Sorted array of migration references.
 	 */
 	public function create_all( string $migrations_directory ): array;
 
 	/**
 	 * Creates a migration reference from a single file.
+	 *
+	 * @since 1.0.0
 	 *
 	 * @param string $filepath Absolute path to the migration file.
 	 *

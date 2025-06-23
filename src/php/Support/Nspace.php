@@ -32,7 +32,8 @@ final readonly class Nspace {
 	public static function resolve_class_name_by_path( string $path ): ?string {
 
 		$path = explode( Path::PHP_BASE, $path );
-		if ( 2 !== count( $path ) ) {
+
+		if ( count( $path ) !== 2 ) {
 			return null;
 		}
 
@@ -43,8 +44,8 @@ final readonly class Nspace {
 		$segments = explode( '/', $path );
 
 		$segments = array_map(
-			static fn( string $segment ): string => ucfirst( $segment ),
-			$segments
+			static fn ( string $segment ): string => ucfirst( $segment ),
+			$segments,
 		);
 
 		$path = '\\' . implode( '\\', $segments );
@@ -52,6 +53,7 @@ final readonly class Nspace {
 		return self::BASE . $path;
 	}
 
+	// phpcs:disable SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
 	/**
 	 * Normalizes a file path by resolving `.` and `..` segments.
 	 *
@@ -79,11 +81,11 @@ final readonly class Nspace {
 
 		foreach ( explode( '/', $path ) as $segment ) {
 
-			if ( '' === $segment || '.' === $segment ) {
+			if ( $segment === '' || $segment === '.' ) {
 				continue;
 			}
 
-			if ( '..' === $segment ) {
+			if ( $segment === '..' ) {
 				array_pop( $segments );
 			} else {
 				$segments[] = $segment;
@@ -92,4 +94,5 @@ final readonly class Nspace {
 
 		return implode( '/', $segments );
 	}
+	// phpcs:enable SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
 }

@@ -8,7 +8,6 @@ use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
 use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
-use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use RuntimeException;
@@ -40,7 +39,7 @@ final class ContainerRegistryTest extends FundrikTestCase {
 	#[Test]
 	public function set_overwrites_existing_container(): void {
 
-		$first_container  = Mockery::mock( ContainerInterface::class );
+		$first_container = Mockery::mock( ContainerInterface::class );
 		$second_container = Mockery::mock( ContainerInterface::class );
 
 		ContainerRegistry::set( $first_container );

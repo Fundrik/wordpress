@@ -7,10 +7,10 @@ namespace Fundrik\WordPress\Tests\Infrastructure\Migrations;
 use Brain\Monkey\Functions;
 use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
 use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
-use Fundrik\WordPress\Infrastructure\Migrations\MigrationManager;
-use Fundrik\WordPress\Infrastructure\Migrations\MigrationReference;
 use Fundrik\WordPress\Infrastructure\Migrations\Files\Abstracts\AbstractMigration;
 use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationManager;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationReference;
 use Fundrik\WordPress\Support\Path;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
@@ -30,9 +30,9 @@ use wpdb;
 #[UsesFunction( 'fundrik' )]
 final class MigrationManagerTest extends FundrikTestCase {
 
-	private const OPTION_KEY                = 'fundrik_migration_version';
+	private const OPTION_KEY = 'fundrik_migration_version';
 	private const DEFAULT_MIGRATION_VERSION = '0000_00_00_00';
-	private const CHARSET_COLLATE           = 'CHARSET';
+	private const CHARSET_COLLATE = 'CHARSET';
 
 	private wpdb&MockInterface $wpdb;
 	private MigrationReferenceFactoryInterface&MockInterface $reference_factory;
@@ -44,16 +44,13 @@ final class MigrationManagerTest extends FundrikTestCase {
 
 		parent::setUp();
 
-		$this->wpdb              = Mockery::mock( wpdb::class );
+		$this->wpdb = Mockery::mock( wpdb::class );
 		$this->reference_factory = Mockery::mock( MigrationReferenceFactoryInterface::class );
-		$this->container         = Mockery::mock( ContainerInterface::class );
+		$this->container = Mockery::mock( ContainerInterface::class );
 
 		ContainerRegistry::set( $this->container );
 
-		$this->manager = new MigrationManager(
-			$this->wpdb,
-			$this->reference_factory,
-		);
+		$this->manager = new MigrationManager( $this->wpdb, $this->reference_factory );
 
 		$this->wpdb
 			->shouldReceive( 'get_charset_collate' )
@@ -73,7 +70,7 @@ final class MigrationManagerTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::OPTION_KEY ),
-				$this->identicalTo( self::DEFAULT_MIGRATION_VERSION )
+				$this->identicalTo( self::DEFAULT_MIGRATION_VERSION ),
 			)
 			->andReturn( $current_version );
 
@@ -103,7 +100,7 @@ final class MigrationManagerTest extends FundrikTestCase {
 			->with(
 				$this->identicalTo( self::OPTION_KEY ),
 				'2025_06_01_00',
-				false
+				false,
 			)
 			->andReturnTrue();
 
@@ -122,7 +119,7 @@ final class MigrationManagerTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( self::OPTION_KEY ),
-				$this->identicalTo( self::DEFAULT_MIGRATION_VERSION )
+				$this->identicalTo( self::DEFAULT_MIGRATION_VERSION ),
 			)
 			->andReturn( $current_version );
 
@@ -141,13 +138,13 @@ final class MigrationManagerTest extends FundrikTestCase {
 	public function it_throws_if_migration_is_not_instance_of_abstract_migration(): void {
 
 		$current_version = self::DEFAULT_MIGRATION_VERSION;
-		$reference       = new MigrationReference( '2025_06_16_00', 'MigrationNew' );
+		$reference = new MigrationReference( '2025_06_16_00', 'MigrationNew' );
 
 		Functions\expect( 'get_option' )
 			->once()
 			->with(
 				$this->identicalTo( self::OPTION_KEY ),
-				$this->identicalTo( self::DEFAULT_MIGRATION_VERSION )
+				$this->identicalTo( self::DEFAULT_MIGRATION_VERSION ),
 			)
 			->andReturn( $current_version );
 

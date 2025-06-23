@@ -19,13 +19,15 @@ final readonly class AdminWordPressCampaignInput extends AbstractAdminWordPressC
 	/**
 	 * Constructor.
 	 *
-	 * @param int    $id Campaign identifier provided by WordPress. Must not be blank.
+	 * @since 1.0.0
+	 *
+	 * @param int $id Campaign identifier provided by WordPress. Must not be blank.
 	 * @param string $title Campaign title. Must not be blank.
 	 * @param string $slug Campaign slug. Must not be blank.
-	 * @param bool   $is_enabled Whether the campaign is enabled.
-	 * @param bool   $is_open Whether the campaign is open.
-	 * @param bool   $has_target Whether the campaign has a target amount.
-	 * @param int    $target_amount Target amount for the campaign. Must be zero or positive.
+	 * @param bool $is_enabled Whether the campaign is enabled.
+	 * @param bool $is_open Whether the campaign is open.
+	 * @param bool $has_target Whether the campaign has a target amount.
+	 * @param int $target_amount Target amount for the campaign. Must be zero or positive.
 	 */
 	public function __construct(
 		int $id,
@@ -40,6 +42,7 @@ final readonly class AdminWordPressCampaignInput extends AbstractAdminWordPressC
 		bool $has_target,
 		int $target_amount,
 	) {
+
 		parent::__construct( $id, $is_open, $has_target, $target_amount );
 	}
 }

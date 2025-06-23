@@ -30,8 +30,8 @@ final class AppTest extends FundrikTestCase {
 		parent::setUp();
 
 		$this->container = Mockery::mock( ContainerInterface::class );
-		$this->provider  = Mockery::mock( DependencyProviderInterface::class );
-		$this->platform  = Mockery::mock( PlatformInterface::class );
+		$this->provider = Mockery::mock( DependencyProviderInterface::class );
+		$this->platform = Mockery::mock( PlatformInterface::class );
 
 		ContainerRegistry::set( $this->container );
 
@@ -47,8 +47,8 @@ final class AppTest extends FundrikTestCase {
 	public function it_registers_bindings_and_initializes_platform_on_run(): void {
 
 		$bindings = [
-			'SomeInterface' => fn() => new stdClass(),
-			'Grouped'       => [
+			'SomeInterface' => static fn () => new stdClass(),
+			'Grouped' => [
 				'Nested1' => 'NestedImpl1',
 				'Nested2' => 'NestedImpl2',
 			],
@@ -116,10 +116,10 @@ final class AppTest extends FundrikTestCase {
 	public function register_bindings_registers_singletons(): void {
 
 		$bindings = [
-			'abstract1' => fn () => (object) [ 'tag' => 'stdClass1' ],
-			'group'     => [
-				'abstract2a' => fn () => (object) [ 'tag' => 'stdClass2a' ],
-				'abstract2b' => fn () => (object) [ 'tag' => 'stdClass2b' ],
+			'abstract1' => static fn () => (object) [ 'tag' => 'stdClass1' ],
+			'group' => [
+				'abstract2a' => static fn () => (object) [ 'tag' => 'stdClass2a' ],
+				'abstract2b' => static fn () => (object) [ 'tag' => 'stdClass2b' ],
 			],
 		];
 
@@ -134,11 +134,11 @@ final class AppTest extends FundrikTestCase {
 		->with(
 			'abstract1',
 			Mockery::on(
-				function ( $func ) {
+				static function ( $func ) {
 					$result = $func();
-					return is_object( $result ) && 'stdClass1' === $result->tag;
-				}
-			)
+					return is_object( $result ) && $result->tag === 'stdClass1';
+				},
+			),
 		)
 		->once();
 
@@ -147,11 +147,11 @@ final class AppTest extends FundrikTestCase {
 		->with(
 			'abstract2a',
 			Mockery::on(
-				function ( $func ) {
+				static function ( $func ) {
 					$result = $func();
-					return is_object( $result ) && 'stdClass2a' === $result->tag;
-				}
-			)
+					return is_object( $result ) && $result->tag === 'stdClass2a';
+				},
+			),
 		)
 		->once();
 
@@ -160,11 +160,11 @@ final class AppTest extends FundrikTestCase {
 		->with(
 			'abstract2b',
 			Mockery::on(
-				function ( $func ) {
+				static function ( $func ) {
 					$result = $func();
-					return is_object( $result ) && 'stdClass2b' === $result->tag;
-				}
-			)
+					return is_object( $result ) && $result->tag === 'stdClass2b';
+				},
+			),
 		)
 		->once();
 
@@ -177,7 +177,7 @@ final class AppTest extends FundrikTestCase {
 		$category = 'platform';
 
 		$bindings = [
-			'some.abstract' => fn () => new stdClass(),
+			'some.abstract' => static fn () => new stdClass(),
 		];
 
 		$this->provider

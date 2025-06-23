@@ -46,7 +46,7 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 		parent::setUp();
 
 		$this->repository = Mockery::mock( WordPressCampaignRepositoryInterface::class );
-		$this->validator  = Mockery::mock( ValidatorInterface::class );
+		$this->validator = Mockery::mock( ValidatorInterface::class );
 
 		$this->service = new WordPressCampaignService(
 			new WordPressCampaignFactory(
@@ -65,13 +65,13 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 		$campaign_id = EntityId::create( 123 );
 
 		$dto = new WordPressCampaignDto(
-			id            : 123,
-			title         : 'Array Campaign',
-			slug          : 'array-campaign',
-			is_enabled    : true,
-			is_open       : true,
-			has_target    : true,
-			target_amount : 1500,
+			id: 123,
+			title: 'Array Campaign',
+			slug: 'array-campaign',
+			is_enabled: true,
+			is_open: true,
+			has_target: true,
+			target_amount: 1_500,
 		);
 
 		$this->repository
@@ -84,7 +84,6 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 
 		$this->assertInstanceOf( WordPressCampaign::class, $result );
 	}
-
 
 	#[Test]
 	public function get_by_id_returns_null_when_not_found(): void {
@@ -106,23 +105,23 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 	public function get_all_campaigns_returns_list_of_campaigns(): void {
 
 		$dto1 = new WordPressCampaignDto(
-			id            : 123,
-			title         : 'Campaign One',
-			slug          : 'campaign-one',
-			is_enabled    : true,
-			is_open       : true,
-			has_target    : true,
-			target_amount : 1500,
+			id: 123,
+			title: 'Campaign One',
+			slug: 'campaign-one',
+			is_enabled: true,
+			is_open: true,
+			has_target: true,
+			target_amount: 1_500,
 		);
 
 		$dto2 = new WordPressCampaignDto(
-			id            : 124,
-			title         : 'Campaign Two',
-			slug          : 'campaign-two',
-			is_enabled    : true,
-			is_open       : true,
-			has_target    : true,
-			target_amount : 1500,
+			id: 124,
+			title: 'Campaign Two',
+			slug: 'campaign-two',
+			is_enabled: true,
+			is_open: true,
+			has_target: true,
+			target_amount: 1_500,
 		);
 
 		$this->repository
@@ -141,13 +140,13 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 	public function save_campaign_inserts_when_not_exists(): void {
 
 		$input = new AdminWordPressCampaignInput(
-			id            : 555,
-			title         : 'New Campaign',
-			slug          : 'new-campaign',
-			is_enabled    : true,
-			is_open       : true,
-			has_target    : false,
-			target_amount : 0,
+			id: 555,
+			title: 'New Campaign',
+			slug: 'new-campaign',
+			is_enabled: true,
+			is_open: true,
+			has_target: false,
+			target_amount: 0,
 		);
 
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
@@ -182,13 +181,13 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 	public function save_campaign_updates_when_exists(): void {
 
 		$input = new AdminWordPressCampaignInput(
-			id            : 777,
-			title         : 'Existing Campaign',
-			slug          : 'existing-campaign',
-			is_enabled    : true,
-			is_open       : false,
-			has_target    : true,
-			target_amount : 999,
+			id: 777,
+			title: 'Existing Campaign',
+			slug: 'existing-campaign',
+			is_enabled: true,
+			is_open: false,
+			has_target: true,
+			target_amount: 999,
 		);
 
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
@@ -223,13 +222,13 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 	public function save_campaign_throws_exception_when_validation_fails(): void {
 
 		$input = new AdminWordPressCampaignInput(
-			id            : 999,
-			title         : 'Invalid Campaign',
-			slug          : 'invalid-campaign',
-			is_enabled    : true,
-			is_open       : true,
-			has_target    : false,
-			target_amount : 0,
+			id: 999,
+			title: 'Invalid Campaign',
+			slug: 'invalid-campaign',
+			is_enabled: true,
+			is_open: true,
+			has_target: false,
+			target_amount: 0,
 		);
 
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
@@ -284,13 +283,13 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 	public function validate_input_passes_when_no_errors(): void {
 
 		$input = new AdminWordPressCampaignInput(
-			id            : 1,
-			title         : 'Valid Campaign',
-			slug          : 'valid-campaign',
-			is_enabled    : true,
-			is_open       : true,
-			has_target    : false,
-			target_amount : 0,
+			id: 1,
+			title: 'Valid Campaign',
+			slug: 'valid-campaign',
+			is_enabled: true,
+			is_open: true,
+			has_target: false,
+			target_amount: 0,
 		);
 
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
@@ -314,13 +313,13 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 	public function validate_input_throws_exception_when_errors_present(): void {
 
 		$input = new AdminWordPressCampaignInput(
-			id            : 2,
-			title         : 'Invalid Campaign',
-			slug          : 'invalid-campaign',
-			is_enabled    : false,
-			is_open       : false,
-			has_target    : true,
-			target_amount : 1000,
+			id: 2,
+			title: 'Invalid Campaign',
+			slug: 'invalid-campaign',
+			is_enabled: false,
+			is_open: false,
+			has_target: true,
+			target_amount: 1_000,
 		);
 
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );

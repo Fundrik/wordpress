@@ -30,7 +30,7 @@ final class MigrationReferenceFactoryTest extends FundrikTestCase {
 		parent::setUp();
 
 		$this->factory = new MigrationReferenceFactory(
-			new MigrationValidator()
+			new MigrationValidator(),
 		);
 	}
 
@@ -45,7 +45,7 @@ final class MigrationReferenceFactoryTest extends FundrikTestCase {
 		Functions\expect( 'glob' )
 			->once()
 			->with(
-				$this->identicalTo( $directory . '/*.php' )
+				$this->identicalTo( $directory . '/*.php' ),
 			)
 			->andReturn( [ $migration2, $migration1 ] );
 

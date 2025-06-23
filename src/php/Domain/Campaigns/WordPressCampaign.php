@@ -24,12 +24,12 @@ final readonly class WordPressCampaign {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Campaign              $core_campaign Core campaign entity.
-	 * @param WordPressCampaignSlug $slug          Campaign slug.
+	 * @param Campaign $core_campaign Core campaign entity.
+	 * @param WordPressCampaignSlug $slug Campaign slug.
 	 */
 	public function __construct(
 		private Campaign $core_campaign,
-		private WordPressCampaignSlug $slug
+		private WordPressCampaignSlug $slug,
 	) {}
 
 	/**

@@ -21,16 +21,16 @@ final readonly class ValidationErrorTransformer implements ValidationErrorTransf
 	 *
 	 * @param ValidationFailedException $exception The exception thrown during validation.
 	 *
-	 * @return array<string, string[]> Associative array of field names to their respective error messages.
+	 * @return array<string, array<string>> Associative array of field names to their respective error messages.
 	 */
 	public function to_array( ValidationFailedException $exception ): array {
 
 		$violations = $exception->getViolations();
-		$errors     = [];
+		$errors = [];
 
 		foreach ( $violations as $violation ) {
 			$property_path = $violation->getPropertyPath();
-			$message       = $violation->getMessage();
+			$message = $violation->getMessage();
 
 			$errors[ $property_path ][] = $message;
 		}
@@ -50,9 +50,10 @@ final readonly class ValidationErrorTransformer implements ValidationErrorTransf
 	public function to_string( ValidationFailedException $exception ): string {
 
 		$errors = $this->to_array( $exception );
-		$lines  = [];
+		$lines = [];
 
-		foreach ( $errors as $field => $messages ) {
+		foreach ( $errors as $messages ) {
+
 			foreach ( $messages as $message ) {
 				$lines[] = $message;
 			}

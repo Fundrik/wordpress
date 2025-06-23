@@ -31,12 +31,14 @@ interface WordPressCampaignServiceInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return WordPressCampaign[] An array of campaigns.
+	 * @return array<WordPressCampaign> An array of campaigns.
 	 */
 	public function get_all_campaigns(): array;
 
 	/**
 	 * Save a campaign (create or update).
+	 *
+	 * @since 1.0.0
 	 *
 	 * @param AbstractAdminWordPressCampaignInput $input The input DTO containing campaign data.
 	 *

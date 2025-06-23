@@ -33,12 +33,12 @@ final class CampaignTargetConstraintTest extends FundrikTestCase {
 
 		$this->assertSame(
 			'Target amount must be greater than zero when targeting is enabled.',
-			$this->constraint->enabled_invalid
+			$this->constraint->enabled_invalid,
 		);
 
 		$this->assertSame(
 			'Target amount must be zero when targeting is disabled.',
-			$this->constraint->disabled_invalid
+			$this->constraint->disabled_invalid,
 		);
 	}
 

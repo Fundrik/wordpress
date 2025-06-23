@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "96aff7d6866a770096c6a6461ef178af",
+    "content-hash": "bd14f11f62df78f16604318ebff28020",
     "packages": [
         {
             "name": "brick/math",
@@ -72,12 +72,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Fundrik/core.git",
-                "reference": "6e9276cdec9e022a1f770b9e6480d6d1cdd14f03"
+                "reference": "dd2bbc2a915939a4bed1dd3179916d9ecd5dbe86"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Fundrik/core/zipball/6e9276cdec9e022a1f770b9e6480d6d1cdd14f03",
-                "reference": "6e9276cdec9e022a1f770b9e6480d6d1cdd14f03",
+                "url": "https://api.github.com/repos/Fundrik/core/zipball/dd2bbc2a915939a4bed1dd3179916d9ecd5dbe86",
+                "reference": "dd2bbc2a915939a4bed1dd3179916d9ecd5dbe86",
                 "shasum": ""
             },
             "require": {
@@ -87,9 +87,11 @@
             "require-dev": {
                 "brain/monkey": "^2.6",
                 "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
-                "phpcompatibility/php-compatibility": "^9.3",
+                "fundrik/coding-standard": "dev-main",
+                "phpcompatibility/php-compatibility": "dev-develop as 9.4.0",
                 "phpcompatibility/phpcompatibility-wp": "^2.1",
                 "phpunit/phpunit": "^11.5",
+                "slevomat/coding-standard": "^8.19",
                 "wp-coding-standards/wpcs": "^3.1"
             },
             "default-branch": true,
@@ -124,7 +126,7 @@
                 "issues": "https://github.com/Fundrik/core/issues",
                 "source": "https://github.com/Fundrik/core"
             },
-            "time": "2025-06-18T23:29:11+00:00"
+            "time": "2025-06-23T21:49:19+00:00"
         },
         {
             "name": "illuminate/container",
@@ -1162,17 +1164,17 @@
             "time": "2023-01-05T11:28:13+00:00"
         },
         {
-            "name": "fundrik/coding-standards",
+            "name": "fundrik/coding-standard",
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Fundrik/coding-standards.git",
-                "reference": "221e3fc5ff35de0f76155d04a2538e1a3b20de1f"
+                "url": "https://github.com/Fundrik/coding-standard.git",
+                "reference": "f559075580b92892eb7f621f0355baf7faa4f363"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Fundrik/coding-standards/zipball/221e3fc5ff35de0f76155d04a2538e1a3b20de1f",
-                "reference": "221e3fc5ff35de0f76155d04a2538e1a3b20de1f",
+                "url": "https://api.github.com/repos/Fundrik/coding-standard/zipball/f559075580b92892eb7f621f0355baf7faa4f363",
+                "reference": "f559075580b92892eb7f621f0355baf7faa4f363",
                 "shasum": ""
             },
             "require": {
@@ -1183,13 +1185,14 @@
                 "phpcompatibility/php-compatibility": "dev-develop as 9.4.0",
                 "phpcompatibility/phpcompatibility-wp": "^2.1",
                 "phpunit/phpunit": "^11.5",
+                "slevomat/coding-standard": "^8.19",
                 "wp-coding-standards/wpcs": "^3.1"
             },
             "default-branch": true,
             "type": "phpcodesniffer-standard",
             "autoload": {
                 "psr-4": {
-                    "FundrikStandards\\": "FundrikStandards/"
+                    "FundrikStandard\\": "FundrikStandard/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1212,10 +1215,10 @@
             ],
             "support": {
                 "email": "denis@denisco.pro",
-                "issues": "https://github.com/Fundrik/coding-standards/issues",
-                "source": "https://github.com/Fundrik/coding-standards"
+                "issues": "https://github.com/Fundrik/coding-standard/issues",
+                "source": "https://github.com/Fundrik/coding-standard"
             },
-            "time": "2025-06-23T00:34:19+00:00"
+            "time": "2025-06-23T21:47:52+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -2004,6 +2007,53 @@
             "time": "2025-06-12T04:32:33+00:00"
         },
         {
+            "name": "phpstan/phpdoc-parser",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpdoc-parser.git",
+                "reference": "9b30d6fd026b2c132b3985ce6b23bec09ab3aa68"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/9b30d6fd026b2c132b3985ce6b23bec09ab3aa68",
+                "reference": "9b30d6fd026b2c132b3985ce6b23bec09ab3aa68",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "doctrine/annotations": "^2.0",
+                "nikic/php-parser": "^5.3.0",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^9.6",
+                "symfony/process": "^5.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\PhpDocParser\\": [
+                        "src/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPDoc parser with support for nullable, intersection and generic types",
+            "support": {
+                "issues": "https://github.com/phpstan/phpdoc-parser/issues",
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.1.0"
+            },
+            "time": "2025-02-19T13:28:12+00:00"
+        },
+        {
             "name": "phpunit/php-code-coverage",
             "version": "11.0.10",
             "source": {
@@ -2340,16 +2390,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "11.5.23",
+            "version": "11.5.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "86ebcd8a3dbcd1857d88505109b2a2b376501cde"
+                "reference": "6b07ab1047155cf38f82dd691787a277782271dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/86ebcd8a3dbcd1857d88505109b2a2b376501cde",
-                "reference": "86ebcd8a3dbcd1857d88505109b2a2b376501cde",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/6b07ab1047155cf38f82dd691787a277782271dd",
+                "reference": "6b07ab1047155cf38f82dd691787a277782271dd",
                 "shasum": ""
             },
             "require": {
@@ -2363,7 +2413,7 @@
                 "phar-io/manifest": "^2.0.4",
                 "phar-io/version": "^3.2.1",
                 "php": ">=8.2",
-                "phpunit/php-code-coverage": "^11.0.9",
+                "phpunit/php-code-coverage": "^11.0.10",
                 "phpunit/php-file-iterator": "^5.1.0",
                 "phpunit/php-invoker": "^5.0.1",
                 "phpunit/php-text-template": "^4.0.1",
@@ -2421,7 +2471,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.23"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.24"
             },
             "funding": [
                 {
@@ -2445,7 +2495,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-06-13T05:47:49+00:00"
+            "time": "2025-06-20T11:31:02+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -3386,6 +3436,71 @@
             "time": "2024-10-09T05:16:32+00:00"
         },
         {
+            "name": "slevomat/coding-standard",
+            "version": "8.19.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/slevomat/coding-standard.git",
+                "reference": "458d665acd49009efebd7e0cb385d71ae9ac3220"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/458d665acd49009efebd7e0cb385d71ae9ac3220",
+                "reference": "458d665acd49009efebd7e0cb385d71ae9ac3220",
+                "shasum": ""
+            },
+            "require": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.6.2 || ^0.7 || ^1.0",
+                "php": "^7.4 || ^8.0",
+                "phpstan/phpdoc-parser": "^2.1.0",
+                "squizlabs/php_codesniffer": "^3.13.0"
+            },
+            "require-dev": {
+                "phing/phing": "3.0.1",
+                "php-parallel-lint/php-parallel-lint": "1.4.0",
+                "phpstan/phpstan": "2.1.17",
+                "phpstan/phpstan-deprecation-rules": "2.0.3",
+                "phpstan/phpstan-phpunit": "2.0.6",
+                "phpstan/phpstan-strict-rules": "2.0.4",
+                "phpunit/phpunit": "9.6.8|10.5.45|11.4.4|11.5.21|12.1.3"
+            },
+            "type": "phpcodesniffer-standard",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "8.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "SlevomatCodingStandard\\": "SlevomatCodingStandard/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Slevomat Coding Standard for PHP_CodeSniffer complements Consistence Coding Standard by providing sniffs with additional checks.",
+            "keywords": [
+                "dev",
+                "phpcs"
+            ],
+            "support": {
+                "issues": "https://github.com/slevomat/coding-standard/issues",
+                "source": "https://github.com/slevomat/coding-standard/tree/8.19.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/kukulich",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/slevomat/coding-standard",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-06-09T17:53:57+00:00"
+        },
+        {
             "name": "squizlabs/php_codesniffer",
             "version": "3.13.2",
             "source": {
@@ -3648,7 +3763,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "fundrik/coding-standards": 20,
+        "fundrik/coding-standard": 20,
         "fundrik/core": 20,
         "phpcompatibility/php-compatibility": 20
     },

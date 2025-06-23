@@ -10,8 +10,6 @@ use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceI
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignService;
 use Fundrik\WordPress\Application\Validation\Interfaces\ValidationErrorTransformerInterface;
 use Fundrik\WordPress\Application\Validation\ValidationErrorTransformer;
-use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
-use Fundrik\WordPress\Infrastructure\Persistence\WpdbQueryExecutor;
 use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbWordPressCampaignRepository;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignSyncListenerInterface;
@@ -20,6 +18,8 @@ use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostTyp
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
 use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationReferenceFactory;
+use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
+use Fundrik\WordPress\Infrastructure\Persistence\WpdbQueryExecutor;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface;
 use Fundrik\WordPress\Infrastructure\Platform\WordPressPlatform;
 use Symfony\Component\Validator\Validation;
@@ -33,6 +33,7 @@ use wpdb;
  */
 class DependencyProvider implements DependencyProviderInterface {
 
+	// phpcs:disable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
 	/**
 	 * Returns all the bindings for dependencies.
 	 *
@@ -57,9 +58,10 @@ class DependencyProvider implements DependencyProviderInterface {
 		$bindings = apply_filters(
 			'fundrik_container_bindings',
 			[
-				'core'       => [],
-				'wordpress'  => [
-					wpdb::class                   => fn() => $GLOBALS['wpdb'],
+				'core' => [],
+				'wordpress' => [
+					// phpcs:ignore SlevomatCodingStandard.Variables.DisallowSuperGlobalVariable.DisallowedSuperGlobalVariable
+					wpdb::class => static fn () => $GLOBALS['wpdb'],
 
 					QueryExecutorInterface::class => WpdbQueryExecutor::class,
 
@@ -70,19 +72,19 @@ class DependencyProvider implements DependencyProviderInterface {
 					MigrationReferenceFactoryInterface::class => MigrationReferenceFactory::class,
 
 					ValidationErrorTransformerInterface::class => ValidationErrorTransformer::class,
-					ValidatorInterface::class     => fn() => Validation::createValidatorBuilder()
+					ValidatorInterface::class => static fn () => Validation::createValidatorBuilder()
 						->enableAttributeMapping()
 						->getValidator(),
 
-					PlatformInterface::class      => WordPressPlatform::class,
+					PlatformInterface::class => WordPressPlatform::class,
 				],
 				'post_types' => [
 					WordPressCampaignPostType::class => WordPressCampaignPostType::class,
 				],
-				'listeners'  => [
+				'listeners' => [
 					WordPressCampaignSyncListenerInterface::class => WordPressCampaignSyncListener::class,
 				],
-			]
+			],
 		);
 
 		if ( $category ) {
@@ -91,4 +93,5 @@ class DependencyProvider implements DependencyProviderInterface {
 
 		return $bindings;
 	}
+	// phpcs:enable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
 }

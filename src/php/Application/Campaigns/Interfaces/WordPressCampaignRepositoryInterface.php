@@ -31,7 +31,7 @@ interface WordPressCampaignRepositoryInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return WordPressCampaignDto[] An array of campaign DTOs.
+	 * @return array<WordPressCampaignDto> An array of campaign DTOs.
 	 */
 	public function get_all(): array;
 

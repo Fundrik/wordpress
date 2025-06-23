@@ -8,8 +8,8 @@ use Brain\Monkey\Functions;
 use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
 use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
-use Fundrik\WordPress\Infrastructure\Migrations\MigrationManager;
 use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationManager;
 use Fundrik\WordPress\Infrastructure\Platform\AllowedBlockTypesFilter;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\ListenerInterface;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
@@ -38,15 +38,16 @@ final class WordPressPlatformTest extends FundrikTestCase {
 	private ContainerInterface&MockInterface $container;
 
 	protected function setUp(): void {
+
 		parent::setUp();
 
 		$this->dependency_provider = Mockery::mock( DependencyProvider::class );
-		$this->container           = Mockery::mock( ContainerInterface::class );
+		$this->container = Mockery::mock( ContainerInterface::class );
 
 		ContainerRegistry::set( $this->container );
 
 		$allowed_block_types_filter = new AllowedBlockTypesFilter(
-			[ 'core/paragraph', 'core/image', 'core/quote' ]
+			[ 'core/paragraph', 'core/image', 'core/quote' ],
 		);
 
 		$this->platform = new WordPressPlatform(
@@ -54,8 +55,8 @@ final class WordPressPlatformTest extends FundrikTestCase {
 			$allowed_block_types_filter,
 			new MigrationManager(
 				Mockery::mock( 'wpdb' ),
-				Mockery::mock( MigrationReferenceFactoryInterface::class )
-			)
+				Mockery::mock( MigrationReferenceFactoryInterface::class ),
+			),
 		);
 	}
 
@@ -71,18 +72,18 @@ final class WordPressPlatformTest extends FundrikTestCase {
 		$this->platform->init();
 
 		self::assertNotFalse(
-			has_action( 'init', $this->platform->register_post_types( ... ) )
+			has_action( 'init', $this->platform->register_post_types( ... ) ),
 		);
 
 		self::assertNotFalse(
-			has_action( 'init', $this->platform->register_blocks( ... ) )
+			has_action( 'init', $this->platform->register_blocks( ... ) ),
 		);
 
 		self::assertNotFalse(
 			has_filter(
 				'allowed_block_types_all',
-				$this->platform->filter_allowed_blocks_by_post_type( ... )
-			)
+				$this->platform->filter_allowed_blocks_by_post_type( ... ),
+			),
 		);
 	}
 
@@ -97,7 +98,7 @@ final class WordPressPlatformTest extends FundrikTestCase {
 		$post_type_mock_1->shouldReceive( 'get_meta_fields' )->once()->andReturn(
 			[
 				'meta_key_1' => [ 'type' => 'string' ],
-			]
+			],
 		);
 
 		$post_type_mock_2 = Mockery::mock( PostTypeInterface::class );
@@ -108,7 +109,7 @@ final class WordPressPlatformTest extends FundrikTestCase {
 		$post_type_mock_2->shouldReceive( 'get_meta_fields' )->once()->andReturn(
 			[
 				'meta_key_2' => [ 'type' => 'boolean' ],
-			]
+			],
 		);
 
 		$this->dependency_provider
@@ -129,31 +130,29 @@ final class WordPressPlatformTest extends FundrikTestCase {
 		Functions\expect( 'register_post_type' )
 			->twice()
 			->andReturnUsing(
-				function ( string $type, array $args ) {
+				function ( string $type, array $args ): void {
 					$this->assertStringStartsWith( 'type_', $type );
 					$this->assertArrayHasKey( 'labels', $args );
 					$this->assertArrayHasKey( 'rewrite', $args );
 					$this->assertArrayHasKey( 'template', $args );
-				}
+				},
 			);
 
 		Functions\expect( 'register_post_meta' )
 			->twice()
 			->andReturnUsing(
-				function ( string $post_type, string $meta_key, array $args ) {
+				function ( string $post_type, string $meta_key, array $args ): void {
 					$this->assertStringStartsWith( 'type_', $post_type );
 					$this->assertStringStartsWith( 'meta_key_', $meta_key );
 					$this->assertArrayHasKey( 'show_in_rest', $args );
 					$this->assertArrayHasKey( 'single', $args );
-				}
+				},
 			);
 
 		Functions\expect( 'wp_parse_args' )
 			->twice()
 			->andReturnUsing(
-				function ( $args, $defaults ) {
-					return array_merge( $defaults, $args );
-				}
+				static fn ( $args, $defaults ) => array_merge( $defaults, $args ),
 			);
 
 		$this->platform->register_post_types();
@@ -195,15 +194,12 @@ final class WordPressPlatformTest extends FundrikTestCase {
 			->shouldReceive( 'create_all' )
 			->andReturn( [] );
 
-		$migration_manager = new MigrationManager(
-			$wpdb_mock,
-			$reference_factory_mock,
-		);
+		$migration_manager = new MigrationManager( $wpdb_mock, $reference_factory_mock );
 
 		$platform = new WordPressPlatform(
 			$this->dependency_provider,
 			new AllowedBlockTypesFilter( [] ),
-			$migration_manager
+			$migration_manager,
 		);
 
 		$platform->on_activate();
@@ -218,7 +214,7 @@ final class WordPressPlatformTest extends FundrikTestCase {
 			->once()
 			->with(
 				$this->identicalTo( Path::Blocks->get_full_path() ),
-				$this->identicalTo( Path::BlocksManifest->get_full_path() )
+				$this->identicalTo( Path::BlocksManifest->get_full_path() ),
 			);
 
 		$this->platform->register_blocks();
@@ -228,12 +224,12 @@ final class WordPressPlatformTest extends FundrikTestCase {
 	public function filter_allowed_blocks_by_post_type_returns_filtered_result(): void {
 
 		$allowed_blocks = true;
-		$post_type      = 'custom_type';
+		$post_type = 'custom_type';
 
-		$post            = Mockery::mock( 'WP_Post' );
+		$post = Mockery::mock( 'WP_Post' );
 		$post->post_type = $post_type;
 
-		$editor_context       = Mockery::mock( 'WP_Block_Editor_Context' );
+		$editor_context = Mockery::mock( 'WP_Block_Editor_Context' );
 		$editor_context->post = $post;
 
 		$this->dependency_provider
@@ -242,10 +238,7 @@ final class WordPressPlatformTest extends FundrikTestCase {
 			->with( 'post_types' )
 			->andReturn( [] );
 
-		$result = $this->platform->filter_allowed_blocks_by_post_type(
-			$allowed_blocks,
-			$editor_context
-		);
+		$result = $this->platform->filter_allowed_blocks_by_post_type( $allowed_blocks, $editor_context );
 
 		$this->assertIsArray( $result );
 	}

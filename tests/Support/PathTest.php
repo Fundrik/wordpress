@@ -15,15 +15,9 @@ final class PathTest extends FundrikTestCase {
 	#[Test]
 	public function constants_have_expected_values(): void {
 
-		$this->assertSame(
-			FUNDRIK_PATH,
-			Path::BASE
-		);
+		$this->assertSame( FUNDRIK_PATH, Path::BASE );
 
-		$this->assertSame(
-			FUNDRIK_PATH . 'src/php/',
-			Path::PHP_BASE
-		);
+		$this->assertSame( FUNDRIK_PATH . 'src/php/', Path::PHP_BASE );
 	}
 
 	#[Test]
@@ -31,7 +25,7 @@ final class PathTest extends FundrikTestCase {
 
 		$this->assertSame(
 			Path::BASE . 'assets/js/blocks/',
-			Path::Blocks->get_full_path()
+			Path::Blocks->get_full_path(),
 		);
 	}
 
@@ -40,7 +34,7 @@ final class PathTest extends FundrikTestCase {
 
 		$this->assertSame(
 			Path::BASE . 'assets/js/blocks/blocks-manifest.php',
-			Path::BlocksManifest->get_full_path()
+			Path::BlocksManifest->get_full_path(),
 		);
 	}
 
@@ -49,7 +43,7 @@ final class PathTest extends FundrikTestCase {
 
 		$this->assertSame(
 			Path::PHP_BASE . 'Infrastructure/Migrations/Files/',
-			Path::MigrationFiles->get_full_path()
+			Path::MigrationFiles->get_full_path(),
 		);
 	}
 
@@ -60,12 +54,12 @@ final class PathTest extends FundrikTestCase {
 
 		$this->assertSame(
 			Path::BASE . 'assets/js/blocks/' . $suffix,
-			Path::Blocks->get_full_path( $suffix )
+			Path::Blocks->get_full_path( $suffix ),
 		);
 
 		$this->assertSame(
 			Path::PHP_BASE . 'Infrastructure/Migrations/Files/' . $suffix,
-			Path::MigrationFiles->get_full_path( $suffix )
+			Path::MigrationFiles->get_full_path( $suffix ),
 		);
 	}
 }

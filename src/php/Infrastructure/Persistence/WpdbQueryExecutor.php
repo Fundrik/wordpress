@@ -29,16 +29,16 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string     $table The name of the table.
-	 * @param int|string $id    The value of the primary key (integer or UUID).
+	 * @param string $table The name of the table.
+	 * @param int|string $id The value of the primary key (integer or UUID).
 	 *
-	 * @return array<string,mixed>|null The result as an associative array, or null if not found.
+	 * @return array<string,scalar|null>|null The result as an associative array, or null if not found.
 	 */
 	public function get_by_id( string $table, int|string $id ): ?array {
 
 		$placeholder = is_int( $id ) ? '%d' : '%s';
 
-		$sql   = "SELECT * FROM %i WHERE id = {$placeholder} LIMIT 1";
+		$sql = "SELECT * FROM %i WHERE id = {$placeholder} LIMIT 1";
 		$query = $this->db->prepare( $sql, $table, $id );
 
 		return $this->db->get_row( $query, ARRAY_A );
@@ -51,11 +51,11 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 	 *
 	 * @param string $table The name of the table.
 	 *
-	 * @return array<int,array<string,mixed>> An array of rows as associative arrays.
+	 * @return array<int,array<string,scalar|null>> An array of rows as associative arrays.
 	 */
 	public function get_all( string $table ): array {
 
-		$sql   = 'SELECT * FROM %i';
+		$sql = 'SELECT * FROM %i';
 		$query = $this->db->prepare( $sql, $table );
 
 		return $this->db->get_results( $query, ARRAY_A );
@@ -66,8 +66,8 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string     $table The name of the table.
-	 * @param int|string $id    The value of the primary key (integer or UUID).
+	 * @param string $table The name of the table.
+	 * @param int|string $id The value of the primary key (integer or UUID).
 	 *
 	 * @return bool True if the record exists, false otherwise.
 	 */
@@ -75,7 +75,7 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 
 		$placeholder = is_int( $id ) ? '%d' : '%s';
 
-		$sql   = "SELECT 1 FROM %i WHERE id = {$placeholder} LIMIT 1";
+		$sql = "SELECT 1 FROM %i WHERE id = {$placeholder} LIMIT 1";
 		$query = $this->db->prepare( $sql, $table, $id );
 
 		return TypeCaster::to_bool( $this->db->get_var( $query ) );
@@ -86,24 +86,23 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $table  The name of the table.
+	 * @param string $table The name of the table.
 	 * @param string $column The column name.
-	 * @param mixed  $value  The value to check.
+	 * @param int|float|string|bool|null $value The value to check.
 	 *
 	 * @return bool True if the record exists, false otherwise.
 	 */
-	public function exists_by_column( string $table, string $column, mixed $value ): bool {
+	public function exists_by_column( string $table, string $column, int|float|string|bool|null $value ): bool {
 
 		$placeholder = is_int( $value ) ? '%d' : '%s';
 
 		$column_escaped = esc_sql( $column );
 
-		$sql   = "SELECT 1 FROM %i WHERE {$column_escaped} = {$placeholder} LIMIT 1";
+		$sql = "SELECT 1 FROM %i WHERE {$column_escaped} = {$placeholder} LIMIT 1";
 		$query = $this->db->prepare( $sql, $table, $value );
 
 		return TypeCaster::to_bool( $this->db->get_var( $query ) );
 	}
-
 
 	/**
 	 * Inserts a new row into the given table.
@@ -111,7 +110,7 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 	 * @since 1.0.0
 	 *
 	 * @param string $table The name of the table.
-	 * @param array  $data  An associative array of column names and their values.
+	 * @param array<string,scalar|null> $data An associative array of column names and their values.
 	 *
 	 * @return bool True on success, false on failure.
 	 */
@@ -121,7 +120,7 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 			$this->db->insert(
 				$table,
 				$data,
-			)
+			),
 		);
 	}
 
@@ -130,8 +129,8 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string     $table The name of the table.
-	 * @param array      $data  An associative array of column names and their new values.
+	 * @param string $table The name of the table.
+	 * @param array<string,scalar|null> $data An associative array of column names and their new values.
 	 * @param int|string $id The value of the primary key (integer or UUID).
 	 *
 	 * @return bool True on success, false on failure.
@@ -141,10 +140,10 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 		$result = $this->db->update(
 			$table,
 			$data,
-			[ 'id' => $id ]
+			[ 'id' => $id ],
 		);
 
-		return false === $result ? false : true;
+		return $result !== false;
 	}
 
 	/**
@@ -152,8 +151,8 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string     $table The name of the table.
-	 * @param int|string $id    The value of the primary key (integer or UUID).
+	 * @param string $table The name of the table.
+	 * @param int|string $id The value of the primary key (integer or UUID).
 	 *
 	 * @return bool True on success, false on failure.
 	 */
@@ -162,8 +161,8 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 		return TypeCaster::to_bool(
 			$this->db->delete(
 				$table,
-				[ 'id' => $id ]
-			)
+				[ 'id' => $id ],
+			),
 		);
 	}
 
@@ -180,6 +179,6 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 
 		$result = $this->db->query( $sql );
 
-		return false === $result ? false : true;
+		return $result !== false;
 	}
 }

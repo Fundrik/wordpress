@@ -11,10 +11,10 @@ namespace Fundrik\WordPress\Support;
  */
 enum Path: string {
 
-	public const BASE     = FUNDRIK_PATH;
+	public const BASE = FUNDRIK_PATH;
 	public const PHP_BASE = self::BASE . 'src/php/';
 
-	case Blocks         = 'assets/js/blocks/';
+	case Blocks = 'assets/js/blocks/';
 	case BlocksManifest = self::Blocks->value . 'blocks-manifest.php';
 
 	case MigrationFiles = 'Infrastructure/Migrations/Files/';
@@ -22,13 +22,15 @@ enum Path: string {
 	/**
 	 * Returns the full filesystem path by prepending the plugin base directory.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param string $suffix Optional suffix to append to the path (e.g. filename or subdirectory).
 	 *
 	 * @return string Full path including plugin base directory.
 	 */
 	public function get_full_path( string $suffix = '' ): string {
 
-		$base   = str_starts_with( $this->value, 'assets' ) ? self::BASE : self::PHP_BASE;
+		$base = str_starts_with( $this->value, 'assets' ) ? self::BASE : self::PHP_BASE;
 		$target = $this->value;
 
 		$path = "{$base}{$target}";

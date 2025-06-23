@@ -28,12 +28,12 @@ final class AdminWordPressCampaignPartialInputFactoryTest extends FundrikTestCas
 	public function from_array_creates_input_correctly(): void {
 
 		$data = [
-			'id'    => '22',
+			'id' => '22',
 			'title' => 'Partial Campaign',
-			'slug'  => 'partial-campaign',
-			'meta'  => [
-				'is_open'       => false,
-				'has_target'    => true,
+			'slug' => 'partial-campaign',
+			'meta' => [
+				'is_open' => false,
+				'has_target' => true,
 				'target_amount' => '2500',
 			],
 		];
@@ -46,17 +46,17 @@ final class AdminWordPressCampaignPartialInputFactoryTest extends FundrikTestCas
 		$this->assertSame( 'partial-campaign', $input->slug );
 		$this->assertFalse( $input->is_open );
 		$this->assertTrue( $input->has_target );
-		$this->assertSame( 2500, $input->target_amount );
+		$this->assertSame( 2_500, $input->target_amount );
 	}
 
 	#[Test]
 	public function from_array_sets_optional_fields_to_null_when_missing(): void {
 
 		$data = [
-			'id'   => '99',
+			'id' => '99',
 			'meta' => [
-				'is_open'       => true,
-				'has_target'    => false,
+				'is_open' => true,
+				'has_target' => false,
 				'target_amount' => 0,
 			],
 		];

@@ -18,6 +18,8 @@ final readonly class MigrationReferenceFactory implements MigrationReferenceFact
 	/**
 	 * Constructor.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param MigrationValidator $validator Validates migration file structure and extracts metadata.
 	 */
 	public function __construct(
@@ -31,11 +33,11 @@ final readonly class MigrationReferenceFactory implements MigrationReferenceFact
 	 *
 	 * @param string $migrations_directory Absolute path to the directory containing migration files.
 	 *
-	 * @return MigrationReference[] Sorted array of migration references.
+	 * @return array<MigrationReference> Sorted array of migration references.
 	 */
 	public function create_all( string $migrations_directory ): array {
 
-		$files      = glob( $migrations_directory . '/*.php' );
+		$files = glob( $migrations_directory . '/*.php' );
 		$references = [];
 
 		foreach ( $files as $filepath ) {
@@ -44,7 +46,10 @@ final readonly class MigrationReferenceFactory implements MigrationReferenceFact
 
 		usort(
 			$references,
-			static fn ( MigrationReference $a, MigrationReference $b ): int => version_compare( $a->version, $b->version )
+			static fn ( MigrationReference $a, MigrationReference $b ): int => version_compare(
+				$a->version,
+				$b->version,
+			),
 		);
 
 		return $references;

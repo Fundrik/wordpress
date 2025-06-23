@@ -29,7 +29,7 @@ final readonly class Container implements ContainerInterface {
 	 * @param IlluminateContainer $inner The Laravel container instance used for resolution.
 	 */
 	public function __construct(
-		private IlluminateContainer $inner
+		private IlluminateContainer $inner,
 	) {}
 
 	/**
@@ -70,13 +70,13 @@ final readonly class Container implements ContainerInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string              $abstract Class or interface name.
+	 * @param string $abstract Class or interface name.
 	 * @param Closure|string|null $concrete Optional implementation or factory closure.
 	 */
 	public function singleton(
 		// phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.abstractFound
 		string $abstract,
-		Closure|string|null $concrete = null
+		Closure|string|null $concrete = null,
 	): void {
 
 		$this->inner->singleton( $abstract, $concrete );

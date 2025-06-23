@@ -10,15 +10,21 @@ define( 'FUNDRIK_PATH', realpath( dirname( FUNDRIK_MAIN_FILE ) ) . '/' );
 
 if ( ! class_exists( 'WP_Error' ) ) {
 
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound
-	class WP_Error {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound, SlevomatCodingStandard.Files.TypeNameMatchesFileName.NoMatchBetweenTypeNameAndFileName
+	final class WP_Error {
+
+		// phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint
 		private $code;
 
+		// phpcs:ignore SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint
 		public function __construct( $code = '' ) {
+
 			$this->code = $code;
 		}
 
+		// phpcs:ignore SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint
 		public function get_error_code() {
+
 			return $this->code;
 		}
 	}

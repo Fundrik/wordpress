@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable SlevomatCodingStandard.Commenting.ForbiddenAnnotations.AnnotationForbidden, SlevomatCodingStandard.Commenting.DocCommentSpacing.IncorrectLinesCountBetweenDifferentAnnotationsTypes
 /**
  * Fundrik
  *
@@ -76,5 +77,5 @@ function fundrik_activate(): void {
  */
 register_activation_hook(
 	__FILE__,
-	fundrik_activate( ... )
+	fundrik_activate( ... ),
 );
