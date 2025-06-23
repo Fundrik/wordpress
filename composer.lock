@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7c08193a211f38f6dda3ed4877d4b29c",
+    "content-hash": "96aff7d6866a770096c6a6461ef178af",
     "packages": [
         {
             "name": "brick/math",
@@ -72,12 +72,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Fundrik/core.git",
-                "reference": "c70ba02b9375289193cbcbf8777c2389ebd7c474"
+                "reference": "6e9276cdec9e022a1f770b9e6480d6d1cdd14f03"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Fundrik/core/zipball/c70ba02b9375289193cbcbf8777c2389ebd7c474",
-                "reference": "c70ba02b9375289193cbcbf8777c2389ebd7c474",
+                "url": "https://api.github.com/repos/Fundrik/core/zipball/6e9276cdec9e022a1f770b9e6480d6d1cdd14f03",
+                "reference": "6e9276cdec9e022a1f770b9e6480d6d1cdd14f03",
                 "shasum": ""
             },
             "require": {
@@ -124,7 +124,7 @@
                 "issues": "https://github.com/Fundrik/core/issues",
                 "source": "https://github.com/Fundrik/core"
             },
-            "time": "2025-06-18T21:21:31+00:00"
+            "time": "2025-06-18T23:29:11+00:00"
         },
         {
             "name": "illuminate/container",
@@ -1160,6 +1160,62 @@
                 "source": "https://github.com/PHPCSStandards/composer-installer"
             },
             "time": "2023-01-05T11:28:13+00:00"
+        },
+        {
+            "name": "fundrik/coding-standards",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Fundrik/coding-standards.git",
+                "reference": "221e3fc5ff35de0f76155d04a2538e1a3b20de1f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Fundrik/coding-standards/zipball/221e3fc5ff35de0f76155d04a2538e1a3b20de1f",
+                "reference": "221e3fc5ff35de0f76155d04a2538e1a3b20de1f",
+                "shasum": ""
+            },
+            "require": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpcompatibility/php-compatibility": "dev-develop as 9.4.0",
+                "phpcompatibility/phpcompatibility-wp": "^2.1",
+                "phpunit/phpunit": "^11.5",
+                "wp-coding-standards/wpcs": "^3.1"
+            },
+            "default-branch": true,
+            "type": "phpcodesniffer-standard",
+            "autoload": {
+                "psr-4": {
+                    "FundrikStandards\\": "FundrikStandards/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Denis Yanchevskiy",
+                    "email": "denis@denisco.pro"
+                }
+            ],
+            "description": "Custom PHP_CodeSniffer rules for Fundrik",
+            "homepage": "https://fundrik.ru",
+            "keywords": [
+                "Fundrik",
+                "phpcs",
+                "standards",
+                "static analysis"
+            ],
+            "support": {
+                "email": "denis@denisco.pro",
+                "issues": "https://github.com/Fundrik/coding-standards/issues",
+                "source": "https://github.com/Fundrik/coding-standards"
+            },
+            "time": "2025-06-23T00:34:19+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -3592,6 +3648,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "fundrik/coding-standards": 20,
         "fundrik/core": 20,
         "phpcompatibility/php-compatibility": 20
     },
