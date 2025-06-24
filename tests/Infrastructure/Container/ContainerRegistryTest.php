@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fundrik\WordPress\Tests\Infrastructure;
+namespace Fundrik\WordPress\Tests\Infrastructure\Container;
 
 use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
 use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;

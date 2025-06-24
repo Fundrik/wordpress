@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fundrik\WordPress\Tests\Infrastructure;
+namespace Fundrik\WordPress\Tests\Infrastructure\Container;
 
 use Fundrik\WordPress\Infrastructure\Container\Container;
 use Illuminate\Container\Container as IlluminateContainer;
@@ -99,5 +99,42 @@ final class ContainerTest extends TestCase {
 		$this->container->singleton( 'MyService' );
 
 		$this->addToAssertionCount( 1 );
+	}
+
+	#[Test]
+	public function make_delegates_to_inner_container_without_parameters(): void {
+
+		$instance = new stdClass();
+
+		$this->inner
+			->shouldReceive( 'make' )
+			->once()
+			->with( 'MyClass', [] )
+			->andReturn( $instance );
+
+		$result = $this->container->make( 'MyClass' );
+
+		$this->assertSame( $instance, $result );
+	}
+
+	#[Test]
+	public function make_delegates_to_inner_container_with_parameters(): void {
+
+		$instance = new stdClass();
+
+		$params = [
+			'id' => 123,
+			'name' => 'Test',
+		];
+
+		$this->inner
+			->shouldReceive( 'make' )
+			->once()
+			->with( 'MyClass', $params )
+			->andReturn( $instance );
+
+		$result = $this->container->make( 'MyClass', $params );
+
+		$this->assertSame( $instance, $result );
 	}
 }

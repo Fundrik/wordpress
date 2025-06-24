@@ -81,4 +81,23 @@ final readonly class Container implements ContainerInterface {
 
 		$this->inner->singleton( $abstract, $concrete );
 	}
+
+	/**
+	 * Creates (makes) an instance of the given class or interface.
+	 *
+	 * Allows passing parameters to the constructor.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $id Class or interface name.
+	 * @param array<string, mixed> $parameters Optional parameters to pass during instantiation.
+	 *
+	 * @return object The created instance.
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
+	 */
+	public function make( string $id, array $parameters = [] ): object {
+
+		return $this->inner->make( $id, $parameters );
+	}
 }
