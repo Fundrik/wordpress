@@ -38,7 +38,13 @@ final class DependencyProviderTest extends FundrikTestCase {
 	public function get_bindings_contains_all_required_keys(): void {
 
 		$bindings = $this->provider->get_bindings();
-		$all_keys = $this->collect_keys_recursively( $bindings );
+
+		$all_keys = [];
+
+		foreach ( $bindings as $category_bindings ) {
+			$all_keys = array_merge( $all_keys, array_keys( $category_bindings ) );
+		}
+
 		$required_keys = [
 			wpdb::class,
 			QueryExecutorInterface::class,
@@ -63,7 +69,6 @@ final class DependencyProviderTest extends FundrikTestCase {
 	public function get_bindings_returns_specific_category_if_exists(): void {
 
 		$bindings = $this->provider->get_bindings();
-
 		$result = $this->provider->get_bindings( 'post_types' );
 
 		$this->assertSame( $bindings['post_types'], $result );
@@ -86,31 +91,15 @@ final class DependencyProviderTest extends FundrikTestCase {
 			->with( \Mockery::type( 'array' ) )
 			->andReturnUsing(
 				static function ( array $bindings ): array {
-					$bindings['custom_binding'] = 'CustomClass';
+					$bindings['custom_category']['custom_binding'] = 'CustomClass';
 					return $bindings;
 				},
 			);
 
 		$bindings = $this->provider->get_bindings();
 
-		$this->assertArrayHasKey( 'custom_binding', $bindings );
-		$this->assertSame( 'CustomClass', $bindings['custom_binding'] );
-	}
-
-	private function collect_keys_recursively( array $items ): array {
-
-		$keys = [];
-
-		foreach ( $items as $key => $value ) {
-			$keys[] = $key;
-
-			if ( ! is_array( $value ) ) {
-				continue;
-			}
-
-			$keys = array_merge( $keys, $this->collect_keys_recursively( $value ) );
-		}
-
-		return $keys;
+		$this->assertArrayHasKey( 'custom_category', $bindings );
+		$this->assertArrayHasKey( 'custom_binding', $bindings['custom_category'] );
+		$this->assertSame( 'CustomClass', $bindings['custom_category']['custom_binding'] );
 	}
 }

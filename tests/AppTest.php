@@ -14,6 +14,7 @@ use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
+use RuntimeException;
 use stdClass;
 
 #[CoversClass( App::class )]
@@ -35,19 +36,22 @@ final class AppTest extends FundrikTestCase {
 
 		ContainerRegistry::set( $this->container );
 
-		$this->container
-			->shouldReceive( 'get' )
-			->with( PlatformInterface::class )
-			->andReturn( $this->platform );
-
 		$this->app = new App( $this->provider );
 	}
 
 	#[Test]
 	public function it_registers_bindings_and_initializes_platform_on_run(): void {
 
+		$this->container
+			->shouldReceive( 'get' )
+			->once()
+			->with( PlatformInterface::class )
+			->andReturn( $this->platform );
+
 		$bindings = [
-			'SomeInterface' => static fn () => new stdClass(),
+			'default' => [
+				'SomeInterface' => static fn () => new stdClass(),
+			],
 			'Grouped' => [
 				'Nested1' => 'NestedImpl1',
 				'Nested2' => 'NestedImpl2',
@@ -85,6 +89,12 @@ final class AppTest extends FundrikTestCase {
 	#[Test]
 	public function it_runs_and_executes_platform_activation_on_activate(): void {
 
+		$this->container
+			->shouldReceive( 'get' )
+			->twice()
+			->with( PlatformInterface::class )
+			->andReturn( $this->platform );
+
 		$this->provider
 			->shouldReceive( 'get_bindings' )
 			->once()
@@ -113,10 +123,46 @@ final class AppTest extends FundrikTestCase {
 	}
 
 	#[Test]
+	public function platform_returns_platform_interface_instance(): void {
+
+		$this->container
+			->shouldReceive( 'get' )
+			->once()
+			->with( PlatformInterface::class )
+			->andReturn( $this->platform );
+
+		$result = $this->app->platform();
+
+		$this->assertSame( $this->platform, $result );
+	}
+
+	#[Test]
+	public function platform_throws_if_container_returns_invalid_instance(): void {
+
+		$invalid_object = new stdClass();
+
+		$this->container
+			->shouldReceive( 'get' )
+			->once()
+			->with( PlatformInterface::class )
+			->andReturn( $invalid_object );
+
+		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			'Container returned an instance of stdClass, but Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface expected.',
+		);
+
+		$this->app->platform();
+	}
+
+	#[Test]
 	public function register_bindings_registers_singletons(): void {
 
 		$bindings = [
-			'abstract1' => static fn () => (object) [ 'tag' => 'stdClass1' ],
+			'default' => [
+				'abstract1' => static fn () => (object) [ 'tag' => 'stdClass1' ],
+			],
 			'group' => [
 				'abstract2a' => static fn () => (object) [ 'tag' => 'stdClass2a' ],
 				'abstract2b' => static fn () => (object) [ 'tag' => 'stdClass2b' ],
@@ -130,43 +176,43 @@ final class AppTest extends FundrikTestCase {
 			->andReturn( $bindings );
 
 		$this->container
-		->shouldReceive( 'singleton' )
-		->with(
-			'abstract1',
-			Mockery::on(
-				static function ( $func ) {
-					$result = $func();
-					return is_object( $result ) && $result->tag === 'stdClass1';
-				},
-			),
-		)
-		->once();
+			->shouldReceive( 'singleton' )
+			->with(
+				'abstract1',
+				Mockery::on(
+					static function ( $func ) {
+						$result = $func();
+						return is_object( $result ) && $result->tag === 'stdClass1';
+					},
+				),
+			)
+			->once();
 
 		$this->container
-		->shouldReceive( 'singleton' )
-		->with(
-			'abstract2a',
-			Mockery::on(
-				static function ( $func ) {
-					$result = $func();
-					return is_object( $result ) && $result->tag === 'stdClass2a';
-				},
-			),
-		)
-		->once();
+			->shouldReceive( 'singleton' )
+			->with(
+				'abstract2a',
+				Mockery::on(
+					static function ( $func ) {
+						$result = $func();
+						return is_object( $result ) && $result->tag === 'stdClass2a';
+					},
+				),
+			)
+			->once();
 
 		$this->container
-		->shouldReceive( 'singleton' )
-		->with(
-			'abstract2b',
-			Mockery::on(
-				static function ( $func ) {
-					$result = $func();
-					return is_object( $result ) && $result->tag === 'stdClass2b';
-				},
-			),
-		)
-		->once();
+			->shouldReceive( 'singleton' )
+			->with(
+				'abstract2b',
+				Mockery::on(
+					static function ( $func ) {
+						$result = $func();
+						return is_object( $result ) && $result->tag === 'stdClass2b';
+					},
+				),
+			)
+			->once();
 
 		$this->app->register_bindings( $this->provider );
 	}
@@ -177,7 +223,9 @@ final class AppTest extends FundrikTestCase {
 		$category = 'platform';
 
 		$bindings = [
-			'some.abstract' => static fn () => new stdClass(),
+			'default' => [
+				'some.abstract' => static fn () => new stdClass(),
+			],
 		];
 
 		$this->provider

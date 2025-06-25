@@ -48,7 +48,7 @@ class DependencyProvider implements DependencyProviderInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array<string, string|callable|array<string, string|callable>> The array of bindings for dependencies.
+	 * @return array<string, array<string, string|Closure>> The array of bindings for dependencies.
 	 */
 	public function get_bindings( string $category = '' ): array {
 
@@ -57,7 +57,7 @@ class DependencyProvider implements DependencyProviderInterface {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param array<string, string|callable|array<string, string|callable>> $bindings The bindings array.
+		 * @param array<string, array<string, string|Closure>> $bindings The bindings array.
 		 */
 		$bindings = apply_filters(
 			'fundrik_container_bindings',

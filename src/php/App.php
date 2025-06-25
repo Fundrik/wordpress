@@ -8,6 +8,7 @@ use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
 use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
 use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface;
+use RuntimeException;
 
 /**
  * Bootstraps and initializes the plugin's core components.
@@ -74,7 +75,20 @@ final readonly class App {
 	 */
 	public function platform(): PlatformInterface {
 
-		return $this->container()->get( PlatformInterface::class );
+		$platform = $this->container()->get( PlatformInterface::class );
+
+		if ( ! $platform instanceof PlatformInterface ) {
+
+			throw new RuntimeException(
+				sprintf(
+					'Container returned an instance of %s, but %s expected.',
+					$platform::class,
+					PlatformInterface::class,
+				),
+			);
+		}
+
+		return $platform;
 	}
 
 	// phpcs:disable SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
@@ -90,15 +104,10 @@ final readonly class App {
 
 		$bindings = $provider->get_bindings( $category );
 
-		foreach ( $bindings as $abstract => $concrete ) {
+		foreach ( $bindings as $concrete ) {
 
-			if ( is_array( $concrete ) ) {
-
-				foreach ( $concrete as $a => $c ) {
-					$this->container()->singleton( $a, $c );
-				}
-			} else {
-				$this->container()->singleton( $abstract, $concrete );
+			foreach ( $concrete as $a => $c ) {
+				$this->container()->singleton( $a, $c );
 			}
 		}
 	}
