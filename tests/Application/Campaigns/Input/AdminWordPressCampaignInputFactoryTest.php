@@ -11,6 +11,7 @@ use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInputFac
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Tests\FundrikTestCase;
+use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -128,6 +129,15 @@ final class AdminWordPressCampaignInputFactoryTest extends FundrikTestCase {
 		$this->assertFalse( $input->is_open );
 		$this->assertFalse( $input->has_target );
 		$this->assertSame( 0, $input->target_amount );
+	}
+
+	#[Test]
+	public function from_array_throws_exception_if_id_missing(): void {
+
+		$this->expectException( InvalidArgumentException::class );
+		$this->expectExceptionMessage( 'Missing required key "id" in input data.' );
+
+		$this->factory->from_array( [] );
 	}
 
 	#[Test]

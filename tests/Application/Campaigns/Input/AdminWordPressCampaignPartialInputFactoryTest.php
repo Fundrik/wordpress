@@ -10,6 +10,7 @@ use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialI
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInputFactory;
 use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Tests\FundrikTestCase;
+use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -121,5 +122,14 @@ final class AdminWordPressCampaignPartialInputFactoryTest extends FundrikTestCas
 		$input = $this->factory->from_array( $data );
 
 		$this->assertSame( $expected, $input );
+	}
+
+	#[Test]
+	public function from_array_throws_exception_if_id_missing(): void {
+
+		$this->expectException( InvalidArgumentException::class );
+		$this->expectExceptionMessage( 'Missing required key "id" in input data.' );
+
+		$this->factory->from_array( [] );
 	}
 }

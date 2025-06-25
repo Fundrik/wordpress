@@ -12,6 +12,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Encapsulates shared validated fields such as title, slug, and enablement state.
  *
  * @since 1.0.0
+ *
+ * @codeCoverageIgnore
+ *
+ * @todo Remove codeCoverageIgnore after migrating to PHP 8.3+
  */
 abstract readonly class AbstractAdminWordPressCampaignInput extends AbstractBaseAdminWordPressCampaignInput {
 

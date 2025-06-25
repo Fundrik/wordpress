@@ -12,6 +12,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Used for handling updates where only a subset of fields may be present.
  *
  * @since 1.0.0
+ *
+ * @codeCoverageIgnore
+ *
+ * @todo Remove codeCoverageIgnore after migrating to PHP 8.3+
  */
 abstract readonly class AbstractAdminWordPressCampaignPartialInput extends AbstractBaseAdminWordPressCampaignInput {
 
