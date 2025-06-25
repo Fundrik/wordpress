@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure;
 
+// phpcs:ignore SlevomatCodingStandard.Namespaces.UnusedUses.UnusedUse
+use Closure;
 use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
 use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignPartialInput;
@@ -37,7 +39,7 @@ use wpdb;
  */
 class DependencyProvider implements DependencyProviderInterface {
 
-	// phpcs:disable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
+	// phpcs:disable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength, SlevomatCodingStandard.Files.LineLength.LineTooLong
 	/**
 	 * Returns all the bindings for dependencies.
 	 *
@@ -48,7 +50,7 @@ class DependencyProvider implements DependencyProviderInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array<string, array<string, string|Closure>> The array of bindings for dependencies.
+	 * @return array<string, array<string, string|Closure>>|array<string, Closure|string> The array of bindings for dependencies.
 	 */
 	public function get_bindings( string $category = '' ): array {
 
@@ -79,7 +81,7 @@ class DependencyProvider implements DependencyProviderInterface {
 					MigrationReferenceFactoryInterface::class => MigrationReferenceFactory::class,
 
 					ValidationErrorTransformerInterface::class => ValidationErrorTransformer::class,
-					ValidatorInterface::class => static fn () => Validation::createValidatorBuilder()
+					ValidatorInterface::class => static fn (): ValidatorInterface => Validation::createValidatorBuilder()
 						->enableAttributeMapping()
 						->getValidator(),
 

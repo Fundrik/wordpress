@@ -20,7 +20,7 @@ interface WordPressCampaignPostMapperInterface {
 	 *
 	 * @param WP_Post $post The WordPress post object.
 	 *
-	 * @return array<string, mixed> An associative array of raw post data.
+	 * @return array<string, scalar> An associative array of raw post data.
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
 	 */

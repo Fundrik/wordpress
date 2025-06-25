@@ -37,7 +37,7 @@ final readonly class AdminWordPressCampaignInputFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, int|string|bool> $data Raw input data from WordPress post meta and form submission.
+	 * @param array<string, scalar> $data Raw input data from WordPress post meta and form submission.
 	 *
 	 * @return AbstractAdminWordPressCampaignInput Input DTO with data from WordPress form and post meta.
 	 */
@@ -91,9 +91,9 @@ final readonly class AdminWordPressCampaignInputFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, int|string|bool> $data Raw associative array with possible nested meta fields.
+	 * @param array<string, scalar> $data Raw associative array with possible nested meta fields.
 	 *
-	 * @return array<string, int|string|bool|null> Normalized parameters for DTO construction.
+	 * @return array<string, scalar> Normalized parameters for DTO construction.
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.Files.LineLength.LineTooLong
 	 */
@@ -101,8 +101,8 @@ final readonly class AdminWordPressCampaignInputFactory {
 
 		return [
 			'id' => TypeCaster::to_id( $data['id'] ),
-			'title' => TypedArrayExtractor::extract_string_or_null( $data, 'title' ),
-			'slug' => TypedArrayExtractor::extract_string_or_null( $data, 'slug' ),
+			'title' => TypedArrayExtractor::extract_string_or_empty( $data, 'title' ),
+			'slug' => TypedArrayExtractor::extract_string_or_empty( $data, 'slug' ),
 			'is_enabled' => TypedArrayExtractor::extract_bool_or_false( $data, 'is_enabled' ),
 			'is_open' => TypedArrayExtractor::extract_bool_or_false( $data, 'is_open' ),
 			'has_target' => TypedArrayExtractor::extract_bool_or_false( $data, 'has_target' ),

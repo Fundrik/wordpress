@@ -149,12 +149,6 @@ final class WordPressPlatformTest extends FundrikTestCase {
 				},
 			);
 
-		Functions\expect( 'wp_parse_args' )
-			->twice()
-			->andReturnUsing(
-				static fn ( $args, $defaults ) => array_merge( $defaults, $args ),
-			);
-
 		$this->platform->register_post_types();
 	}
 

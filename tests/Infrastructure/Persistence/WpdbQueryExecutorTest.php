@@ -222,7 +222,6 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 		$column = 'slug';
 
 		$placeholder = is_int( $value ) ? '%d' : '%s';
-		$column_escaped = esc_sql( $column );
 
 		$prepared_sql = "SELECT 1 FROM {$this->table_name} WHERE slug = {$value} LIMIT 1";
 
@@ -230,8 +229,9 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->shouldReceive( 'prepare' )
 			->once()
 			->with(
-				$this->identicalTo( "SELECT 1 FROM %i WHERE {$column_escaped} = {$placeholder} LIMIT 1" ),
+				$this->identicalTo( "SELECT 1 FROM %i WHERE %i = {$placeholder} LIMIT 1" ),
 				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( $column ),
 				$this->identicalTo( $value ),
 			)
 			->andReturn( $prepared_sql );
@@ -252,7 +252,6 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 		$column = 'slug';
 
 		$placeholder = is_int( $value ) ? '%d' : '%s';
-		$column_escaped = esc_sql( $column );
 
 		$prepared_sql = "SELECT 1 FROM {$this->table_name} WHERE slug = {$value} LIMIT 1";
 
@@ -260,8 +259,9 @@ final class WpdbQueryExecutorTest extends FundrikTestCase {
 			->shouldReceive( 'prepare' )
 			->once()
 			->with(
-				$this->identicalTo( "SELECT 1 FROM %i WHERE {$column_escaped} = {$placeholder} LIMIT 1" ),
+				$this->identicalTo( "SELECT 1 FROM %i WHERE %i = {$placeholder} LIMIT 1" ),
 				$this->identicalTo( self::TABLE ),
+				$this->identicalTo( $column ),
 				$this->identicalTo( $value ),
 			)
 			->andReturn( $prepared_sql );

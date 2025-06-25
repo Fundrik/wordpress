@@ -37,7 +37,7 @@ final readonly class MigrationReferenceFactory implements MigrationReferenceFact
 	 */
 	public function create_all( string $migrations_directory ): array {
 
-		$files = glob( $migrations_directory . '/*.php' );
+		$files = glob( $migrations_directory . '/*.php' ) ?: [];
 		$references = [];
 
 		foreach ( $files as $filepath ) {

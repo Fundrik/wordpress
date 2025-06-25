@@ -40,10 +40,18 @@ final readonly class WordPressCampaignDto {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array<string, int|string|bool> The DTO data as a key-value array.
+	 * @return array<string, scalar> The DTO data as a key-value array.
 	 */
 	public function to_array(): array {
 
-		return get_object_vars( $this );
+		return [
+			'id' => $this->id,
+			'title' => $this->title,
+			'slug' => $this->slug,
+			'is_enabled' => $this->is_enabled,
+			'is_open' => $this->is_open,
+			'has_target' => $this->has_target,
+			'target_amount' => $this->target_amount,
+		];
 	}
 }

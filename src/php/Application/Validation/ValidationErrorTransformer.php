@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Application\Validation;
 
+use Fundrik\Core\Support\TypeCaster;
 use Fundrik\WordPress\Application\Validation\Interfaces\ValidationErrorTransformerInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 
@@ -30,7 +31,7 @@ final readonly class ValidationErrorTransformer implements ValidationErrorTransf
 
 		foreach ( $violations as $violation ) {
 			$property_path = $violation->getPropertyPath();
-			$message = $violation->getMessage();
+			$message = TypeCaster::to_string( $violation->getMessage() );
 
 			$errors[ $property_path ][] = $message;
 		}

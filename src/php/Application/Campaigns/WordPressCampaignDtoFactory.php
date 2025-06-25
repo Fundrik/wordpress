@@ -27,7 +27,7 @@ final readonly class WordPressCampaignDtoFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, int|string|bool> $data Associative array with keys:
+	 * @param array<string,scalar|null> $data Associative array with keys:
 	 *      - id (int|string)
 	 *      - title (string)
 	 *      - slug (string)

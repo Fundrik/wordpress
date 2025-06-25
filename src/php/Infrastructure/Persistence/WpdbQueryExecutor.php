@@ -32,7 +32,7 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 	 * @param string $table The name of the table.
 	 * @param int|string $id The value of the primary key (integer or UUID).
 	 *
-	 * @return array<string,scalar|null>|null The result as an associative array, or null if not found.
+	 * @return array<string, scalar|null>|null The result as an associative array, or null if not found.
 	 */
 	public function get_by_id( string $table, int|string $id ): ?array {
 
@@ -41,7 +41,22 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 		$sql = "SELECT * FROM %i WHERE id = {$placeholder} LIMIT 1";
 		$query = $this->db->prepare( $sql, $table, $id );
 
-		return $this->db->get_row( $query, ARRAY_A );
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort, SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
+		/** @var array<string, mixed>|null $row */
+		$row = $this->db->get_row( $query, ARRAY_A );
+
+		if ( $row === null ) {
+			return null;
+		}
+
+		$result = [];
+
+		foreach ( $row as $key => $value ) {
+
+			$result[ $key ] = TypeCaster::to_scalar_or_null( $value );
+		}
+
+		return $result;
 	}
 
 	/**
@@ -51,14 +66,35 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 	 *
 	 * @param string $table The name of the table.
 	 *
-	 * @return array<int,array<string,scalar|null>> An array of rows as associative arrays.
+	 * @return list<array<string, scalar|null>> An array of rows as associative arrays.
 	 */
 	public function get_all( string $table ): array {
 
 		$sql = 'SELECT * FROM %i';
 		$query = $this->db->prepare( $sql, $table );
 
-		return $this->db->get_results( $query, ARRAY_A );
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort, SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
+		/** @var list<array<string, mixed>>|null $results */
+		$results = $this->db->get_results( $query, ARRAY_A );
+
+		if ( ! is_array( $results ) ) {
+			return [];
+		}
+
+		$casted_results = [];
+
+		foreach ( $results as $index => $row ) {
+
+			$casted_row = [];
+
+			foreach ( $row as $key => $value ) {
+				$casted_row[ $key ] = TypeCaster::to_scalar_or_null( $value );
+			}
+
+			$casted_results[ $index ] = $casted_row;
+		}
+
+		return array_values( $casted_results );
 	}
 
 	/**
@@ -96,10 +132,8 @@ final readonly class WpdbQueryExecutor implements QueryExecutorInterface {
 
 		$placeholder = is_int( $value ) ? '%d' : '%s';
 
-		$column_escaped = esc_sql( $column );
-
-		$sql = "SELECT 1 FROM %i WHERE {$column_escaped} = {$placeholder} LIMIT 1";
-		$query = $this->db->prepare( $sql, $table, $value );
+		$sql = "SELECT 1 FROM %i WHERE %i = {$placeholder} LIMIT 1";
+		$query = $this->db->prepare( $sql, $table, $column, $value );
 
 		return TypeCaster::to_bool( $this->db->get_var( $query ) );
 	}

@@ -13,9 +13,28 @@ use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
  */
 class WordPressCampaignPostType implements PostTypeInterface {
 
+	// phpcs:disable
+	/**
+	 * @var string
+	 * 
+	 * @todo Replace with native typed constants when upgrading to PHP 8.3.
+	 */
 	public const META_IS_OPEN = 'is_open';
+
+	/**
+	 * @var string
+	 * 
+	 * @todo Replace with native typed constants when upgrading to PHP 8.3.
+	 */
 	public const META_HAS_TARGET = 'has_target';
+
+	/**
+	 * @var string
+	 * 
+	 * @todo Replace with native typed constants when upgrading to PHP 8.3.
+	 */
 	public const META_TARGET_AMOUNT = 'target_amount';
+	// phpcs:enable
 
 	public const CAMPAIGN_SETTINGS_BLOCK = 'fundrik/campaign-settings';
 
@@ -108,13 +127,14 @@ class WordPressCampaignPostType implements PostTypeInterface {
 		return apply_filters( 'fundrik_campaign_post_type_slug', 'campaigns' );
 	}
 
+	// phpcs:disable SlevomatCodingStandard.Files.LineLength.LineTooLong
 	/**
 	 * Returns an array of meta fields associated with the campaign post type.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array<string, array<string, mixed>> An associative array where keys are meta field names,
-	 *                                             and values are arrays of configuration options for each field.
+	 * @return array<string, array{type: string, default?: mixed}> An associative array where keys are meta field names,
+	 *                                                             and values are arrays of configuration options for each field.
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
 	 */
@@ -129,6 +149,7 @@ class WordPressCampaignPostType implements PostTypeInterface {
 			self::META_TARGET_AMOUNT => [ 'type' => 'string' ],
 		];
 	}
+	// phpcs:enable SlevomatCodingStandard.Files.LineLength.LineTooLong
 
 	/**
 	 * Returns the block-based template used to render the campaign post type in the editor.

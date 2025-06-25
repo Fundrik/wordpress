@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Infrastructure\Platform;
 
 use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
+use Fundrik\Core\Support\TypeCaster;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationManager;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\ListenerInterface;
 use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface;
@@ -85,13 +86,10 @@ final readonly class WordPressPlatform implements PlatformInterface {
 				register_post_meta(
 					$post_type->get_type(),
 					$meta_key,
-					wp_parse_args(
-						$args,
-						[
-							'show_in_rest' => true,
-							'single' => true,
-						],
-					),
+					$args + [
+						'show_in_rest' => true,
+						'single' => true,
+					],
 				);
 			}
 		}
@@ -128,6 +126,10 @@ final readonly class WordPressPlatform implements PlatformInterface {
 		bool|array $allowed_blocks,
 		WP_Block_Editor_Context $editor_context,
 	): array {
+
+		if ( $editor_context->post === null ) {
+			return is_array( $allowed_blocks ) ? $allowed_blocks : [];
+		}
 
 		return $this->allowed_block_types_filter->filter(
 			$allowed_blocks,
@@ -173,7 +175,7 @@ final readonly class WordPressPlatform implements PlatformInterface {
 
 		foreach ( $post_type_classes as $class ) {
 
-			$post_type = fundrik()->get( $class );
+			$post_type = fundrik()->get( TypeCaster::to_string( $class ) );
 
 			if ( ! $post_type instanceof PostTypeInterface ) {
 				// @todo Escaping
@@ -181,7 +183,7 @@ final readonly class WordPressPlatform implements PlatformInterface {
 					sprintf(
 						'Expected instance of PostTypeInterface, got %s for class %s',
 						get_debug_type( $post_type ),
-						$class,
+						TypeCaster::to_scalar_or_null( $class ),
 					),
 				);
 			}
@@ -206,7 +208,7 @@ final readonly class WordPressPlatform implements PlatformInterface {
 
 		foreach ( $listener_classes as $class ) {
 
-			$listener = fundrik()->get( $class );
+			$listener = fundrik()->get( TypeCaster::to_string( $class ) );
 
 			if ( ! $listener instanceof ListenerInterface ) {
 				// @todo Escaping
@@ -214,7 +216,7 @@ final readonly class WordPressPlatform implements PlatformInterface {
 					sprintf(
 						'Expected instance of ListenerInterface, got %s for class %s',
 						get_debug_type( $listener ),
-						$class,
+						TypeCaster::to_scalar_or_null( $class ),
 					),
 				);
 			}

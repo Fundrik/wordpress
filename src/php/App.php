@@ -104,10 +104,15 @@ final readonly class App {
 
 		$bindings = $provider->get_bindings( $category );
 
-		foreach ( $bindings as $concrete ) {
+		foreach ( $bindings as $abstract => $concrete ) {
 
-			foreach ( $concrete as $a => $c ) {
-				$this->container()->singleton( $a, $c );
+			if ( is_array( $concrete ) ) {
+
+				foreach ( $concrete as $a => $c ) {
+					$this->container()->singleton( $a, $c );
+				}
+			} else {
+				$this->container()->singleton( $abstract, $concrete );
 			}
 		}
 	}

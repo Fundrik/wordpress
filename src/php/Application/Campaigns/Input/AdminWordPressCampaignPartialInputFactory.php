@@ -23,9 +23,11 @@ final readonly class AdminWordPressCampaignPartialInputFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, int|string|bool|array<string, int|string|bool>> $data Raw partial input data from WordPress post meta and form submission.
+	 * @param array<string, mixed> $data Raw partial input data from WordPress post meta and form submission.
 	 *
 	 * @return AbstractAdminWordPressCampaignPartialInput Input DTO with partial data from WordPress admin form.
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
 	 */
 	public function from_array( array $data ): AbstractAdminWordPressCampaignPartialInput {
 
@@ -63,11 +65,11 @@ final readonly class AdminWordPressCampaignPartialInputFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, int|string|bool|array<string, int|string|bool>> $data Raw associative array with possible nested meta fields.
+	 * @param array<string, mixed> $data Raw associative array with possible nested meta fields.
 	 *
-	 * @return array<string, int|string|bool|null> Normalized parameters for DTO construction.
+	 * @return array<string, scalar|null> Normalized parameters for DTO construction.
 	 *
-	 * @phpcsSuppress SlevomatCodingStandard.Files.LineLength.LineTooLong
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
 	 */
 	private function build_parameters_from_array( array $data ): array {
 

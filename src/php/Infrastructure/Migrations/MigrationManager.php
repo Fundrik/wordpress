@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Migrations;
 
+use Fundrik\Core\Support\TypeCaster;
 use Fundrik\WordPress\Infrastructure\Migrations\Files\Abstracts\AbstractMigration;
 use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
 use Fundrik\WordPress\Support\Path;
@@ -79,7 +80,7 @@ final readonly class MigrationManager {
 	 */
 	private function get_current_migration_version(): string {
 
-		return get_option( self::OPTION_KEY, '0000_00_00_00' );
+		return TypeCaster::to_string( get_option( self::OPTION_KEY, '0000_00_00_00' ) );
 	}
 
 	/**

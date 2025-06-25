@@ -38,7 +38,7 @@ final class CampaignTargetConstraintValidator extends ConstraintValidator {
 
 		if ( ! $input instanceof AbstractBaseAdminWordPressCampaignInput ) {
 			// @todo Escaping
-			throw new UnexpectedValueException( $input, $input::class );
+			throw new UnexpectedValueException( $input, AbstractBaseAdminWordPressCampaignInput::class );
 		}
 
 		if ( ! $constraint instanceof CampaignTargetConstraint ) {
