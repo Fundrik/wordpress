@@ -17,6 +17,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\Attributes\UsesFunction;
+use RuntimeException;
+use stdClass;
 
 #[CoversClass( AdminWordPressCampaignPartialInputFactory::class )]
 #[UsesClass( AbstractAdminWordPressCampaignPartialInput::class )]
@@ -131,5 +133,27 @@ final class AdminWordPressCampaignPartialInputFactoryTest extends FundrikTestCas
 		$this->expectExceptionMessage( 'Missing required key "id" in input data.' );
 
 		$this->factory->from_array( [] );
+	}
+
+	#[Test]
+	public function from_array_throws_runtime_exception_if_returned_object_invalid(): void {
+
+		$this->container
+			->shouldReceive( 'make' )
+			->once()
+			->with(
+				AdminWordPressCampaignPartialInput::class,
+				Mockery::type( 'array' ),
+			)
+			->andReturn( new stdClass() );
+
+		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			'Factory returned an instance of stdClass, but Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignPartialInput expected.',
+		);
+
+		$data = [ 'id' => 1 ];
+		$this->factory->from_array( $data );
 	}
 }

@@ -8,6 +8,7 @@ use Fundrik\Core\Support\TypeCaster;
 use Fundrik\Core\Support\TypedArrayExtractor;
 use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignPartialInput;
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * Factory for creating AbstractAdminWordPressCampaignPartialInput DTOs.
@@ -32,10 +33,23 @@ final readonly class AdminWordPressCampaignPartialInputFactory {
 			throw new InvalidArgumentException( 'Missing required key "id" in input data.' );
 		}
 
-		return fundrik()->make(
+		$input = fundrik()->make(
 			AdminWordPressCampaignPartialInput::class,
 			$this->build_parameters_from_array( $data ),
 		);
+
+		if ( ! $input instanceof AbstractAdminWordPressCampaignPartialInput ) {
+
+			throw new RuntimeException(
+				sprintf(
+					'Factory returned an instance of %s, but %s expected.',
+					$input::class,
+					AbstractAdminWordPressCampaignPartialInput::class,
+				),
+			);
+		}
+
+		return $input;
 	}
 	// phpcs:enable SlevomatCodingStandard.Files.LineLength.LineTooLong
 

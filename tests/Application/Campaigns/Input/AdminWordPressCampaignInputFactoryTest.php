@@ -18,6 +18,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\Attributes\UsesFunction;
+use RuntimeException;
+use stdClass;
 use WP_Post;
 
 #[CoversClass( AdminWordPressCampaignInputFactory::class )]
@@ -36,7 +38,6 @@ final class AdminWordPressCampaignInputFactoryTest extends FundrikTestCase {
 		parent::setUp();
 
 		$this->container = Mockery::mock( ContainerInterface::class );
-
 		ContainerRegistry::set( $this->container );
 
 		$this->mapper = Mockery::mock( WordPressCampaignPostMapperInterface::class );
@@ -138,6 +139,28 @@ final class AdminWordPressCampaignInputFactoryTest extends FundrikTestCase {
 		$this->expectExceptionMessage( 'Missing required key "id" in input data.' );
 
 		$this->factory->from_array( [] );
+	}
+
+	#[Test]
+	public function from_array_throws_runtime_exception_if_returned_object_invalid(): void {
+
+		$this->container
+			->shouldReceive( 'make' )
+			->once()
+			->with(
+				AbstractAdminWordPressCampaignInput::class,
+				Mockery::type( 'array' ),
+			)
+			->andReturn( new stdClass() );
+
+		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			'Factory returned an instance of stdClass, but Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput expected.',
+		);
+
+		$data = [ 'id' => 1 ];
+		$this->factory->from_array( $data );
 	}
 
 	#[Test]

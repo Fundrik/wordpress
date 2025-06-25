@@ -9,6 +9,7 @@ use Fundrik\Core\Support\TypedArrayExtractor;
 use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use InvalidArgumentException;
+use RuntimeException;
 use WP_Post;
 
 /**
@@ -46,10 +47,23 @@ final readonly class AdminWordPressCampaignInputFactory {
 			throw new InvalidArgumentException( 'Missing required key "id" in input data.' );
 		}
 
-		return fundrik()->make(
+		$input = fundrik()->make(
 			AbstractAdminWordPressCampaignInput::class,
 			$this->build_parameters_from_array( $data ),
 		);
+
+		if ( ! $input instanceof AbstractAdminWordPressCampaignInput ) {
+
+			throw new RuntimeException(
+				sprintf(
+					'Factory returned an instance of %s, but %s expected.',
+					$input::class,
+					AbstractAdminWordPressCampaignInput::class,
+				),
+			);
+		}
+
+		return $input;
 	}
 
 	/**
