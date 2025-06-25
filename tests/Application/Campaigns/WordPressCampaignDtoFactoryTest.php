@@ -8,7 +8,6 @@ use Fundrik\Core\Domain\Campaigns\Campaign;
 use Fundrik\Core\Domain\Campaigns\CampaignTarget;
 use Fundrik\Core\Domain\Campaigns\CampaignTitle;
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Application\Campaigns\Input\AbstractAdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
@@ -22,7 +21,6 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[CoversClass( WordPressCampaignDtoFactory::class )]
 #[UsesClass( WordPressCampaign::class )]
 #[UsesClass( WordPressCampaignSlug::class )]
-#[UsesClass( AbstractAdminWordPressCampaignInput::class )]
 #[UsesClass( AdminWordPressCampaignInput::class )]
 #[UsesClass( WordPressCampaignDto::class )]
 final class WordPressCampaignDtoFactoryTest extends FundrikTestCase {

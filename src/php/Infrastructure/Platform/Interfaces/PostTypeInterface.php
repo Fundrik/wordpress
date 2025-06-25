@@ -45,8 +45,10 @@ interface PostTypeInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array<string, string> An associative array where keys are meta field names,
-	 *                               and values are the corresponding data types.
+	 * @return array<string, mixed> An associative array where keys are meta field names,
+	 *                              and values are the corresponding data types.
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
 	 */
 	public function get_meta_fields(): array;
 

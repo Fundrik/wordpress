@@ -49,7 +49,7 @@ final readonly class WordPressCampaign {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return int|string Campaign title.
+	 * @return string Campaign title.
 	 */
 	public function get_title(): string {
 

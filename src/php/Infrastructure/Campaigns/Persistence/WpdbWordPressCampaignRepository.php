@@ -48,7 +48,7 @@ final readonly class WpdbWordPressCampaignRepository implements WordPressCampaig
 
 		$data = $this->query_executor->get_by_id( self::TABLE, $id->value );
 
-		return $data ? $this->dto_factory->from_array( $data ) : null;
+		return $data !== null ? $this->dto_factory->from_array( $data ) : null;
 	}
 
 	/**

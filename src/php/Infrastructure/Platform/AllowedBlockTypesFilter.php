@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Platform;
 
+// phpcs:ignore SlevomatCodingStandard.Namespaces.UnusedUses.UnusedUse
+use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
 use WP_Block_Type_Registry;
 
 /**

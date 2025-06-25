@@ -130,7 +130,10 @@ final class ContainerTest extends TestCase {
 		$this->inner
 			->shouldReceive( 'make' )
 			->once()
-			->with( 'MyClass', $params )
+			->with(
+				'MyClass',
+				$this->identicalTo( $params ),
+			)
 			->andReturn( $instance );
 
 		$result = $this->container->make( 'MyClass', $params );

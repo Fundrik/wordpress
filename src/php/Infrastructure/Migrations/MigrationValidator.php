@@ -93,7 +93,7 @@ final readonly class MigrationValidator {
 			dirname( $filepath ) . "/{$class_name}.php",
 		);
 
-		if ( ! $full_class_name || ! class_exists( $full_class_name ) ) {
+		if ( $full_class_name === null || ! class_exists( $full_class_name ) ) {
 			// @todo Escaping
 			throw new RuntimeException( "Migration class '{$class_name}' does not exist in file '{$filepath}'" );
 		}

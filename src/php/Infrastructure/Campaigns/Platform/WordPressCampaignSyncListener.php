@@ -81,7 +81,11 @@ final readonly class WordPressCampaignSyncListener implements WordPressCampaignS
 	 * @param stdClass $prepared_post The post object prepared for insertion.
 	 * @param WP_REST_Request $request The REST request containing input data.
 	 *
+	 * @phpstan-param WP_REST_Request<array<string, mixed>> $request
+	 *
 	 * @return stdClass|WP_Error The validated post object, or WP_Error on failure.
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
 	 */
 	public function validate( stdClass $prepared_post, WP_REST_Request $request ): stdClass|WP_Error {
 

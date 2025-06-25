@@ -65,7 +65,7 @@ final class CampaignTargetConstraint extends Constraint {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return string The constraint target type.
+	 * @return self::CLASS_CONSTRAINT The constraint target type.
 	 */
 	public function getTargets(): string {
 

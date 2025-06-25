@@ -35,7 +35,7 @@ enum Path: string {
 
 		$path = "{$base}{$target}";
 
-		if ( $suffix ) {
+		if ( $suffix !== '' ) {
 			$path .= $suffix;
 		}
 

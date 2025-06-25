@@ -13,6 +13,8 @@
  * Plugin URI: https://fundrik.ru
  * Description: Fundraising solution for WordPress
  * Version: 1.0.0
+ * Requires at least: 6.8
+ * Requires PHP: 8.2
  * Author: Denis Yanchevskiy
  * Author URI: https://denisco.pro
  * License: GPLv2 or later
