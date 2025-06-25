@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Platform;
 
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Application\Campaigns\Input\AbstractAdminWordPressCampaignInput;
+use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
+use Fundrik\Core\Support\TypeCaster;
+use Fundrik\Core\Support\TypedArrayExtractor;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInputFactory;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput;
@@ -15,12 +18,14 @@ use Fundrik\WordPress\Application\Validation\Interfaces\ValidationErrorTransform
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
+use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
+use PHPUnit\Framework\Attributes\UsesFunction;
 use stdClass;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -29,13 +34,15 @@ use WP_REST_Request;
 
 #[CoversClass( WordPressCampaignSyncListener::class )]
 #[UsesClass( WordPressCampaignPostType::class )]
-#[UsesClass( AbstractAdminWordPressCampaignInput::class )]
 #[UsesClass( AdminWordPressCampaignInputFactory::class )]
 #[UsesClass( AdminWordPressCampaignPartialInput::class )]
 #[UsesClass( AdminWordPressCampaignPartialInputFactory::class )]
 #[UsesClass( AdminWordPressCampaignInput::class )]
+#[UsesClass( ContainerRegistry::class )]
+#[UsesFunction( 'fundrik' )]
 final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
+	private ContainerInterface&MockInterface $container;
 	private WordPressCampaignPostType&MockInterface $post_type;
 	private WordPressCampaignPostMapperInterface&MockInterface $mapper;
 	private WordPressCampaignServiceInterface&MockInterface $service;
@@ -49,6 +56,10 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
 		parent::setUp();
 
+		$this->container = Mockery::mock( ContainerInterface::class );
+
+		ContainerRegistry::set( $this->container );
+
 		$this->post_type = Mockery::mock( WordPressCampaignPostType::class );
 		$this->mapper = Mockery::mock( WordPressCampaignPostMapperInterface::class );
 		$this->service = Mockery::mock( WordPressCampaignServiceInterface::class );
@@ -56,6 +67,49 @@ final class WordPressCampaignSyncListenerTest extends FundrikTestCase {
 
 		$this->input_factory = new AdminWordPressCampaignInputFactory( $this->mapper );
 		$this->partial_input_factory = new AdminWordPressCampaignPartialInputFactory();
+
+		$this->container
+			->shouldReceive( 'make' )
+			->with(
+				AdminWordPressCampaignPartialInput::class,
+				Mockery::type( 'array' ),
+			)
+			->andReturnUsing(
+				// phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
+				static fn ( string $class_name, array $data ) => new AdminWordPressCampaignPartialInput(
+					id: TypeCaster::to_id( $data['id'] ),
+					title: TypedArrayExtractor::extract_string_or_null( $data, 'title' ),
+					slug: TypedArrayExtractor::extract_string_or_null( $data, 'slug' ),
+					is_open: TypedArrayExtractor::extract_bool_or_false( $data, 'is_open' ),
+					has_target: TypedArrayExtractor::extract_bool_or_false( $data, 'has_target' ),
+					target_amount: TypedArrayExtractor::extract_int_or_zero( $data, 'target_amount' ),
+				),
+			);
+
+		$this->container
+			->shouldReceive( 'make' )
+			->with(
+				Mockery::on(
+					static fn ( $class_name ) => is_a(
+						$class_name,
+						AbstractAdminWordPressCampaignInput::class,
+						true,
+					),
+				),
+				Mockery::type( 'array' ),
+			)
+			->andReturnUsing(
+				// phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
+				static fn ( string $class_name, array $data ) => new AdminWordPressCampaignInput(
+					id: TypeCaster::to_id( $data['id'] ),
+					title: TypedArrayExtractor::extract_string_or_null( $data, 'title' ),
+					slug: TypedArrayExtractor::extract_string_or_null( $data, 'slug' ),
+					is_enabled: TypedArrayExtractor::extract_bool_or_false( $data, 'is_enabled' ),
+					is_open: TypedArrayExtractor::extract_bool_or_false( $data, 'is_open' ),
+					has_target: TypedArrayExtractor::extract_bool_or_false( $data, 'has_target' ),
+					target_amount: TypedArrayExtractor::extract_int_or_zero( $data, 'target_amount' ),
+				),
+			);
 
 		$this->listener = new WordPressCampaignSyncListener(
 			$this->post_type,

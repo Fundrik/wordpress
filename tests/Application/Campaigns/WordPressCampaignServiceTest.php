@@ -7,7 +7,7 @@ namespace Fundrik\WordPress\Tests\Application\Campaigns;
 use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
 use Fundrik\Core\Domain\Campaigns\CampaignFactory;
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Application\Campaigns\Input\AbstractAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractBaseAdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
@@ -30,7 +30,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[UsesClass( WordPressCampaign::class )]
 #[UsesClass( WordPressCampaignFactory::class )]
 #[UsesClass( WordPressCampaignSlug::class )]
-#[UsesClass( AbstractAdminWordPressCampaignInput::class )]
 #[UsesClass( AdminWordPressCampaignInput::class )]
 #[UsesClass( WordPressCampaignDtoFactory::class )]
 #[UsesClass( WordPressCampaignDto::class )]
@@ -152,6 +151,7 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
 		$mock_violation_list
 			->shouldReceive( 'count' )
+			->once()
 			->andReturn( 0 );
 
 		$this->validator
@@ -193,6 +193,7 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
 		$mock_violation_list
 			->shouldReceive( 'count' )
+			->once()
 			->andReturn( 0 );
 
 		$this->validator
@@ -234,6 +235,7 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
 		$mock_violation_list
 			->shouldReceive( 'count' )
+			->once()
 			->andReturn( 1 );
 
 		$this->validator
@@ -282,15 +284,7 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 	#[Test]
 	public function validate_input_passes_when_no_errors(): void {
 
-		$input = new AdminWordPressCampaignInput(
-			id: 1,
-			title: 'Valid Campaign',
-			slug: 'valid-campaign',
-			is_enabled: true,
-			is_open: true,
-			has_target: false,
-			target_amount: 0,
-		);
+		$input = $this->createMock( AbstractBaseAdminWordPressCampaignInput::class );
 
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
 		$mock_violation_list
@@ -312,21 +306,13 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 	#[Test]
 	public function validate_input_throws_exception_when_errors_present(): void {
 
-		$input = new AdminWordPressCampaignInput(
-			id: 2,
-			title: 'Invalid Campaign',
-			slug: 'invalid-campaign',
-			is_enabled: false,
-			is_open: false,
-			has_target: true,
-			target_amount: 1_000,
-		);
+		$input = $this->createMock( AbstractBaseAdminWordPressCampaignInput::class );
 
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
 		$mock_violation_list
 			->shouldReceive( 'count' )
 			->once()
-			->andReturn( 3 );
+			->andReturn( 2 );
 
 		$this->validator
 			->shouldReceive( 'validate' )

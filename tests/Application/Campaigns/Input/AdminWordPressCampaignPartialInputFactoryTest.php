@@ -4,22 +4,35 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Tests\Application\Campaigns\Input;
 
+use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignPartialInput;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInputFactory;
+use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Tests\FundrikTestCase;
+use Mockery;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
+use PHPUnit\Framework\Attributes\UsesFunction;
 
 #[CoversClass( AdminWordPressCampaignPartialInputFactory::class )]
-#[UsesClass( AdminWordPressCampaignPartialInput::class )]
+#[UsesClass( AbstractAdminWordPressCampaignPartialInput::class )]
+#[UsesClass( ContainerRegistry::class )]
+#[UsesFunction( 'fundrik' )]
 final class AdminWordPressCampaignPartialInputFactoryTest extends FundrikTestCase {
+
+	private ContainerInterface&MockInterface $container;
 
 	private AdminWordPressCampaignPartialInputFactory $factory;
 
 	protected function setUp(): void {
 
 		parent::setUp();
+
+		$this->container = Mockery::mock( ContainerInterface::class );
+		ContainerRegistry::set( $this->container );
 
 		$this->factory = new AdminWordPressCampaignPartialInputFactory();
 	}
@@ -38,15 +51,34 @@ final class AdminWordPressCampaignPartialInputFactoryTest extends FundrikTestCas
 			],
 		];
 
+		$expected = new AdminWordPressCampaignPartialInput(
+			id: 22,
+			title: 'Partial Campaign',
+			slug: 'partial-campaign',
+			is_open: false,
+			has_target: true,
+			target_amount: 2_500,
+		);
+
+		$this->container
+			->shouldReceive( 'make' )
+			->once()
+			->with(
+				AdminWordPressCampaignPartialInput::class,
+				[
+					'id' => 22,
+					'title' => 'Partial Campaign',
+					'slug' => 'partial-campaign',
+					'is_open' => false,
+					'has_target' => true,
+					'target_amount' => 2_500,
+				],
+			)
+			->andReturn( $expected );
+
 		$input = $this->factory->from_array( $data );
 
-		$this->assertInstanceOf( AdminWordPressCampaignPartialInput::class, $input );
-		$this->assertSame( 22, $input->id );
-		$this->assertSame( 'Partial Campaign', $input->title );
-		$this->assertSame( 'partial-campaign', $input->slug );
-		$this->assertFalse( $input->is_open );
-		$this->assertTrue( $input->has_target );
-		$this->assertSame( 2_500, $input->target_amount );
+		$this->assertSame( $expected, $input );
 	}
 
 	#[Test]
@@ -61,14 +93,33 @@ final class AdminWordPressCampaignPartialInputFactoryTest extends FundrikTestCas
 			],
 		];
 
+		$expected = new AdminWordPressCampaignPartialInput(
+			id: 99,
+			title: null,
+			slug: null,
+			is_open: true,
+			has_target: false,
+			target_amount: 0,
+		);
+
+		$this->container
+			->shouldReceive( 'make' )
+			->once()
+			->with(
+				AdminWordPressCampaignPartialInput::class,
+				[
+					'id' => 99,
+					'title' => null,
+					'slug' => null,
+					'is_open' => true,
+					'has_target' => false,
+					'target_amount' => 0,
+				],
+			)
+			->andReturn( $expected );
+
 		$input = $this->factory->from_array( $data );
 
-		$this->assertInstanceOf( AdminWordPressCampaignPartialInput::class, $input );
-		$this->assertSame( 99, $input->id );
-		$this->assertNull( $input->title );
-		$this->assertNull( $input->slug );
-		$this->assertTrue( $input->is_open );
-		$this->assertFalse( $input->has_target );
-		$this->assertSame( 0, $input->target_amount );
+		$this->assertSame( $expected, $input );
 	}
 }

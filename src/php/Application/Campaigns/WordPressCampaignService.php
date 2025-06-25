@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Application\Campaigns;
 
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Application\Campaigns\Input\AbstractAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractBaseAdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
@@ -50,7 +51,7 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 
 		$campaign_dto = $this->repository->get_by_id( $id );
 
-		return $campaign_dto ? $this->factory->create( $campaign_dto ) : null;
+		return $campaign_dto !== null ? $this->factory->create( $campaign_dto ) : null;
 	}
 
 	/**
@@ -106,15 +107,15 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 	}
 
 	/**
-	 * Validates the given AbstractAdminWordPressCampaignInput.
+	 * Validates the given AbstractBaseAdminWordPressCampaignInput.
 	 *
 	 * Throws a ValidationFailedException if validation fails.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param AbstractAdminWordPressCampaignInput $input The input data to validate.
+	 * @param AbstractBaseAdminWordPressCampaignInput $input The input data to validate.
 	 */
-	public function validate_input( AbstractAdminWordPressCampaignInput $input ): void {
+	public function validate_input( AbstractBaseAdminWordPressCampaignInput $input ): void {
 
 		$errors = $this->validator->validate( $input );
 

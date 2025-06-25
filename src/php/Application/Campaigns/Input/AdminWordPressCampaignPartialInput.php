@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Application\Campaigns\Input;
 
-use Symfony\Component\Validator\Constraints as Assert;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignPartialInput;
 
+// phpcs:disable SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces.IncorrectEmptyLinesBeforeClosingBrace, SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces.MultipleEmptyLinesAfterOpeningBrace
 /**
  * Input DTO for partial updates of WordPress campaign data via the admin interface.
  *
@@ -14,33 +15,5 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @since 1.0.0
  */
-final readonly class AdminWordPressCampaignPartialInput extends AbstractAdminWordPressCampaignInput {
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $id Campaign identifier provided by WordPress.
-	 * @param bool $is_open Flag for open state.
-	 * @param bool $has_target Flag for whether campaign has a target.
-	 * @param int $target_amount Target amount.
-	 * @param string|null $title Campaign title (optional).
-	 * @param string|null $slug Campaign slug (optional).
-	 */
-	public function __construct(
-		int $id,
-		bool $is_open,
-		bool $has_target,
-		int $target_amount,
-		// @todo Translate message.
-		#[Assert\NotBlank( allowNull: true, message: 'Title must not be blank' )]
-		public ?string $title = null,
-		// @todo Translate message.
-		#[Assert\NotBlank( allowNull: true, message: 'Slug must not be blank' )]
-		public ?string $slug = null,
-	) {
-
-		parent::__construct( $id, $is_open, $has_target, $target_amount );
-	}
-}
+final readonly class AdminWordPressCampaignPartialInput extends AbstractAdminWordPressCampaignPartialInput {}
+// phpcs:enable SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces.IncorrectEmptyLinesBeforeClosingBrace, SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces.MultipleEmptyLinesAfterOpeningBrace

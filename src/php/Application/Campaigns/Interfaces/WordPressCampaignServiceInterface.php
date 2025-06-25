@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Application\Campaigns\Interfaces;
 
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Application\Campaigns\Input\AbstractAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractBaseAdminWordPressCampaignInput;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 
 /**
@@ -64,7 +65,7 @@ interface WordPressCampaignServiceInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param AbstractAdminWordPressCampaignInput $input The input DTO containing campaign data.
+	 * @param AbstractBaseAdminWordPressCampaignInput $input The input DTO containing campaign data.
 	 */
-	public function validate_input( AbstractAdminWordPressCampaignInput $input ): void;
+	public function validate_input( AbstractBaseAdminWordPressCampaignInput $input ): void;
 }

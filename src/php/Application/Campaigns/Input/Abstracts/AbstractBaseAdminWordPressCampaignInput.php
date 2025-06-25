@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fundrik\WordPress\Application\Campaigns\Input;
+namespace Fundrik\WordPress\Application\Campaigns\Input\Abstracts;
 
 use Fundrik\WordPress\Application\Campaigns\Validation\CampaignTargetConstraint;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -19,14 +19,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @todo Remove codeCoverageIgnore after migrating to PHP 8.3+
  */
 #[CampaignTargetConstraint]
-abstract readonly class AbstractAdminWordPressCampaignInput {
+abstract readonly class AbstractBaseAdminWordPressCampaignInput {
 
 	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $id Campaign identifier.
+	 * @param int $id Campaign identifier. Must be positive.
 	 * @param bool $is_open Whether the campaign is open.
 	 * @param bool $has_target Whether the campaign has a target.
 	 * @param int $target_amount Target amount.

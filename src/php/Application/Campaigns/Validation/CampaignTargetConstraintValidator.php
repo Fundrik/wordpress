@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Application\Campaigns\Validation;
 
-use Fundrik\WordPress\Application\Campaigns\Input\AbstractAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractBaseAdminWordPressCampaignInput;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
@@ -27,8 +27,7 @@ final class CampaignTargetConstraintValidator extends ConstraintValidator {
 	/**
 	 * Validates the input against the CampaignTargetConstraint.
 	 *
-	 * @param mixed $input The value being validated (should be AdminWordPressCampaignInput
-	 *                     or AdminWordPressCampaignPartialInput).
+	 * @param mixed $input The value being validated (should be AbstractBaseAdminWordPressCampaignInput).
 	 * @param Constraint $constraint The constraint instance (must be CampaignTargetConstraint).
 	 *
 	 * @since 1.0.0
@@ -37,7 +36,7 @@ final class CampaignTargetConstraintValidator extends ConstraintValidator {
 	 */
 	public function validate( mixed $input, Constraint $constraint ): void {
 
-		if ( ! $input instanceof AbstractAdminWordPressCampaignInput ) {
+		if ( ! $input instanceof AbstractBaseAdminWordPressCampaignInput ) {
 			// @todo Escaping
 			throw new UnexpectedValueException( $input, $input::class );
 		}
@@ -55,11 +54,11 @@ final class CampaignTargetConstraintValidator extends ConstraintValidator {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param AbstractAdminWordPressCampaignInput $input The campaign input data.
+	 * @param AbstractBaseAdminWordPressCampaignInput $input The campaign input data.
 	 * @param CampaignTargetConstraint $constraint The validation constraint instance.
 	 */
 	private function validateTargetAmount(
-		AbstractAdminWordPressCampaignInput $input,
+		AbstractBaseAdminWordPressCampaignInput $input,
 		CampaignTargetConstraint $constraint,
 	): void {
 

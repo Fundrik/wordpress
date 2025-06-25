@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure;
 
 use Brain\Monkey\Filters;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignPartialInput;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
 use Fundrik\WordPress\Application\Validation\Interfaces\ValidationErrorTransformerInterface;
@@ -43,6 +45,8 @@ final class DependencyProviderTest extends FundrikTestCase {
 			WordPressCampaignRepositoryInterface::class,
 			WordPressCampaignServiceInterface::class,
 			WordPressCampaignPostMapperInterface::class,
+			AbstractAdminWordPressCampaignInput::class,
+			AbstractAdminWordPressCampaignPartialInput::class,
 			MigrationReferenceFactoryInterface::class,
 			ValidationErrorTransformerInterface::class,
 			ValidatorInterface::class,

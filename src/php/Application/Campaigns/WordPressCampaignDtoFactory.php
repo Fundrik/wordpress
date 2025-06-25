@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Application\Campaigns;
 
 use Fundrik\Core\Support\TypeCaster;
-use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 
 /**
@@ -74,15 +74,15 @@ final readonly class WordPressCampaignDtoFactory {
 	}
 
 	/**
-	 * Create a WordPressCampaignDto from an AdminWordPressCampaignInput object.
+	 * Create a WordPressCampaignDto from an AbstractAdminWordPressCampaignInput object.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param AdminWordPressCampaignInput $input Validated input data from WordPress admin post form.
+	 * @param AbstractAdminWordPressCampaignInput $input Validated input data from WordPress admin post form.
 	 *
 	 * @return WordPressCampaignDto A DTO representing the campaign input.
 	 */
-	public function from_input( AdminWordPressCampaignInput $input ): WordPressCampaignDto {
+	public function from_input( AbstractAdminWordPressCampaignInput $input ): WordPressCampaignDto {
 
 		return new WordPressCampaignDto(
 			id: $input->id,

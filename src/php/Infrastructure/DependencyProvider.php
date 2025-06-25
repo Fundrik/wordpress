@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Infrastructure;
 
 use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignPartialInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignService;
@@ -53,7 +57,7 @@ class DependencyProvider implements DependencyProviderInterface {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param array<string, string|array<string, string>> $bindings The bindings array.
+		 * @param array<string, string|callable|array<string, string|callable>> $bindings The bindings array.
 		 */
 		$bindings = apply_filters(
 			'fundrik_container_bindings',
@@ -68,6 +72,9 @@ class DependencyProvider implements DependencyProviderInterface {
 					WordPressCampaignRepositoryInterface::class => WpdbWordPressCampaignRepository::class,
 					WordPressCampaignServiceInterface::class => WordPressCampaignService::class,
 					WordPressCampaignPostMapperInterface::class => WordPressCampaignPostMapper::class,
+
+					AbstractAdminWordPressCampaignInput::class => AdminWordPressCampaignInput::class,
+					AbstractAdminWordPressCampaignPartialInput::class => AdminWordPressCampaignPartialInput::class,
 
 					MigrationReferenceFactoryInterface::class => MigrationReferenceFactory::class,
 
@@ -87,7 +94,7 @@ class DependencyProvider implements DependencyProviderInterface {
 			],
 		);
 
-		if ( $category ) {
+		if ( $category !== '' ) {
 			return $bindings[ $category ] ?? [];
 		}
 
