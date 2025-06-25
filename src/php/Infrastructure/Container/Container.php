@@ -7,6 +7,7 @@ namespace Fundrik\WordPress\Infrastructure\Container;
 use Closure;
 use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
 use Illuminate\Container\Container as IlluminateContainer;
+use RuntimeException;
 
 /**
  * Fundrik Dependency Injection Container.
@@ -43,7 +44,52 @@ final readonly class Container implements ContainerInterface {
 	 */
 	public function get( string $id ): object {
 
-		return $this->inner->get( $id );
+		$instance = $this->inner->get( $id );
+
+		if ( ! is_object( $instance ) ) {
+
+			throw new RuntimeException(
+				sprintf(
+					'Container returned a non-object for id %s: %s',
+					$id,
+					gettype( $instance ),
+				),
+			);
+		}
+
+		return $instance;
+	}
+
+	/**
+	 * Creates (makes) an instance of the given class or interface.
+	 *
+	 * Allows passing parameters to the constructor.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $id Class or interface name.
+	 * @param array<string, mixed> $parameters Optional parameters to pass during instantiation.
+	 *
+	 * @return object The created instance.
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
+	 */
+	public function make( string $id, array $parameters = [] ): object {
+
+		$instance = $this->inner->make( $id, $parameters );
+
+		if ( ! is_object( $instance ) ) {
+
+			throw new RuntimeException(
+				sprintf(
+					'Container made a non-object for id %s: %s',
+					$id,
+					gettype( $instance ),
+				),
+			);
+		}
+
+		return $instance;
 	}
 
 	/**
@@ -80,24 +126,5 @@ final readonly class Container implements ContainerInterface {
 	): void {
 
 		$this->inner->singleton( $abstract, $concrete );
-	}
-
-	/**
-	 * Creates (makes) an instance of the given class or interface.
-	 *
-	 * Allows passing parameters to the constructor.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $id Class or interface name.
-	 * @param array<string, mixed> $parameters Optional parameters to pass during instantiation.
-	 *
-	 * @return object The created instance.
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
-	 */
-	public function make( string $id, array $parameters = [] ): object {
-
-		return $this->inner->make( $id, $parameters );
 	}
 }

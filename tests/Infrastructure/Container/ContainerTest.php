@@ -11,6 +11,7 @@ use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use stdClass;
 
 #[CoversClass( Container::class )]
@@ -41,6 +42,21 @@ final class ContainerTest extends TestCase {
 		$result = $this->container->get( 'MyClass' );
 
 		$this->assertSame( $instance, $result );
+	}
+
+	#[Test]
+	public function get_throws_if_inner_returns_non_object(): void {
+
+		$this->inner
+			->shouldReceive( 'get' )
+			->once()
+			->with( 'MyClass' )
+			->andReturn( 'not_an_object' );
+
+		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage( 'Container returned a non-object for id MyClass: string' );
+
+		$this->container->get( 'MyClass' );
 	}
 
 	#[Test]
@@ -130,14 +146,26 @@ final class ContainerTest extends TestCase {
 		$this->inner
 			->shouldReceive( 'make' )
 			->once()
-			->with(
-				'MyClass',
-				$this->identicalTo( $params ),
-			)
+			->with( 'MyClass', $this->identicalTo( $params ) )
 			->andReturn( $instance );
 
 		$result = $this->container->make( 'MyClass', $params );
 
 		$this->assertSame( $instance, $result );
+	}
+
+	#[Test]
+	public function make_throws_if_inner_returns_non_object(): void {
+
+		$this->inner
+			->shouldReceive( 'make' )
+			->once()
+			->with( 'MyClass', [] )
+			->andReturn( 42 );
+
+		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage( 'Container made a non-object for id MyClass: integer' );
+
+		$this->container->make( 'MyClass' );
 	}
 }
