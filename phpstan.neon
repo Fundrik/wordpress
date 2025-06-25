@@ -1,0 +1,9 @@
+parameters:
+	level: max
+	paths:
+		- src
+	bootstrapFiles:
+		- phpstan-bootstrap.php
+	ignoreErrors:
+		-
+			identifier: ternary.shortNotAllowed
