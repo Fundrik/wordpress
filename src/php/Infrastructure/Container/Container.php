@@ -40,7 +40,9 @@ final readonly class Container implements ContainerInterface {
 	 *
 	 * @param string $id Class or interface name.
 	 *
-	 * @return object The resolved instance.
+	 * @phpstan-param class-string $id
+	 *
+	 * @return object Resolved instance.
 	 */
 	public function get( string $id ): object {
 
@@ -69,6 +71,8 @@ final readonly class Container implements ContainerInterface {
 	 *
 	 * @param string $id Class or interface name.
 	 * @param array<string, mixed> $parameters Optional parameters to pass during instantiation.
+	 *
+	 * @phpstan-param class-string $id
 	 *
 	 * @return object The created instance.
 	 *
@@ -99,6 +103,8 @@ final readonly class Container implements ContainerInterface {
 	 *
 	 * @param string $id Class or interface name.
 	 *
+	 * @phpstan-param class-string $id
+	 *
 	 * @return bool True if the binding exists, false otherwise.
 	 */
 	public function has( string $id ): bool {
@@ -118,6 +124,8 @@ final readonly class Container implements ContainerInterface {
 	 *
 	 * @param string $abstract Class or interface name.
 	 * @param Closure|string|null $concrete Optional implementation or factory closure.
+	 *
+	 * @phpstan-param class-string<object> $abstract
 	 */
 	public function singleton(
 		// phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.abstractFound

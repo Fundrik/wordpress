@@ -26,8 +26,6 @@ final class ContainerRegistry {
 	/**
 	 * Returns the current container instance.
 	 *
-	 * Throws if the container has not been set yet.
-	 *
 	 * @since 1.0.0
 	 *
 	 * @return ContainerInterface The current shared container instance.
