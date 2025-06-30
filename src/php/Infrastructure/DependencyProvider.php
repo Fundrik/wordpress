@@ -7,19 +7,13 @@ namespace Fundrik\WordPress\Infrastructure;
 // phpcs:ignore SlevomatCodingStandard.Namespaces.UnusedUses.UnusedUse
 use Closure;
 use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignPartialInput;
-use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
-use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignService;
 use Fundrik\WordPress\Application\Validation\Interfaces\ValidationErrorTransformerInterface;
 use Fundrik\WordPress\Application\Validation\ValidationErrorTransformer;
 use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbWordPressCampaignRepository;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignSyncListenerInterface;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostMapper;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignSyncListener;
 use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
@@ -73,10 +67,6 @@ class DependencyProvider implements DependencyProviderInterface {
 
 					WordPressCampaignRepositoryInterface::class => WpdbWordPressCampaignRepository::class,
 					WordPressCampaignServiceInterface::class => WordPressCampaignService::class,
-					WordPressCampaignPostMapperInterface::class => WordPressCampaignPostMapper::class,
-
-					AbstractAdminWordPressCampaignInput::class => AdminWordPressCampaignInput::class,
-					AbstractAdminWordPressCampaignPartialInput::class => AdminWordPressCampaignPartialInput::class,
 
 					MigrationReferenceFactoryInterface::class => MigrationReferenceFactory::class,
 

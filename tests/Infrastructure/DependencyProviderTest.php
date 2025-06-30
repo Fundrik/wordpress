@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure;
 
 use Brain\Monkey\Filters;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignPartialInput;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
 use Fundrik\WordPress\Application\Validation\Interfaces\ValidationErrorTransformerInterface;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignSyncListenerInterface;
 use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
 use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
 use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
 use Fundrik\WordPress\Tests\FundrikTestCase;
+use Mockery;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -50,9 +48,6 @@ final class DependencyProviderTest extends FundrikTestCase {
 			QueryExecutorInterface::class,
 			WordPressCampaignRepositoryInterface::class,
 			WordPressCampaignServiceInterface::class,
-			WordPressCampaignPostMapperInterface::class,
-			AbstractAdminWordPressCampaignInput::class,
-			AbstractAdminWordPressCampaignPartialInput::class,
 			MigrationReferenceFactoryInterface::class,
 			ValidationErrorTransformerInterface::class,
 			ValidatorInterface::class,
@@ -88,7 +83,7 @@ final class DependencyProviderTest extends FundrikTestCase {
 
 		Filters\expectApplied( 'fundrik_container_bindings' )
 			->once()
-			->with( \Mockery::type( 'array' ) )
+			->with( Mockery::type( 'array' ) )
 			->andReturnUsing(
 				static function ( array $bindings ): array {
 					$bindings['custom_category']['custom_binding'] = 'CustomClass';

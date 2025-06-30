@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Application\Campaigns\Input;
 
 use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignPartialInput;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInputFactory;
+use Fundrik\WordPress\Application\Campaigns\Input\Exceptions\InvalidAdminWordPressCampaignPartialInputException;
 use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Tests\FundrikTestCase;
-use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\Attributes\UsesFunction;
@@ -21,7 +21,6 @@ use RuntimeException;
 use stdClass;
 
 #[CoversClass( AdminWordPressCampaignPartialInputFactory::class )]
-#[UsesClass( AbstractAdminWordPressCampaignPartialInput::class )]
 #[UsesClass( ContainerRegistry::class )]
 #[UsesFunction( 'fundrik' )]
 final class AdminWordPressCampaignPartialInputFactoryTest extends FundrikTestCase {
@@ -127,16 +126,219 @@ final class AdminWordPressCampaignPartialInputFactoryTest extends FundrikTestCas
 	}
 
 	#[Test]
-	public function from_array_throws_exception_if_id_missing(): void {
+	#[DataProvider( 'incomplete_input_provider' )]
+	public function from_array_throws_exception_when_required_fields_missing( array $data, string $key, ): void {
 
-		$this->expectException( InvalidArgumentException::class );
-		$this->expectExceptionMessage( 'Missing required key "id" in input data.' );
+		$this->expectException( InvalidAdminWordPressCampaignPartialInputException::class );
+		$this->expectExceptionMessage(
+			"Failed to build parameters for AdminWordPressCampaignPartialInput: Missing required key '{$key}'",
+		);
 
-		$this->factory->from_array( [] );
+		$this->factory->from_array( $data );
+	}
+
+	#[Test]
+	#[DataProvider( 'invalid_type_provider' )]
+	public function from_array_throws_exception_when_field_has_invalid_type( array $data, string $key ): void {
+
+		$this->expectException( InvalidAdminWordPressCampaignPartialInputException::class );
+		$this->expectExceptionMessageMatches(
+			"/Failed to build parameters for AdminWordPressCampaignPartialInput: Invalid value type at key '{$key}'/",
+		);
+
+		$this->factory->from_array( $data );
 	}
 
 	#[Test]
 	public function from_array_throws_runtime_exception_if_returned_object_invalid(): void {
+
+		$valid_data = [
+			'id' => 22,
+			'title' => 'Partial Campaign',
+			'slug' => 'partial-campaign',
+			'meta' => [
+				'is_open' => false,
+				'has_target' => true,
+				'target_amount' => 250,
+			],
+		];
+
+		$this->container
+			->shouldReceive( 'make' )
+			->once()
+			->with( AdminWordPressCampaignPartialInput::class, Mockery::type( 'array' ) )
+			->andReturn( new stdClass() );
+
+		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage(
+			'Factory returned an instance of stdClass, but Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput expected.',
+		);
+
+		$this->factory->from_array( $valid_data );
+	}
+
+	public static function incomplete_input_provider(): array {
+
+		return [
+			'missing id' => [
+				[
+					'meta' => [
+						'is_open' => true,
+						'has_target' => true,
+						'target_amount' => 100,
+					],
+				],
+				'id',
+			],
+			'missing meta' => [
+				[
+					'id' => 1,
+				],
+				'meta',
+			],
+			'missing is_open in meta' => [
+				[
+					'id' => 1,
+					'meta' => [
+						'has_target' => true,
+						'target_amount' => 100,
+					],
+				],
+				'is_open',
+			],
+			'missing has_target in meta' => [
+				[
+					'id' => 1,
+					'meta' => [
+						'is_open' => true,
+						'target_amount' => 100,
+					],
+				],
+				'has_target',
+			],
+			'missing target_amount in meta' => [
+				[
+					'id' => 1,
+					'meta' => [
+						'is_open' => true,
+						'has_target' => true,
+					],
+				],
+				'target_amount',
+			],
+		];
+	}
+
+	public static function invalid_type_provider(): array {
+
+		return [
+			'id as string' => [
+				[
+					'id' => 'not-an-int',
+					'title' => 'Campaign',
+					'slug' => 'campaign',
+					'meta' => [
+						'is_open' => true,
+						'has_target' => true,
+						'target_amount' => 100,
+					],
+				],
+				'id',
+			],
+			'title as int' => [
+				[
+					'id' => 1,
+					'title' => 123,
+					'slug' => 'campaign',
+					'meta' => [
+						'is_open' => true,
+						'has_target' => true,
+						'target_amount' => 100,
+					],
+				],
+				'title',
+			],
+			'slug as array' => [
+				[
+					'id' => 1,
+					'title' => 'Campaign',
+					'slug' => [ 'slug' ],
+					'meta' => [
+						'is_open' => true,
+						'has_target' => true,
+						'target_amount' => 100,
+					],
+				],
+				'slug',
+			],
+			'is_open as string' => [
+				[
+					'id' => 1,
+					'title' => 'Campaign',
+					'slug' => 'campaign',
+					'meta' => [
+						'is_open' => 'open',
+						'has_target' => true,
+						'target_amount' => 100,
+					],
+				],
+				'is_open',
+			],
+			'has_target as null' => [
+				[
+					'id' => 1,
+					'title' => 'Campaign',
+					'slug' => 'campaign',
+					'meta' => [
+						'is_open' => true,
+						'has_target' => null,
+						'target_amount' => 100,
+					],
+				],
+				'has_target',
+			],
+			'target_amount as string' => [
+				[
+					'id' => 1,
+					'title' => 'Campaign',
+					'slug' => 'campaign',
+					'meta' => [
+						'is_open' => true,
+						'has_target' => true,
+						'target_amount' => 'a lot',
+					],
+				],
+				'target_amount',
+			],
+		];
+	}
+
+	/*#[Test]
+	#[DataProvider( 'incomplete_input_provider' )]
+	public function from_array_throws_exception_when_required_fields_missing_or_invalid(
+		array $data,
+		string $expected_message,
+	): void {
+
+		$this->expectException( InvalidArgumentException::class );
+		$this->expectExceptionMessage( $expected_message );
+
+		$this->factory->from_array( $data );
+	}
+
+	#[Test]
+	public function from_array_throws_runtime_exception_if_returned_object_invalid(): void {
+
+		$valid_data = [
+			'id' => 1,
+			'title' => 'Valid Title',
+			'slug' => 'valid-slug',
+			'meta' => [
+				'is_open' => true,
+				'has_target' => false,
+				'target_amount' => 100,
+			],
+		];
 
 		$this->container
 			->shouldReceive( 'make' )
@@ -149,11 +351,85 @@ final class AdminWordPressCampaignPartialInputFactoryTest extends FundrikTestCas
 
 		$this->expectException( RuntimeException::class );
 		$this->expectExceptionMessage(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 			'Factory returned an instance of stdClass, but Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignPartialInput expected.',
 		);
 
-		$data = [ 'id' => 1 ];
-		$this->factory->from_array( $data );
+		$this->factory->from_array( $valid_data );
 	}
+
+	public static function incomplete_input_provider(): array {
+
+		return [
+			'missing id' => [
+				[
+					'meta' => [
+						'is_open' => true,
+						'has_target' => false,
+						'target_amount' => 100,
+					],
+				],
+				"Missing required key 'id' (expected entity ID)",
+			],
+			'invalid title type' => [
+				[
+					'id' => 1,
+					'title' => [ 'not a string' ],
+					'slug' => 'partial-campaign',
+					'meta' => [
+						'is_open' => true,
+						'has_target' => true,
+						'target_amount' => 100,
+					],
+				],
+				"Invalid value at key 'title' (expected string)",
+			],
+			'invalid slug type' => [
+				[
+					'id' => 1,
+					'title' => 'Valid title',
+					'slug' => 123, // not a string.
+					'meta' => [
+						'is_open' => true,
+						'has_target' => true,
+						'target_amount' => 100,
+					],
+				],
+				"Invalid value at key 'slug' (expected string)",
+			],
+			'missing is_open' => [
+				[
+					'id' => 1,
+					'meta' => [
+						'has_target' => true,
+						'target_amount' => 100,
+					],
+				],
+				"Missing required key 'is_open' (expected bool)",
+			],
+			'missing has_target' => [
+				[
+					'id' => 1,
+					'title' => 'Partial Campaign',
+					'slug' => 'partial-campaign',
+					'meta' => [
+						'is_open' => true,
+						'target_amount' => 100,
+					],
+				],
+				"Missing required key 'has_target' (expected bool)",
+			],
+			'missing target_amount' => [
+				[
+					'id' => 1,
+					'title' => 'Partial Campaign',
+					'slug' => 'partial-campaign',
+					'meta' => [
+						'is_open' => true,
+						'has_target' => true,
+					],
+				],
+				"Missing required key 'target_amount' (expected int)",
+			],
+		];
+	}*/
 }

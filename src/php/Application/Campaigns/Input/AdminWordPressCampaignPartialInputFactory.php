@@ -4,85 +4,109 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Application\Campaigns\Input;
 
-use Fundrik\Core\Support\TypeCaster;
-use Fundrik\Core\Support\TypedArrayExtractor;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignPartialInput;
-use InvalidArgumentException;
+use Fundrik\Core\Support\ArrayExtractor;
+use Fundrik\Core\Support\Exceptions\ArrayExtractionException;
+use Fundrik\WordPress\Application\Campaigns\Input\Exceptions\InvalidAdminWordPressCampaignPartialInputException;
 use RuntimeException;
 
 /**
- * Factory for creating AbstractAdminWordPressCampaignPartialInput DTOs.
+ * Factory for creating AdminWordPressCampaignPartialInput DTOs.
  *
  * @since 1.0.0
  */
 final readonly class AdminWordPressCampaignPartialInputFactory {
 
-	// phpcs:disable SlevomatCodingStandard.Files.LineLength.LineTooLong
 	/**
-	 * Creates an AbstractAdminWordPressCampaignPartialInput object from an associative array.
+	 * Creates an AdminWordPressCampaignPartialInput object from an associative array.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, mixed> $data Raw partial input data from WordPress post meta and form submission.
+	 * phpcs:disable SlevomatCodingStandard.Files.LineLength.LineTooLong
 	 *
-	 * @return AbstractAdminWordPressCampaignPartialInput Input DTO with partial data from WordPress admin form.
+	 * @param array<string, scalar|array<string, scalar>> $data Raw input data from WordPress admin edit page submission.
 	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
+	 * phpcs:enable
+	 *
+	 * @phpstan-param array{
+	 *     id: int,
+	 *     title?: string,
+	 *     slug?: string,
+	 *     meta: array{
+	 *         is_open: bool,
+	 *         has_target: bool,
+	 *         target_amount: int
+	 *     }
+	 * } $data
+	 *
+	 * @return AdminWordPressCampaignPartialInput Input DTO with partial data from WordPress admin form.
 	 */
-	public function from_array( array $data ): AbstractAdminWordPressCampaignPartialInput {
+	public function from_array( array $data ): AdminWordPressCampaignPartialInput {
 
-		if ( ! array_key_exists( 'id', $data ) ) {
-			throw new InvalidArgumentException( 'Missing required key "id" in input data.' );
+		try {
+			$parameters = $this->build_parameters_from_array( $data );
+		} catch ( ArrayExtractionException $e ) {
+			throw new InvalidAdminWordPressCampaignPartialInputException(
+				'Failed to build parameters for AdminWordPressCampaignPartialInput: ' . $e->getMessage(),
+				previous: $e,
+			);
 		}
 
-		$input = fundrik()->make(
-			AdminWordPressCampaignPartialInput::class,
-			$this->build_parameters_from_array( $data ),
-		);
+		$input = fundrik()->make( AdminWordPressCampaignPartialInput::class, $parameters );
 
-		if ( ! $input instanceof AbstractAdminWordPressCampaignPartialInput ) {
+		if ( ! $input instanceof AdminWordPressCampaignPartialInput ) {
 
 			throw new RuntimeException(
 				sprintf(
 					'Factory returned an instance of %s, but %s expected.',
 					$input::class,
-					AbstractAdminWordPressCampaignPartialInput::class,
+					AdminWordPressCampaignPartialInput::class,
 				),
 			);
 		}
 
 		return $input;
 	}
-	// phpcs:enable SlevomatCodingStandard.Files.LineLength.LineTooLong
 
-	// phpcs:disable SlevomatCodingStandard.Files.LineLength.LineTooLong
 	/**
 	 * Builds a parameter array for creating a DTO from raw input data.
 	 *
-	 * This method extracts and casts expected fields from the input array,
-	 * including meta fields nested under the 'meta' key. It returns a
-	 * normalized array suitable for use with a DI container's `make()` call.
-	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, mixed> $data Raw associative array with possible nested meta fields.
+	 * @param array<string, scalar|array<string, scalar>> $data Raw associative array.
+	 *
+	 * @phpstan-param array{
+	 *     id: int,
+	 *     title?: string,
+	 *     slug?: string,
+	 *     meta: array{
+	 *         is_open: bool,
+	 *         has_target: bool,
+	 *         target_amount: int
+	 *     }
+	 * } $data
+	 *
+	 * @phpstan-return array{
+	 *     id: int,
+	 *     title: string|null,
+	 *     slug: string|null,
+	 *     is_open: bool,
+	 *     has_target: bool,
+	 *     target_amount: int
+	 * }
 	 *
 	 * @return array<string, scalar|null> Normalized parameters for DTO construction.
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
 	 */
 	private function build_parameters_from_array( array $data ): array {
 
-		$meta = TypedArrayExtractor::extract_array_or_empty( $data, 'meta' );
+		$meta = ArrayExtractor::extract_array_required( $data, 'meta' );
 
 		return [
-			'id' => TypeCaster::to_id( $data['id'] ),
-			'title' => TypedArrayExtractor::extract_string_or_null( $data, 'title' ),
-			'slug' => TypedArrayExtractor::extract_string_or_null( $data, 'slug' ),
-			'is_open' => TypedArrayExtractor::extract_bool_or_false( $meta, 'is_open' ),
-			'has_target' => TypedArrayExtractor::extract_bool_or_false( $meta, 'has_target' ),
-			'target_amount' => TypedArrayExtractor::extract_int_or_zero( $meta, 'target_amount' ),
+			'id' => ArrayExtractor::extract_id_int_required( $data, 'id' ),
+			'title' => ArrayExtractor::extract_string_optional( $data, 'title' ),
+			'slug' => ArrayExtractor::extract_string_optional( $data, 'slug' ),
+			'is_open' => ArrayExtractor::extract_bool_required( $meta, 'is_open' ),
+			'has_target' => ArrayExtractor::extract_bool_required( $meta, 'has_target' ),
+			'target_amount' => ArrayExtractor::extract_int_required( $meta, 'target_amount' ),
 		];
 	}
-	// phpcs:enable SlevomatCodingStandard.Files.LineLength.LineTooLong
 }

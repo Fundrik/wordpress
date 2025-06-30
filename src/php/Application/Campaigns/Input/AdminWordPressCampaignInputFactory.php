@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Application\Campaigns\Input;
 
-use Fundrik\Core\Support\TypeCaster;
-use Fundrik\Core\Support\TypedArrayExtractor;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
-use Fundrik\WordPress\Infrastructure\Campaigns\Platform\Interfaces\WordPressCampaignPostMapperInterface;
-use InvalidArgumentException;
+use Fundrik\Core\Support\ArrayExtractor;
+use Fundrik\Core\Support\Exceptions\ArrayExtractionException;
+use Fundrik\WordPress\Application\Campaigns\Input\Exceptions\InvalidAdminWordPressCampaignInputException;
+use Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType;
+use Fundrik\WordPress\Support\Exceptions\InvalidPostMetaValueException;
+use Fundrik\WordPress\Support\Exceptions\MissingPostMetaException;
+use Fundrik\WordPress\Support\PostMeta;
 use RuntimeException;
 use WP_Post;
 
 /**
- * Factory for creating AbstractAdminWordPressCampaignInput DTOs.
+ * Factory for creating AdminWordPressCampaignInput DTOs.
  *
  * @since 1.0.0
  */
@@ -24,41 +26,60 @@ final readonly class AdminWordPressCampaignInputFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WordPressCampaignPostMapperInterface $mapper Mapper to extract structured data from WP_Post.
+	 * @param WordPressCampaignPostType $post_type Post type configuration for meta mapping.
 	 */
 	public function __construct(
-		private WordPressCampaignPostMapperInterface $mapper,
+		private WordPressCampaignPostType $post_type,
 	) {}
 
 	/**
-	 * Creates an AbstractAdminWordPressCampaignInput object from an associative array.
-	 *
-	 * This method performs type casting and fills in default values for missing keys.
+	 * Creates an AdminWordPressCampaignInput object from an associative array.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, scalar> $data Raw input data from WordPress post meta and form submission.
+	 * @param array<string, scalar> $data Raw input data from WordPress admin edit page submission.
 	 *
-	 * @return AbstractAdminWordPressCampaignInput Input DTO with data from WordPress form and post meta.
+	 * @phpstan-param array{
+	 *     id: int,
+	 *     title: string,
+	 *     slug: string,
+	 *     is_enabled: bool,
+	 *     is_open: bool,
+	 *     has_target: bool,
+	 *     target_amount: int
+	 * } $data
+	 *
+	 * Data keys:
+	 *  - id Campaign ID
+	 *  - title Campaign title
+	 *  - slug Campaign slug
+	 *  - is_enabled Whether campaign is enabled (visible/active)
+	 *  - is_open Whether campaign is open
+	 *  - has_target Whether campaign has a fundraising target
+	 *  - target_amount The fundraising target amount
+	 *
+	 * @return AdminWordPressCampaignInput Input DTO with data from WordPress form and post meta.
 	 */
-	public function from_array( array $data ): AbstractAdminWordPressCampaignInput {
+	public function from_array( array $data ): AdminWordPressCampaignInput {
 
-		if ( ! array_key_exists( 'id', $data ) ) {
-			throw new InvalidArgumentException( 'Missing required key "id" in input data.' );
+		try {
+			$parameters = $this->build_parameters_from_array( $data );
+		} catch ( ArrayExtractionException $e ) {
+			throw new InvalidAdminWordPressCampaignInputException(
+				'Failed to build parameters for AdminWordPressCampaignInput: ' . $e->getMessage(),
+				previous: $e,
+			);
 		}
 
-		$input = fundrik()->make(
-			AbstractAdminWordPressCampaignInput::class,
-			$this->build_parameters_from_array( $data ),
-		);
+		$input = fundrik()->make( AdminWordPressCampaignInput::class, $parameters );
 
-		if ( ! $input instanceof AbstractAdminWordPressCampaignInput ) {
+		if ( ! $input instanceof AdminWordPressCampaignInput ) {
 
 			throw new RuntimeException(
 				sprintf(
 					'Factory returned an instance of %s, but %s expected.',
 					$input::class,
-					AbstractAdminWordPressCampaignInput::class,
+					AdminWordPressCampaignInput::class,
 				),
 			);
 		}
@@ -67,17 +88,26 @@ final readonly class AdminWordPressCampaignInputFactory {
 	}
 
 	/**
-	 * Creates an AbstractAdminWordPressCampaignInput object from a WP_Post instance.
+	 * Creates an AdminWordPressCampaignInput object from a WP_Post instance.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param WP_Post $post WordPress post object representing the campaign.
 	 *
-	 * @return AbstractAdminWordPressCampaignInput DTO with normalized and casted data.
+	 * @return AdminWordPressCampaignInput DTO with normalized and casted data.
 	 */
-	public function from_wp_post( WP_Post $post ): AbstractAdminWordPressCampaignInput {
+	public function from_wp_post( WP_Post $post ): AdminWordPressCampaignInput {
 
-		$data = $this->mapper->to_array_from_post( $post );
+		try {
+			$data = $this->map_post_to_array( $post );
+		} catch ( MissingPostMetaException | InvalidPostMetaValueException $e ) {
+
+			throw new InvalidAdminWordPressCampaignInputException(
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				'Invalid or missing post meta when building AdminWordPressCampaignInput from WP_Post: ' . $e->getMessage(),
+				previous: $e,
+			);
+		}
 
 		return $this->from_array( $data );
 	}
@@ -85,28 +115,76 @@ final readonly class AdminWordPressCampaignInputFactory {
 	/**
 	 * Builds a parameter array for creating a DTO from raw input data.
 	 *
-	 * This method extracts and casts expected fields from the input array,
-	 * including meta fields nested under the 'meta' key. It returns a
-	 * normalized array suitable for use with a DI container's `make()` call.
-	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, scalar> $data Raw associative array with possible nested meta fields.
+	 * @param array<string, scalar> $data Raw associative array.
+	 *
+	 * @phpstan-param array{
+	 *     id: int,
+	 *     title: string,
+	 *     slug: string,
+	 *     is_enabled: bool,
+	 *     is_open: bool,
+	 *     has_target: bool,
+	 *     target_amount: int
+	 * } $data
+	 *
+	 * @phpstan-return array{
+	 *     id: int,
+	 *     title: string,
+	 *     slug: string,
+	 *     is_enabled: bool,
+	 *     is_open: bool,
+	 *     has_target: bool,
+	 *     target_amount: int
+	 * }
 	 *
 	 * @return array<string, scalar> Normalized parameters for DTO construction.
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.Files.LineLength.LineTooLong
 	 */
 	private function build_parameters_from_array( array $data ): array {
 
 		return [
-			'id' => TypeCaster::to_id( $data['id'] ),
-			'title' => TypedArrayExtractor::extract_string_or_empty( $data, 'title' ),
-			'slug' => TypedArrayExtractor::extract_string_or_empty( $data, 'slug' ),
-			'is_enabled' => TypedArrayExtractor::extract_bool_or_false( $data, 'is_enabled' ),
-			'is_open' => TypedArrayExtractor::extract_bool_or_false( $data, 'is_open' ),
-			'has_target' => TypedArrayExtractor::extract_bool_or_false( $data, 'has_target' ),
-			'target_amount' => TypedArrayExtractor::extract_int_or_zero( $data, 'target_amount' ),
+			'id' => ArrayExtractor::extract_id_int_required( $data, 'id' ),
+			'title' => ArrayExtractor::extract_string_required( $data, 'title' ),
+			'slug' => ArrayExtractor::extract_string_required( $data, 'slug' ),
+			'is_enabled' => ArrayExtractor::extract_bool_required( $data, 'is_enabled' ),
+			'is_open' => ArrayExtractor::extract_bool_required( $data, 'is_open' ),
+			'has_target' => ArrayExtractor::extract_bool_required( $data, 'has_target' ),
+			'target_amount' => ArrayExtractor::extract_int_required( $data, 'target_amount' ),
+		];
+	}
+
+	/**
+	 * Maps a WP_Post to a raw associative array.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_Post $post WordPress post object.
+	 *
+	 * @return array<string, scalar> Mapped post data.
+	 *
+	 * @phpstan-return array{
+	 *     id: int,
+	 *     title: string,
+	 *     slug: string,
+	 *     is_enabled: bool,
+	 *     is_open: bool,
+	 *     has_target: bool,
+	 *     target_amount: int
+	 * }
+	 */
+	private function map_post_to_array( WP_Post $post ): array {
+
+		$post_type_class = $this->post_type::class;
+
+		return [
+			'id' => $post->ID,
+			'title' => $post->post_title,
+			'slug' => $post->post_name,
+			'is_enabled' => $post->post_status === 'publish',
+			'is_open' => PostMeta::get_bool_required( $post->ID, $post_type_class::META_IS_OPEN ),
+			'has_target' => PostMeta::get_bool_required( $post->ID, $post_type_class::META_HAS_TARGET ),
+			'target_amount' => PostMeta::get_int_required( $post->ID, $post_type_class::META_TARGET_AMOUNT ),
 		];
 	}
 }
