@@ -114,7 +114,7 @@ abstract class FundrikTestCase extends PHPUnitTestCase {
 		);
 	}
 
-	protected function assert_сlass_has_attribute(
+	protected function assert_class_has_attribute(
 		string $class_name,
 		string $attribute_class,
 		?array $expected_values = null,

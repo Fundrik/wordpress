@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Application\Campaigns\Input;
 
+use Fundrik\WordPress\Application\Campaigns\Validation\CampaignTargetConstraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -14,6 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @since 1.0.0
  */
+#[CampaignTargetConstraint]
 readonly class AdminWordPressCampaignInput {
 
 	/**
@@ -21,17 +23,20 @@ readonly class AdminWordPressCampaignInput {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $id Campaign identifier.
-	 * @param string $title Campaign title. Must not be blank.
-	 * @param string $slug Campaign slug. Must not be blank.
+	 * @param int $id The campaign ID. Must be a positive integer.
+	 * @param string $title The campaign title. Must not be blank.
+	 * @param string $slug The campaign slug. Must not be blank.
 	 * @param bool $is_enabled Whether the campaign is enabled.
 	 * @param bool $is_open Whether the campaign is open.
 	 * @param bool $has_target Whether the campaign has a target amount.
-	 * @param int $target_amount Target amount for the campaign. Must be zero or positive.
+	 * @param int $target_amount The campaign target amount.
+	 *
+	 * If $has_target is true, then $target_amount must be greater than zero.
+	 * If $has_target is false, then $target_amount must be exactly zero.
 	 */
 	public function __construct(
 		// @todo Translate message.
-		#[Assert\Positive( message: 'ID must be a positive' )]
+		#[Assert\Positive( message: 'ID must be a positive integer' )]
 		public int $id,
 		// @todo Translate message.
 		#[Assert\NotBlank( message: 'Title must not be blank' )]

@@ -37,7 +37,14 @@ final readonly class AdminWordPressCampaignInputFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, scalar> $data Raw input data from WordPress admin edit page submission.
+	 * @param array<string, scalar> $data Raw input data from WordPress admin edit page submission with keys:
+	 *      - id The campaign ID
+	 *      - title The campaign title
+	 *      - slug The campaign slug
+	 *      - is_enabled Whether the campaign is enabled
+	 *      - is_open Whether the campaign is open
+	 *      - has_target Whether the campaign has a target amount.
+	 *      - target_amount The campaign target amount.
 	 *
 	 * @phpstan-param array{
 	 *     id: int,
@@ -48,15 +55,6 @@ final readonly class AdminWordPressCampaignInputFactory {
 	 *     has_target: bool,
 	 *     target_amount: int
 	 * } $data
-	 *
-	 * Data keys:
-	 *  - id Campaign ID
-	 *  - title Campaign title
-	 *  - slug Campaign slug
-	 *  - is_enabled Whether campaign is enabled (visible/active)
-	 *  - is_open Whether campaign is open
-	 *  - has_target Whether campaign has a fundraising target
-	 *  - target_amount The fundraising target amount
 	 *
 	 * @return AdminWordPressCampaignInput Input DTO with data from WordPress form and post meta.
 	 */

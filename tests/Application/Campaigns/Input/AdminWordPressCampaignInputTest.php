@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Application\Campaigns\Input;
 
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Validation\CampaignTargetConstraint;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -17,13 +18,19 @@ use Symfony\Component\Validator\Constraints\Positive;
 final class AdminWordPressCampaignInputTest extends FundrikTestCase {
 
 	#[Test]
+	public function class_has_campaign_target_constraint_attribute(): void {
+
+		$this->assert_class_has_attribute( AdminWordPressCampaignInput::class, CampaignTargetConstraint::class );
+	}
+
+	#[Test]
 	public function id_property_has_positive_constraint(): void {
 
 		$this->assert_has_attribute_instance_of(
 			AdminWordPressCampaignInput::class,
 			'id',
 			Positive::class,
-			[ 'message' => 'ID must be a positive' ],
+			[ 'message' => 'ID must be a positive integer' ],
 		);
 	}
 

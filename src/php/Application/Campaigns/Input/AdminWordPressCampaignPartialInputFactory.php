@@ -23,7 +23,14 @@ final readonly class AdminWordPressCampaignPartialInputFactory {
 	 *
 	 * phpcs:disable SlevomatCodingStandard.Files.LineLength.LineTooLong
 	 *
-	 * @param array<string, scalar|array<string, scalar>> $data Raw input data from WordPress admin edit page submission.
+	 * @param array<string, scalar|array<string, scalar>> $data Raw input data from WordPress admin edit page submission with keys:
+	 *      - id The campaign ID
+	 *      - title (optional) The campaign title
+	 *      - slug (optional) The campaign slug
+	 *      - meta Array of meta values, including:
+	 *           - is_open Whether the campaign is open
+	 *           - has_target Whether the campaign has a target amount
+	 *           - target_amount The campaign target amount.
 	 *
 	 * phpcs:enable
 	 *
