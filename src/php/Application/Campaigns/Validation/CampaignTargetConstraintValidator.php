@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Application\Campaigns\Validation;
 
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractBaseAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
@@ -15,8 +16,8 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
  * Validates that the campaign's target amount is consistent with
  * the has_target flag in the input DTO.
  *
- * - If targeting is enabled (`has_target` is true), the target amount must be > 0.
- * - If targeting is disabled (`has_target` is false), the target amount must be 0.
+ * - If has_target is true, target_amount must be greater than zero.
+ * - If has_target is false, target_amount must be exactly zero.
  *
  * Supports validation of both full and partial admin WordPress campaign input DTOs.
  *
@@ -27,7 +28,8 @@ final class CampaignTargetConstraintValidator extends ConstraintValidator {
 	/**
 	 * Validates the input against the CampaignTargetConstraint.
 	 *
-	 * @param mixed $input The value being validated (should be AbstractBaseAdminWordPressCampaignInput).
+	 * @param mixed $input The object being validated.
+	 *                     Must be an instance of AdminWordPressCampaignInput or AdminWordPressCampaignPartialInput.
 	 * @param Constraint $constraint The constraint instance (must be CampaignTargetConstraint).
 	 *
 	 * @since 1.0.0
@@ -36,13 +38,17 @@ final class CampaignTargetConstraintValidator extends ConstraintValidator {
 	 */
 	public function validate( mixed $input, Constraint $constraint ): void {
 
-		if ( ! $input instanceof AbstractBaseAdminWordPressCampaignInput ) {
-			// @todo Escaping
-			throw new UnexpectedValueException( $input, AbstractBaseAdminWordPressCampaignInput::class );
+		if (
+			! $input instanceof AdminWordPressCampaignInput
+			&& ! $input instanceof AdminWordPressCampaignPartialInput
+		) {
+			throw new UnexpectedValueException(
+				$input,
+				AdminWordPressCampaignInput::class . ' or ' . AdminWordPressCampaignPartialInput::class,
+			);
 		}
 
 		if ( ! $constraint instanceof CampaignTargetConstraint ) {
-			// @todo Escaping
 			throw new UnexpectedValueException( $constraint, $constraint::class );
 		}
 
@@ -50,15 +56,15 @@ final class CampaignTargetConstraintValidator extends ConstraintValidator {
 	}
 
 	/**
-	 * Checks target amount consistency with has_target flag.
+	 * Checks target_amount consistency with has_target.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param AbstractBaseAdminWordPressCampaignInput $input The campaign input data.
+	 * @param AdminWordPressCampaignInput|AdminWordPressCampaignPartialInput $input The campaign input data.
 	 * @param CampaignTargetConstraint $constraint The validation constraint instance.
 	 */
 	private function validateTargetAmount(
-		AbstractBaseAdminWordPressCampaignInput $input,
+		AdminWordPressCampaignInput|AdminWordPressCampaignPartialInput $input,
 		CampaignTargetConstraint $constraint,
 	): void {
 

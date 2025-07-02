@@ -38,9 +38,19 @@
 		</properties>
 	</rule>
 
+	<rule ref="FundrikStandard.Classes.AbstractClassMustBeReadonly">
+		<properties>
+			<property name="excludedParentClasses" type="array">
+				<element value="Throwable"/>
+			</property>
+		</properties>
+	</rule>
+
 	<rule ref="FundrikStandard.Classes.RequireAbstractOrFinal">
 		<properties>
 			<property name="excludedClasses" type="array">
+				<element value="Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput" />
+				<element value="Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput" />
 				<element value="Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType" />
 				<element value="Fundrik\WordPress\Infrastructure\DependencyProvider" />
 			</property>
@@ -64,15 +74,15 @@
 		</properties>
 	</rule>
 
-	<rule ref="Squiz.Commenting.ClassComment.Missing">
-		<exclude-pattern>tests/*</exclude-pattern>
+	<rule ref="SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces.MultipleEmptyLinesAfterOpeningBrace">
+		<exclude-pattern>*/Exceptions/*</exclude-pattern>
 	</rule>
 
-	<rule ref="Squiz.Commenting.VariableComment.Missing">
-		<exclude-pattern>tests/*</exclude-pattern>
+	<rule ref="SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces.IncorrectEmptyLinesBeforeClosingBrace">
+		<exclude-pattern>*/Exceptions/*</exclude-pattern>
 	</rule>
 
-	<rule ref="Squiz.Commenting.FunctionComment.Missing">
+	<rule ref="Squiz.Commenting">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
@@ -84,19 +94,23 @@
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
-	<rule ref="SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh">
+	<rule ref="SlevomatCodingStandard.Complexity">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
-	<rule ref="SlevomatCodingStandard.Functions.FunctionLength.FunctionLength">
+	<rule ref="SlevomatCodingStandard.Functions.FunctionLength">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
-	<rule ref="SlevomatCodingStandard.Files.FileLength.FileTooLong">
+	<rule ref="SlevomatCodingStandard.Files.FileLength">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<rule ref="SlevomatCodingStandard.Files.LineLength">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 	
-	<rule ref="SlevomatCodingStandard.Classes.ClassLength.ClassTooLong">
+	<rule ref="SlevomatCodingStandard.Classes.ClassLength">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
@@ -104,15 +118,7 @@
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
-	<rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingTraversableTypeHintSpecification">
-		<exclude-pattern>tests/*</exclude-pattern>
-	</rule>
-
-	<rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint">
-		<exclude-pattern>tests/*</exclude-pattern>
-	</rule>
-
-	<rule ref="SlevomatCodingStandard.Files.LineLength.LineTooLong">
+	<rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 </ruleset>

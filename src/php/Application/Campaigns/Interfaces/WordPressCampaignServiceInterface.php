@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Application\Campaigns\Interfaces;
 
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractBaseAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 
 /**
@@ -23,7 +23,7 @@ interface WordPressCampaignServiceInterface {
 	 *
 	 * @param EntityId $id The campaign ID.
 	 *
-	 * @return WordPressCampaign|null The campaign if found, or null if not found.
+	 * @return WordPressCampaign|null The campaign if found, or null otherwise.
 	 */
 	public function get_campaign_by_id( EntityId $id ): ?WordPressCampaign;
 
@@ -41,11 +41,11 @@ interface WordPressCampaignServiceInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param AbstractAdminWordPressCampaignInput $input The input DTO containing campaign data.
+	 * @param AdminWordPressCampaignInput $input The input DTO containing campaign data.
 	 *
-	 * @return bool True on success, false on failure.
+	 * @return bool True on success, false otherwise.
 	 */
-	public function save_campaign( AbstractAdminWordPressCampaignInput $input ): bool;
+	public function save_campaign( AdminWordPressCampaignInput $input ): bool;
 
 	/**
 	 * Delete a campaign by its ID.
@@ -54,7 +54,7 @@ interface WordPressCampaignServiceInterface {
 	 *
 	 * @param EntityId $id The ID of the campaign to delete.
 	 *
-	 * @return bool True if the campaign was successfully deleted, false otherwise.
+	 * @return bool True on success, false otherwise.
 	 */
 	public function delete_campaign( EntityId $id ): bool;
 
@@ -65,7 +65,8 @@ interface WordPressCampaignServiceInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param AbstractBaseAdminWordPressCampaignInput $input The input DTO containing campaign data.
+	 * @param AdminWordPressCampaignInput|AdminWordPressCampaignPartialInput $input The input DTO
+	 *                                                                              containing campaign data.
 	 */
-	public function validate_input( AbstractBaseAdminWordPressCampaignInput $input ): void;
+	public function validate_input( AdminWordPressCampaignInput|AdminWordPressCampaignPartialInput $input ): void;
 }

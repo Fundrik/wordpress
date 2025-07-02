@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Input DTO for managing full WordPress campaign data via the admin interface.
  *
  * Represents the complete set of campaign fields after WordPress has saved the post.
- * Used primarily for synchronization and validation against the full set of constraints.
+ * Used for validation against the full set of constraints.
  *
  * @since 1.0.0
  */

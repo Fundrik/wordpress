@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Application\Campaigns;
 
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractBaseAdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignServiceInterface;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
@@ -26,10 +26,10 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WordPressCampaignFactory $factory Factory to create WordPressCampaign entities.
-	 * @param WordPressCampaignDtoFactory $dto_factory Factory for creating WordPressCampaignDto.
-	 * @param WordPressCampaignRepositoryInterface $repository Repository that handles WordPress campaign data access.
-	 * @param ValidatorInterface $validator Validator used to validate campaign input data.
+	 * @param WordPressCampaignFactory $factory Creates domain entities from campaign DTOs.
+	 * @param WordPressCampaignDtoFactory $dto_factory Maps admin input into internal campaign DTOs.
+	 * @param WordPressCampaignRepositoryInterface $repository Persists and retrieves campaign DTOs.
+	 * @param ValidatorInterface $validator Validates admin-facing input before save or update.
 	 */
 	public function __construct(
 		private WordPressCampaignFactory $factory,
@@ -72,15 +72,15 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 	}
 
 	/**
-	 * Saves a campaign by either creating a new one or updating an existing one.
+	 * Save a campaign (create or update).
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param AbstractAdminWordPressCampaignInput $input The admin input used to create or update the campaign.
+	 * @param AdminWordPressCampaignInput $input The input DTO containing campaign data.
 	 *
-	 * @return bool True on success, false on failure.
+	 * @return bool True on success, false otherwise.
 	 */
-	public function save_campaign( AbstractAdminWordPressCampaignInput $input ): bool {
+	public function save_campaign( AdminWordPressCampaignInput $input ): bool {
 
 		$this->validate_input( $input );
 
@@ -99,7 +99,7 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 	 *
 	 * @param EntityId $id The ID of the campaign to delete.
 	 *
-	 * @return bool True if the campaign was successfully deleted, false otherwise.
+	 * @return bool True on success, false otherwise.
 	 */
 	public function delete_campaign( EntityId $id ): bool {
 
@@ -107,20 +107,18 @@ final readonly class WordPressCampaignService implements WordPressCampaignServic
 	}
 
 	/**
-	 * Validates the given AbstractBaseAdminWordPressCampaignInput.
-	 *
-	 * Throws a ValidationFailedException if validation fails.
+	 * Validates the provided campaign input.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param AbstractBaseAdminWordPressCampaignInput $input The input data to validate.
+	 * @param AdminWordPressCampaignInput|AdminWordPressCampaignPartialInput $input The input DTO
+	 *                                                                              containing campaign data.
 	 */
-	public function validate_input( AbstractBaseAdminWordPressCampaignInput $input ): void {
+	public function validate_input( AdminWordPressCampaignInput|AdminWordPressCampaignPartialInput $input ): void {
 
 		$errors = $this->validator->validate( $input );
 
 		if ( count( $errors ) > 0 ) {
-			// @todo Escaping
 			throw new ValidationFailedException( $input, $errors );
 		}
 	}

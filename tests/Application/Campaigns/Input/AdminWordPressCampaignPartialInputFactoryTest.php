@@ -131,7 +131,7 @@ final class AdminWordPressCampaignPartialInputFactoryTest extends FundrikTestCas
 
 		$this->expectException( InvalidAdminWordPressCampaignPartialInputException::class );
 		$this->expectExceptionMessage(
-			"Failed to build parameters for AdminWordPressCampaignPartialInput: Missing required key '{$key}'",
+			"Failed to build AdminWordPressCampaignPartialInput: Missing required key '{$key}'",
 		);
 
 		$this->factory->from_array( $data );
@@ -143,7 +143,7 @@ final class AdminWordPressCampaignPartialInputFactoryTest extends FundrikTestCas
 
 		$this->expectException( InvalidAdminWordPressCampaignPartialInputException::class );
 		$this->expectExceptionMessageMatches(
-			"/Failed to build parameters for AdminWordPressCampaignPartialInput: Invalid value type at key '{$key}'/",
+			"/Failed to build AdminWordPressCampaignPartialInput: Invalid value type at key '{$key}'/",
 		);
 
 		$this->factory->from_array( $data );

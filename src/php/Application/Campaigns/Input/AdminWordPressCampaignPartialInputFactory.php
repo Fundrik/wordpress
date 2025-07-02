@@ -23,14 +23,14 @@ final readonly class AdminWordPressCampaignPartialInputFactory {
 	 *
 	 * phpcs:disable SlevomatCodingStandard.Files.LineLength.LineTooLong
 	 *
-	 * @param array<string, scalar|array<string, scalar>> $data Raw input data from WordPress admin edit page submission with keys:
-	 *      - id The campaign ID
-	 *      - title (optional) The campaign title
-	 *      - slug (optional) The campaign slug
-	 *      - meta Array of meta values, including:
-	 *           - is_open Whether the campaign is open
-	 *           - has_target Whether the campaign has a target amount
-	 *           - target_amount The campaign target amount.
+	 * @param array<string, scalar|array<string, scalar>> $data The raw input data from WordPress admin edit page submission with keys:
+	 *        - id (int): The campaign ID.
+	 *        - title (string): The campaign title (optional).
+	 *        - slug (string): The campaign slug (optional).
+	 *        - meta (array): The array of meta values, including:
+	 *          - is_open (bool): Whether the campaign is open.
+	 *          - has_target (bool): Whether the campaign has a target amount.
+	 *          - target_amount (int): The campaign target amount.
 	 *
 	 * phpcs:enable
 	 *
@@ -45,7 +45,7 @@ final readonly class AdminWordPressCampaignPartialInputFactory {
 	 *     }
 	 * } $data
 	 *
-	 * @return AdminWordPressCampaignPartialInput Input DTO with partial data from WordPress admin form.
+	 * @return AdminWordPressCampaignPartialInput The input DTO with partial data from WordPress admin form.
 	 */
 	public function from_array( array $data ): AdminWordPressCampaignPartialInput {
 
@@ -53,7 +53,7 @@ final readonly class AdminWordPressCampaignPartialInputFactory {
 			$parameters = $this->build_parameters_from_array( $data );
 		} catch ( ArrayExtractionException $e ) {
 			throw new InvalidAdminWordPressCampaignPartialInputException(
-				'Failed to build parameters for AdminWordPressCampaignPartialInput: ' . $e->getMessage(),
+				'Failed to build AdminWordPressCampaignPartialInput: ' . $e->getMessage(),
 				previous: $e,
 			);
 		}
@@ -79,7 +79,7 @@ final readonly class AdminWordPressCampaignPartialInputFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, scalar|array<string, scalar>> $data Raw associative array.
+	 * @param array<string, scalar|array<string, scalar>> $data The raw associative array.
 	 *
 	 * @phpstan-param array{
 	 *     id: int,

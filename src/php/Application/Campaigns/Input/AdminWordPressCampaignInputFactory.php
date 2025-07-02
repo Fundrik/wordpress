@@ -26,7 +26,7 @@ final readonly class AdminWordPressCampaignInputFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WordPressCampaignPostType $post_type Post type configuration for meta mapping.
+	 * @param WordPressCampaignPostType $post_type Provides meta keys and config for campaign post type mapping.
 	 */
 	public function __construct(
 		private WordPressCampaignPostType $post_type,
@@ -37,14 +37,14 @@ final readonly class AdminWordPressCampaignInputFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, scalar> $data Raw input data from WordPress admin edit page submission with keys:
-	 *      - id The campaign ID
-	 *      - title The campaign title
-	 *      - slug The campaign slug
-	 *      - is_enabled Whether the campaign is enabled
-	 *      - is_open Whether the campaign is open
-	 *      - has_target Whether the campaign has a target amount.
-	 *      - target_amount The campaign target amount.
+	 * @param array<string, scalar> $data The raw input data from WordPress admin edit page submission with keys:
+	 *        - id (int): The campaign ID.
+	 *        - title (string): The campaign title.
+	 *        - slug (string): The campaign slug.
+	 *        - is_enabled (bool): Whether the campaign is enabled.
+	 *        - is_open (bool): Whether the campaign is open.
+	 *        - has_target (bool): Whether the campaign has a target amount.
+	 *        - target_amount (int): The campaign target amount.
 	 *
 	 * @phpstan-param array{
 	 *     id: int,
@@ -56,7 +56,7 @@ final readonly class AdminWordPressCampaignInputFactory {
 	 *     target_amount: int
 	 * } $data
 	 *
-	 * @return AdminWordPressCampaignInput Input DTO with data from WordPress form and post meta.
+	 * @return AdminWordPressCampaignInput The input DTO with data from WordPress form and post meta.
 	 */
 	public function from_array( array $data ): AdminWordPressCampaignInput {
 
@@ -64,7 +64,7 @@ final readonly class AdminWordPressCampaignInputFactory {
 			$parameters = $this->build_parameters_from_array( $data );
 		} catch ( ArrayExtractionException $e ) {
 			throw new InvalidAdminWordPressCampaignInputException(
-				'Failed to build parameters for AdminWordPressCampaignInput: ' . $e->getMessage(),
+				'Failed to build AdminWordPressCampaignInput: ' . $e->getMessage(),
 				previous: $e,
 			);
 		}
@@ -90,9 +90,9 @@ final readonly class AdminWordPressCampaignInputFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_Post $post WordPress post object representing the campaign.
+	 * @param WP_Post $post The WordPress post object representing the campaign.
 	 *
-	 * @return AdminWordPressCampaignInput DTO with normalized and casted data.
+	 * @return AdminWordPressCampaignInput The DTO with normalized and casted data.
 	 */
 	public function from_wp_post( WP_Post $post ): AdminWordPressCampaignInput {
 
@@ -115,7 +115,7 @@ final readonly class AdminWordPressCampaignInputFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string, scalar> $data Raw associative array.
+	 * @param array<string, scalar> $data The raw associative array.
 	 *
 	 * @phpstan-param array{
 	 *     id: int,
@@ -153,13 +153,13 @@ final readonly class AdminWordPressCampaignInputFactory {
 	}
 
 	/**
-	 * Maps a WP_Post to a raw associative array.
+	 * Maps a WP_Post to an associative array.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_Post $post WordPress post object.
+	 * @param WP_Post $post The WordPress post object.
 	 *
-	 * @return array<string, scalar> Mapped post data.
+	 * @return array<string, scalar> The mapped post data.
 	 *
 	 * @phpstan-return array{
 	 *     id: int,

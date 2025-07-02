@@ -7,7 +7,6 @@ namespace Fundrik\WordPress\Tests\Application\Campaigns;
 use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
 use Fundrik\Core\Domain\Campaigns\CampaignFactory;
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractBaseAdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\Interfaces\WordPressCampaignRepositoryInterface;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
@@ -284,7 +283,7 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 	#[Test]
 	public function validate_input_passes_when_no_errors(): void {
 
-		$input = $this->createMock( AbstractBaseAdminWordPressCampaignInput::class );
+		$input = $this->createMock( AdminWordPressCampaignInput::class );
 
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
 		$mock_violation_list
@@ -306,7 +305,7 @@ final class WordPressCampaignServiceTest extends FundrikTestCase {
 	#[Test]
 	public function validate_input_throws_exception_when_errors_present(): void {
 
-		$input = $this->createMock( AbstractBaseAdminWordPressCampaignInput::class );
+		$input = $this->createMock( AdminWordPressCampaignInput::class );
 
 		$mock_violation_list = Mockery::mock( ConstraintViolationListInterface::class );
 		$mock_violation_list

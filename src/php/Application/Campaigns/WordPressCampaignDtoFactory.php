@@ -1,22 +1,17 @@
 <?php
-/**
- * WordPressCampaignDtoFactory class.
- *
- * @since 1.0.0
- */
 
 declare(strict_types=1);
 
 namespace Fundrik\WordPress\Application\Campaigns;
 
-use Fundrik\Core\Support\TypeCaster;
-use Fundrik\WordPress\Application\Campaigns\Input\Abstracts\AbstractAdminWordPressCampaignInput;
+use Fundrik\Core\Support\ArrayExtractor;
+use Fundrik\Core\Support\Exceptions\ArrayExtractionException;
+use Fundrik\WordPress\Application\Campaigns\Exceptions\InvalidWordPressCampaignDtoException;
+use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 
 /**
- * Factory for creating WordPressCampaignDto objects from trusted data arrays.
- *
- * Assumes data has already been validated or is trusted (no checks performed).
+ * Factory for creating WordPressCampaignDto objects.
  *
  * @since 1.0.0
  */
@@ -27,28 +22,45 @@ final readonly class WordPressCampaignDtoFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array<string,scalar|null> $data Associative array with keys:
-	 *      - id (int|string)
-	 *      - title (string)
-	 *      - slug (string)
-	 *      - is_enabled (bool)
-	 *      - is_open (bool)
-	 *      - has_target (bool)
-	 *      - target_amount (int).
+	 * @param array<string,scalar> $data Associative array with keys:
+	 *        - id (int): The campaign ID.
+	 *        - title (string): The campaign title.
+	 *        - slug (string): The campaign slug.
+	 *        - is_enabled (bool): Whether the campaign is enabled.
+	 *        - is_open (bool): Whether the campaign is open.
+	 *        - has_target (bool): Whether the campaign has a target amount.
+	 *        - target_amount (int): The campaign target amount.
+	 *
+	 * @phpstan-param array{
+	 *     id: int,
+	 *     title: string,
+	 *     slug: string,
+	 *     is_enabled: bool,
+	 *     is_open: bool,
+	 *     has_target: bool,
+	 *     target_amount: int
+	 * } $data
 	 *
 	 * @return WordPressCampaignDto A DTO representing the campaign data.
 	 */
 	public function from_array( array $data ): WordPressCampaignDto {
 
-		return new WordPressCampaignDto(
-			id: TypeCaster::to_id( $data['id'] ),
-			title: TypeCaster::to_string( $data['title'] ),
-			slug: TypeCaster::to_string( $data['slug'] ),
-			is_enabled: TypeCaster::to_bool( $data['is_enabled'] ),
-			is_open: TypeCaster::to_bool( $data['is_open'] ),
-			has_target: TypeCaster::to_bool( $data['has_target'] ),
-			target_amount: TypeCaster::to_int( $data['target_amount'] ),
-		);
+		try {
+			return new WordPressCampaignDto(
+				id: ArrayExtractor::extract_id_int_required( $data, 'id' ),
+				title: ArrayExtractor::extract_string_required( $data, 'title' ),
+				slug: ArrayExtractor::extract_string_required( $data, 'slug' ),
+				is_enabled: ArrayExtractor::extract_bool_required( $data, 'is_enabled' ),
+				is_open: ArrayExtractor::extract_bool_required( $data, 'is_open' ),
+				has_target: ArrayExtractor::extract_bool_required( $data, 'has_target' ),
+				target_amount: ArrayExtractor::extract_int_required( $data, 'target_amount' ),
+			);
+		} catch ( ArrayExtractionException $e ) {
+			throw new InvalidWordPressCampaignDtoException(
+				'Failed to build WordPressCampaignDto: ' . $e->getMessage(),
+				previous: $e,
+			);
+		}
 	}
 
 	/**
@@ -74,15 +86,15 @@ final readonly class WordPressCampaignDtoFactory {
 	}
 
 	/**
-	 * Create a WordPressCampaignDto from an AbstractAdminWordPressCampaignInput object.
+	 * Create a WordPressCampaignDto from an AdminWordPressCampaignInput object.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param AbstractAdminWordPressCampaignInput $input Validated input data from WordPress admin post form.
+	 * @param AdminWordPressCampaignInput $input Validated input data from WordPress admin post form.
 	 *
 	 * @return WordPressCampaignDto A DTO representing the campaign input.
 	 */
-	public function from_input( AbstractAdminWordPressCampaignInput $input ): WordPressCampaignDto {
+	public function from_input( AdminWordPressCampaignInput $input ): WordPressCampaignDto {
 
 		return new WordPressCampaignDto(
 			id: $input->id,

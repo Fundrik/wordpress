@@ -22,7 +22,7 @@ interface WordPressCampaignRepositoryInterface {
 	 *
 	 * @param EntityId $id The campaign ID.
 	 *
-	 * @return WordPressCampaignDto|null The campaign DTO if found, or null if not found.
+	 * @return WordPressCampaignDto|null The campaign DTO if found, or null otherwise.
 	 */
 	public function get_by_id( EntityId $id ): ?WordPressCampaignDto;
 
@@ -64,7 +64,7 @@ interface WordPressCampaignRepositoryInterface {
 	 *
 	 * @param WordPressCampaign $campaign The campaign entity to insert.
 	 *
-	 * @return bool True on success, false on failure.
+	 * @return bool True on success, false otherwise.
 	 */
 	public function insert( WordPressCampaign $campaign ): bool;
 
@@ -75,7 +75,7 @@ interface WordPressCampaignRepositoryInterface {
 	 *
 	 * @param WordPressCampaign $campaign The campaign entity to update.
 	 *
-	 * @return bool True on success, false on failure.
+	 * @return bool True on success, false otherwise.
 	 */
 	public function update( WordPressCampaign $campaign ): bool;
 
@@ -86,7 +86,7 @@ interface WordPressCampaignRepositoryInterface {
 	 *
 	 * @param EntityId $id The ID of the campaign to delete.
 	 *
-	 * @return bool True on success, false on failure.
+	 * @return bool True on success, false otherwise.
 	 */
 	public function delete( EntityId $id ): bool;
 }

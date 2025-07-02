@@ -16,16 +16,16 @@ final readonly class WordPressCampaignDto {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|string $id The campaign ID (integer or UUID).
-	 * @param string $title The title of the campaign.
-	 * @param string $slug URL-friendly slug used in WordPress permalinks.
-	 * @param bool $is_enabled Whether the campaign is currently enabled (visible and accessible).
-	 * @param bool $is_open Whether the campaign is currently open.
-	 * @param bool $has_target Whether the campaign has a target goal.
-	 * @param int $target_amount The target amount (if any) for the campaign.
+	 * @param int $id The campaign ID.
+	 * @param string $title The campaign title.
+	 * @param string $slug The campaign slug.
+	 * @param bool $is_enabled Whether the campaign is enabled.
+	 * @param bool $is_open Whether the campaign is open.
+	 * @param bool $has_target Whether the campaign has a target amount.
+	 * @param int $target_amount The campaign target amount.
 	 */
 	public function __construct(
-		public int|string $id,
+		public int $id,
 		public string $title,
 		public string $slug,
 		public bool $is_enabled,
@@ -40,7 +40,24 @@ final readonly class WordPressCampaignDto {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array<string, scalar> The DTO data as a key-value array.
+	 * @return array<string, scalar> The DTO data as a key-value array with keys:
+	 *         - id (int): The campaign ID.
+	 *         - title (string): The campaign title.
+	 *         - slug (string): The campaign slug.
+	 *         - is_enabled (bool): Whether the campaign is enabled.
+	 *         - is_open (bool): Whether the campaign is open.
+	 *         - has_target (bool): Whether the campaign has a target amount.
+	 *         - target_amount (int): The campaign target amount.
+	 *
+	 * @phpstan-return array{
+	 *     id: int,
+	 *     title: string,
+	 *     slug: string,
+	 *     is_enabled: bool,
+	 *     is_open: bool,
+	 *     has_target: bool,
+	 *     target_amount: int
+	 * }
 	 */
 	public function to_array(): array {
 

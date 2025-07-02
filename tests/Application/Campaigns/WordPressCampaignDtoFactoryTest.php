@@ -8,6 +8,7 @@ use Fundrik\Core\Domain\Campaigns\Campaign;
 use Fundrik\Core\Domain\Campaigns\CampaignTarget;
 use Fundrik\Core\Domain\Campaigns\CampaignTitle;
 use Fundrik\Core\Domain\EntityId;
+use Fundrik\WordPress\Application\Campaigns\Exceptions\InvalidWordPressCampaignDtoException;
 use Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
 use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
@@ -15,6 +16,7 @@ use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignSlug;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 
@@ -57,6 +59,28 @@ final class WordPressCampaignDtoFactoryTest extends FundrikTestCase {
 		$this->assertTrue( $dto->is_open );
 		$this->assertTrue( $dto->has_target );
 		$this->assertSame( 1_500, $dto->target_amount );
+	}
+
+	#[Test]
+	#[DataProvider( 'incomplete_input_provider' )]
+	public function from_array_throws_exception_when_required_fields_missing( array $data, string $key, ): void {
+
+		$this->expectException( InvalidWordPressCampaignDtoException::class );
+		$this->expectExceptionMessage( "Failed to build WordPressCampaignDto: Missing required key '{$key}'" );
+
+		$this->dto_factory->from_array( $data );
+	}
+
+	#[Test]
+	#[DataProvider( 'invalid_type_provider' )]
+	public function from_array_throws_exception_when_field_has_invalid_type( array $data, string $key ): void {
+
+		$this->expectException( InvalidWordPressCampaignDtoException::class );
+		$this->expectExceptionMessageMatches(
+			"/Failed to build WordPressCampaignDto: Invalid value type at key '{$key}'/",
+		);
+
+		$this->dto_factory->from_array( $data );
 	}
 
 	#[Test]
@@ -108,5 +132,178 @@ final class WordPressCampaignDtoFactoryTest extends FundrikTestCase {
 		$this->assertFalse( $dto->is_open );
 		$this->assertTrue( $dto->has_target );
 		$this->assertSame( 3_000, $dto->target_amount );
+	}
+
+	public static function incomplete_input_provider(): array {
+
+		return [
+			'missing id' => [
+				[
+					'title' => 'Title',
+					'slug' => 'slug',
+					'is_enabled' => true,
+					'is_open' => true,
+					'has_target' => true,
+					'target_amount' => 100,
+				],
+				'id',
+			],
+			'missing title' => [
+				[
+					'id' => 1,
+					'slug' => 'slug',
+					'is_enabled' => true,
+					'is_open' => true,
+					'has_target' => true,
+					'target_amount' => 100,
+				],
+				'title',
+			],
+			'missing slug' => [
+				[
+					'id' => 1,
+					'title' => 'Title',
+					'is_enabled' => true,
+					'is_open' => true,
+					'has_target' => true,
+					'target_amount' => 100,
+				],
+				'slug',
+			],
+			'missing is_enabled' => [
+				[
+					'id' => 1,
+					'title' => 'Title',
+					'slug' => 'slug',
+					'is_open' => true,
+					'has_target' => true,
+					'target_amount' => 100,
+				],
+				'is_enabled',
+			],
+			'missing is_open' => [
+				[
+					'id' => 1,
+					'title' => 'Title',
+					'slug' => 'slug',
+					'is_enabled' => true,
+					'has_target' => true,
+					'target_amount' => 100,
+				],
+				'is_open',
+			],
+			'missing has_target' => [
+				[
+					'id' => 1,
+					'title' => 'Title',
+					'slug' => 'slug',
+					'is_enabled' => true,
+					'is_open' => true,
+					'target_amount' => 100,
+				],
+				'has_target',
+			],
+			'missing target_amount' => [
+				[
+					'id' => 1,
+					'title' => 'Title',
+					'slug' => 'slug',
+					'is_enabled' => true,
+					'is_open' => true,
+					'has_target' => true,
+				],
+				'target_amount',
+			],
+		];
+	}
+
+	public static function invalid_type_provider(): array {
+
+		return [
+			'id as string' => [
+				[
+					'id' => 'not-int',
+					'title' => 'Title',
+					'slug' => 'slug',
+					'is_enabled' => true,
+					'is_open' => true,
+					'has_target' => true,
+					'target_amount' => 100,
+				],
+				'id',
+			],
+			'title as int' => [
+				[
+					'id' => 1,
+					'title' => 123,
+					'slug' => 'slug',
+					'is_enabled' => true,
+					'is_open' => true,
+					'has_target' => true,
+					'target_amount' => 100,
+				],
+				'title',
+			],
+			'slug as array' => [
+				[
+					'id' => 1,
+					'title' => 'Title',
+					'slug' => [ 'slug' ],
+					'is_enabled' => true,
+					'is_open' => true,
+					'has_target' => true,
+					'target_amount' => 100,
+				],
+				'slug',
+			],
+			'is_enabled as string' => [
+				[
+					'id' => 1,
+					'title' => 'Title',
+					'slug' => 'slug',
+					'is_enabled' => 'enabled',
+					'is_open' => true,
+					'has_target' => true,
+					'target_amount' => 100,
+				],
+				'is_enabled',
+			],
+			'is_open as int' => [
+				[
+					'id' => 1,
+					'title' => 'Title',
+					'slug' => 'slug',
+					'is_enabled' => true,
+					'is_open' => 'open',
+					'has_target' => true,
+					'target_amount' => 100,
+				],
+				'is_open',
+			],
+			'has_target as null' => [
+				[
+					'id' => 1,
+					'title' => 'Title',
+					'slug' => 'slug',
+					'is_enabled' => true,
+					'is_open' => true,
+					'has_target' => null,
+					'target_amount' => 100,
+				],
+				'has_target',
+			],
+			'target_amount as string' => [
+				[
+					'id' => 1,
+					'title' => 'Title',
+					'slug' => 'slug',
+					'is_enabled' => true,
+					'is_open' => true,
+					'has_target' => true,
+					'target_amount' => 'one hundred',
+				],
+				'target_amount',
+			],
+		];
 	}
 }

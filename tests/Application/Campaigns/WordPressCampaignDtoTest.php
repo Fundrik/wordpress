@@ -35,30 +35,6 @@ final class WordPressCampaignDtoTest extends FundrikTestCase {
 	}
 
 	#[Test]
-	public function supports_uuid_as_id(): void {
-
-		$uuid = 'b1e29e0a-2fce-4c8f-a0ab-53406f8e9e99';
-
-		$dto = new WordPressCampaignDto(
-			id: $uuid,
-			title: 'UUID Campaign',
-			slug: 'uuid-campaign',
-			is_enabled: false,
-			is_open: true,
-			has_target: false,
-			target_amount: 0,
-		);
-
-		$this->assertSame( $uuid, $dto->id );
-		$this->assertSame( 'UUID Campaign', $dto->title );
-		$this->assertSame( 'uuid-campaign', $dto->slug );
-		$this->assertFalse( $dto->is_enabled );
-		$this->assertTrue( $dto->is_open );
-		$this->assertFalse( $dto->has_target );
-		$this->assertSame( 0, $dto->target_amount );
-	}
-
-	#[Test]
 	public function to_array_returns_correct_structure(): void {
 
 		$dto = new WordPressCampaignDto(

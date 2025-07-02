@@ -8,13 +8,13 @@ use Attribute;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Custom validation constraint to ensure the campaign's target amount
- * is consistent with whether targeting is enabled or disabled.
+ * Custom validation constraint to ensure that target_amount is logically consistent
+ * with has_target.
  *
- * When targeting is enabled, the target amount must be greater than zero.
- * When targeting is disabled, the target amount must be zero.
+ * - If has_target is true, then target_amount must be greater than zero.
+ * - If has_target is false, then target_amount must be exactly zero.
  *
- * This constraint is designed to be applied at the class level.
+ * This is a class-level constraint intended to complement field-level assertions.
  *
  * @since 1.0.0
  */
@@ -24,12 +24,16 @@ final class CampaignTargetConstraint extends Constraint {
 	/**
 	 * Error message when target amount is invalid while targeting is enabled.
 	 *
+	 * Applied when $has_target is true and $target_amount <= 0.
+	 *
 	 * @since 1.0.0
 	 */
 	public string $enabled_invalid;
 
 	/**
 	 * Error message when target amount is invalid while targeting is disabled.
+	 *
+	 * Applied when $has_target is false and $target_amount > 0.
 	 *
 	 * @since 1.0.0
 	 */

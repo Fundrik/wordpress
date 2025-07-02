@@ -79,9 +79,7 @@ final class AdminWordPressCampaignInputFactoryTest extends FundrikTestCase {
 	public function from_array_throws_exception_when_required_fields_missing( array $data, string $key, ): void {
 
 		$this->expectException( InvalidAdminWordPressCampaignInputException::class );
-		$this->expectExceptionMessage(
-			"Failed to build parameters for AdminWordPressCampaignInput: Missing required key '{$key}'",
-		);
+		$this->expectExceptionMessage( "Failed to build AdminWordPressCampaignInput: Missing required key '{$key}'" );
 
 		$this->factory->from_array( $data );
 	}
@@ -92,7 +90,7 @@ final class AdminWordPressCampaignInputFactoryTest extends FundrikTestCase {
 
 		$this->expectException( InvalidAdminWordPressCampaignInputException::class );
 		$this->expectExceptionMessageMatches(
-			"/Failed to build parameters for AdminWordPressCampaignInput: Invalid value type at key '{$key}'/",
+			"/Failed to build AdminWordPressCampaignInput: Invalid value type at key '{$key}'/",
 		);
 
 		$this->factory->from_array( $data );
