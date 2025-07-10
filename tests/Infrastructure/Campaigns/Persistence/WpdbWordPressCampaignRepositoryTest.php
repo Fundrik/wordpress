@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns\Persistence;
+namespace Fundrik\WordPress\Tests\Infrastructure\Campaigns;
 
 use Fundrik\Core\Domain\Campaigns\Campaign;
 use Fundrik\Core\Domain\Campaigns\CampaignTarget;
 use Fundrik\Core\Domain\Campaigns\CampaignTitle;
 use Fundrik\Core\Domain\EntityId;
-use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
-use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDtoFactory;
+use Fundrik\WordPress\Campaigns\Application\WordPressCampaignDto;
+use Fundrik\WordPress\Campaigns\Application\WordPressCampaignDtoFactory;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignSlug;
-use Fundrik\WordPress\Infrastructure\Campaigns\Persistence\WpdbWordPressCampaignRepository;
-use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
+use Fundrik\WordPress\Infrastructure\Campaigns\WpdbWordPressCampaignRepository;
+use Fundrik\WordPress\Infrastructure\Interfaces\QueryExecutorInterface;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
 use Mockery\MockInterface;

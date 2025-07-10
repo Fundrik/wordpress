@@ -28,7 +28,8 @@
 		"php": "^8.2",
 		"fundrik/core": "dev-main",
 		"illuminate/container": "^12.19",
-		"symfony/validator": "^7.2"
+		"symfony/validator": "^7.2",
+		"illuminate/events": "^12.19"
 	},
 	"require-dev": {
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",

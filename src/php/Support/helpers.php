@@ -8,7 +8,7 @@
 declare(strict_types=1);
 
 use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
-use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
+use Fundrik\WordPress\Shared\Infrastructure\Container\ContainerRegistry;
 
 /**
  * Retrieves the Fundrik container instance.

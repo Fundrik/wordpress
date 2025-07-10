@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Tests\Domain\Campaigns;
 
-use Fundrik\Core\Application\Campaigns\CampaignDtoFactory;
+use Fundrik\Core\Campaigns\Application\CampaignDtoFactory;
 use Fundrik\Core\Domain\Campaigns\CampaignFactory;
-use Fundrik\WordPress\Application\Campaigns\WordPressCampaignDto;
+use Fundrik\WordPress\Campaigns\Application\WordPressCampaignDto;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaign;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignFactory;
 use Fundrik\WordPress\Domain\Campaigns\WordPressCampaignSlug;

@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress;
 
-use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
-use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
-use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
-use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface;
-use RuntimeException;
+use Fundrik\WordPress\Shared\Infrastructure\Container\ServiceBindings;
+use Fundrik\WordPress\Shared\Infrastructure\WordPress\Interfaces\WordPressPlatformInterface;
 
 /**
- * Bootstraps and initializes the plugin's core components.
+ * Bootstrapps for the Fundrik plugin.
  *
  * @since 1.0.0
  */
@@ -22,28 +19,26 @@ final readonly class App {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param DependencyProviderInterface $provider Dependency provider.
+	 * @param ServiceBindings $service_bindings Supplies all service bindings to be registered into the container.
 	 */
 	public function __construct(
-		private DependencyProviderInterface $provider,
+		private ServiceBindings $service_bindings,
 	) {}
 
 	/**
 	 * Runs the application.
 	 *
-	 * Registers container bindings and initializes the platform.
-	 *
 	 * @since 1.0.0
 	 */
 	public function run(): void {
 
-		$this->register_bindings( $this->provider );
+		$this->register_bindings();
 
 		$this->platform()->init();
 	}
 
 	/**
-	 * Handles plugin activation.
+	 * Handles the plugin activation.
 	 *
 	 * @since 1.0.0
 	 */
@@ -55,66 +50,32 @@ final readonly class App {
 	}
 
 	/**
-	 * Returns the Fundrik dependency injection container.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return ContainerInterface The instance of the Fundrik container.
-	 */
-	public function container(): ContainerInterface {
-
-		return ContainerRegistry::get();
-	}
-
-	/**
-	 * Returns the platform integration instance.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return PlatformInterface The platform integration instance.
-	 */
-	public function platform(): PlatformInterface {
-
-		$platform = $this->container()->get( PlatformInterface::class );
-
-		if ( ! $platform instanceof PlatformInterface ) {
-
-			throw new RuntimeException(
-				sprintf(
-					'Container returned an instance of %s, but %s expected.',
-					$platform::class,
-					PlatformInterface::class,
-				),
-			);
-		}
-
-		return $platform;
-	}
-
-	// phpcs:disable SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
-	/**
 	 * Registers bindings from a dependency provider into the container.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @param DependencyProviderInterface $provider The dependency provider.
-	 * @param string $category Optional category of bindings.
 	 */
-	public function register_bindings( DependencyProviderInterface $provider, string $category = '' ): void {
+	private function register_bindings(): void {
 
-		$bindings = $provider->get_bindings( $category );
+		$bindings = $this->service_bindings->get_bindings();
 
 		foreach ( $bindings as $abstract => $concrete ) {
 
-			if ( is_array( $concrete ) ) {
-
-				foreach ( $concrete as $a => $c ) {
-					$this->container()->singleton( $a, $c );
-				}
-			} else {
-				$this->container()->singleton( $abstract, $concrete );
-			}
+			fundrik()->singleton( $abstract, $concrete );
 		}
 	}
-	// phpcs:enable SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
+
+	/**
+	 * Returns the WordPress platform integration instance.
+	 *
+	 * Cannot be injected via constructor because the platform binding is
+	 * not available until after {@see App::register_bindings()} is called.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return WordPressPlatformInterface The resolved platform integration instance.
+	 */
+	private function platform(): WordPressPlatformInterface {
+
+		return fundrik()->get( WordPressPlatformInterface::class );
+	}
 }

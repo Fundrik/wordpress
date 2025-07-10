@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Fundrik\WordPress\Tests\Infrastructure\Platform;
+namespace Fundrik\WordPress\Tests\Infrastructure;
 
-use Fundrik\WordPress\Infrastructure\Platform\AllowedBlockTypesFilter;
-use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PostTypeInterface;
+use Fundrik\WordPress\Infrastructure\AllowedBlockTypesFilter;
+use Fundrik\WordPress\Infrastructure\Interfaces\PostTypeInterface;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;
 use PHPUnit\Framework\Attributes\CoversClass;

@@ -32,8 +32,9 @@
 				<element value="Symfony\Component\Validator\ConstraintValidator"/>
 			</property>
 			<property name="excludedClasses" type="array">
-				<element value="Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType"/>
-				<element value="Fundrik\WordPress\Infrastructure\Container\ContainerRegistry"/>
+				<element value="Fundrik\WordPress\Shared\Infrastructure\Container\Container"/>
+				<element value="Fundrik\WordPress\Shared\Infrastructure\Container\ContainerRegistry"/>
+				<element value="Fundrik\WordPress\Shared\Infrastructure\WordPress\Events\AllowedBlockTypesFilterWordPressEvent"/>
 			</property>
 		</properties>
 	</rule>
@@ -49,10 +50,12 @@
 	<rule ref="FundrikStandard.Classes.RequireAbstractOrFinal">
 		<properties>
 			<property name="excludedClasses" type="array">
-				<element value="Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignInput" />
-				<element value="Fundrik\WordPress\Application\Campaigns\Input\AdminWordPressCampaignPartialInput" />
-				<element value="Fundrik\WordPress\Infrastructure\Campaigns\Platform\WordPressCampaignPostType" />
-				<element value="Fundrik\WordPress\Infrastructure\DependencyProvider" />
+				<element value="Fundrik\WordPress\Campaigns\Application\Input\AdminWordPressCampaignInput" />
+				<element value="Fundrik\WordPress\Campaigns\Application\Input\AdminWordPressCampaignPartialInput" />
+				<element value="Fundrik\WordPress\Campaigns\Infrastructure\WordPress\WordPressCampaignPostType" />
+				<element value="Fundrik\WordPress\Shared\Infrastructure\Container\ServiceBindings" />
+				<element value="Fundrik\WordPress\Shared\Infrastructure\FundrikContext" />
+				<element value="Fundrik\WordPress\Shared\Infrastructure\WordPress\WordPressContext" />
 			</property>
 		</properties>
 	</rule>

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Tests\Fixtures;
 
-use Fundrik\WordPress\Infrastructure\Persistence\Interfaces\QueryExecutorInterface;
+use Fundrik\WordPress\Infrastructure\Interfaces\QueryExecutorInterface;
 use Fundrik\WordPress\Support\Path;
 use Fundrik\WordPress\Tests\FundrikTestCase;
 use Mockery;

@@ -8,7 +8,7 @@ use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
 use Fundrik\Core\Infrastructure\Interfaces\DependencyProviderInterface;
 use Fundrik\WordPress\App;
 use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
-use Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface;
+use Fundrik\WordPress\Infrastructure\Interfaces\PlatformInterface;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -150,7 +150,7 @@ final class AppTest extends FundrikTestCase {
 		$this->expectException( RuntimeException::class );
 		$this->expectExceptionMessage(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-			'Container returned an instance of stdClass, but Fundrik\WordPress\Infrastructure\Platform\Interfaces\PlatformInterface expected.',
+			'Container returned an instance of stdClass, but Fundrik\WordPress\Infrastructure\Interfaces\PlatformInterface expected.',
 		);
 
 		$this->app->platform();
