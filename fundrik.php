@@ -27,8 +27,6 @@
 declare(strict_types=1);
 
 use Fundrik\WordPress\App;
-use Fundrik\WordPress\Shared\Infrastructure\Container\Container;
-use Fundrik\WordPress\Shared\Infrastructure\Container\ContainerRegistry;
 
 defined( 'ABSPATH' ) || die;
 
@@ -46,50 +44,22 @@ require_once FUNDRIK_PATH . 'vendor/autoload.php';
  */
 function fundrik_init(): void {
 
-	ContainerRegistry::set( new Container( new \Illuminate\Container\Container() ) );
-
-	/**
-	 * Fires before the Fundrik App runs.
-	 *
-	 * This hook is triggered after the container is initialized,
-	 * but before the application is bootstrapped.
-	 *
-	 * @since 1.0.0
-	 */
-	do_action( 'fundrik_before_app_run' );
-
-	fundrik()->get( App::class )->run();
+	App::bootstrap()->run();
 }
 
 add_action( 'plugins_loaded', fundrik_init( ... ) );
 
 /**
- * Handles the plugin activation.
+ * Temporarily logs a message until a proper logging system is implemented.
  *
  * @since 1.0.0
+ *
+ * @param string $message The message to log.
+ *
+ * @todo Replace with proper PSR-3 compatible logger implementation.
  */
-function fundrik_activate(): void {
+function fundrik_log( string $message ): void {
 
-	ContainerRegistry::set( new Container( new \Illuminate\Container\Container() ) );
-
-	/**
-	 * Fires before the Fundrik App handles activation.
-	 *
-	 * This hook is triggered after the container and dispatcher
-	 * are initialized, but before the app runs activation logic.
-	 *
-	 * @since 1.0.0
-	 */
-	do_action( 'fundrik_before_app_activate' );
-
-	fundrik()->get( App::class )->activate();
+	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+	error_log( $message );
 }
-
-/**
- * Register the activation hook.
- *
- * WordPress requires this to be a top-level call.
- *
- * @see https://developer.wordpress.org/plugins/plugin-basics/activation-deactivation-hooks/
- */
-register_activation_hook( __FILE__, fundrik_activate( ... ) );

@@ -1,9 +1,9 @@
+includes:
+	- phpstan-disallowed-classes.neon
+
 parameters:
 	level: max
 	paths:
 		- src/php
 	bootstrapFiles:
 		- phpstan-bootstrap.php
-	ignoreErrors:
-		-
-			identifier: ternary.shortNotAllowed

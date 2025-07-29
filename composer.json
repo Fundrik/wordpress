@@ -28,8 +28,8 @@
 		"php": "^8.2",
 		"fundrik/core": "dev-main",
 		"illuminate/container": "^12.19",
-		"symfony/validator": "^7.2",
-		"illuminate/events": "^12.19"
+		"illuminate/events": "^12.19",
+		"symfony/validator": "^7.2"
 	},
 	"require-dev": {
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
@@ -45,16 +45,14 @@
 		"phpstan/phpstan-strict-rules": "^2.0",
 		"phpstan/phpstan-deprecation-rules": "^2.0",
 		"swissspidy/phpstan-no-private": "^1.0",
+		"spaze/phpstan-disallowed-calls": "^4.6",
 		"szepeviktor/phpstan-wordpress": "^2.0",
 		"johnbillion/wp-compat": "^1.2"
 	},
 	"autoload": {
 		"psr-4": {
 			"Fundrik\\WordPress\\": "src/php/"
-		},
-		"files": [
-			"src/php/Support/helpers.php"
-		]
+		}
 	},
 	"autoload-dev": {
 		"psr-4": {

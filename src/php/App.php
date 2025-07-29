@@ -4,25 +4,33 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress;
 
-use Fundrik\WordPress\Shared\Infrastructure\Container\ServiceBindings;
-use Fundrik\WordPress\Shared\Infrastructure\WordPress\Interfaces\WordPressPlatformInterface;
+use Fundrik\WordPress\Infrastructure\Container\Container;
+use Fundrik\WordPress\Infrastructure\Container\ContainerInterface;
+use Fundrik\WordPress\Infrastructure\Container\ServiceBindings;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunnerInterface;
+use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext;
+use Fundrik\WordPress\Infrastructure\WordPress\WordPressEventBridge;
+use Illuminate\Container\Container as LaravelContainer;
+use Illuminate\Contracts\Container\Container as LaravelContainerInterface;
 
 /**
- * Bootstrapps for the Fundrik plugin.
+ * Bootstraps the Fundrik plugin.
  *
  * @since 1.0.0
+ *
+ * @internal
  */
 final readonly class App {
 
 	/**
-	 * Constructor.
+	 * Private constructor, use factory method.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ServiceBindings $service_bindings Supplies all service bindings to be registered into the container.
+	 * @param ContainerInterface $container Resolves and registers application services.
 	 */
-	public function __construct(
-		private ServiceBindings $service_bindings,
+	private function __construct(
+		private ContainerInterface $container,
 	) {}
 
 	/**
@@ -34,48 +42,64 @@ final readonly class App {
 
 		$this->register_bindings();
 
-		$this->platform()->init();
+		$this->container->get( MigrationRunnerInterface::class )->migrate();
+
+		$this->run_wordpress();
 	}
 
 	/**
-	 * Handles the plugin activation.
+	 * Builds and returns a new App instance with default containers.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return App The application instance ready to run.
 	 */
-	public function activate(): void {
+	public static function bootstrap(): self {
 
-		$this->run();
+		$laravel_container = new LaravelContainer();
+		$container = new Container( $laravel_container );
 
-		$this->platform()->on_activate();
+		$container->singleton( ContainerInterface::class, static fn (): ContainerInterface => $container );
+		$container->singleton(
+			LaravelContainerInterface::class,
+			static fn (): LaravelContainerInterface => $laravel_container,
+		);
+
+		$container->singleton( ServiceBindings::class );
+
+		return new self( $container );
 	}
 
 	/**
-	 * Registers bindings from a dependency provider into the container.
+	 * Registers service bindings in the container.
 	 *
 	 * @since 1.0.0
 	 */
 	private function register_bindings(): void {
 
-		$bindings = $this->service_bindings->get_bindings();
+		$service_bindings = $this->container->get( ServiceBindings::class );
+
+		$bindings = $service_bindings->get_bindings();
 
 		foreach ( $bindings as $abstract => $concrete ) {
 
-			fundrik()->singleton( $abstract, $concrete );
+			if ( is_int( $abstract ) ) {
+				$abstract = $concrete;
+			}
+
+			$this->container->singleton( $abstract, $concrete );
 		}
 	}
 
 	/**
-	 * Returns the WordPress platform integration instance.
-	 *
-	 * Cannot be injected via constructor because the platform binding is
-	 * not available until after {@see App::register_bindings()} is called.
+	 * Boots WordPress-specific infrastructure.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @return WordPressPlatformInterface The resolved platform integration instance.
 	 */
-	private function platform(): WordPressPlatformInterface {
+	private function run_wordpress(): void {
 
-		return fundrik()->get( WordPressPlatformInterface::class );
+		$this->container
+			->get( WordPressEventBridge::class )
+			->register( $this->container->get( WordPressContext::class ) );
 	}
 }

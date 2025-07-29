@@ -28,13 +28,11 @@
 		<properties>
 			<property name="excludedParentClasses" type="array">
 				<element value="Throwable"/>
-				<element value="Symfony\Component\Validator\Constraint"/>
-				<element value="Symfony\Component\Validator\ConstraintValidator"/>
 			</property>
 			<property name="excludedClasses" type="array">
-				<element value="Fundrik\WordPress\Shared\Infrastructure\Container\Container"/>
-				<element value="Fundrik\WordPress\Shared\Infrastructure\Container\ContainerRegistry"/>
-				<element value="Fundrik\WordPress\Shared\Infrastructure\WordPress\Events\AllowedBlockTypesFilterWordPressEvent"/>
+				<element value="Fundrik\WordPress\Infrastructure\Container\Container"/>
+				<element value="Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressAllowedBlockTypesFilterEvent"/>
+				<element value="Fundrik\WordPress\Infrastructure\WordPress\Listeners\FilterAllowedBlocksByPostTypeListener"/>
 			</property>
 		</properties>
 	</rule>
@@ -50,21 +48,11 @@
 	<rule ref="FundrikStandard.Classes.RequireAbstractOrFinal">
 		<properties>
 			<property name="excludedClasses" type="array">
-				<element value="Fundrik\WordPress\Campaigns\Application\Input\AdminWordPressCampaignInput" />
-				<element value="Fundrik\WordPress\Campaigns\Application\Input\AdminWordPressCampaignPartialInput" />
-				<element value="Fundrik\WordPress\Campaigns\Infrastructure\WordPress\WordPressCampaignPostType" />
-				<element value="Fundrik\WordPress\Shared\Infrastructure\Container\ServiceBindings" />
-				<element value="Fundrik\WordPress\Shared\Infrastructure\FundrikContext" />
-				<element value="Fundrik\WordPress\Shared\Infrastructure\WordPress\WordPressContext" />
+				<element value="Fundrik\WordPress\Infrastructure\Container\ServiceBindings" />
+				<element value="Fundrik\WordPress\Infrastructure\Migrations\MigrationRegistry" />
 			</property>
-		</properties>
-	</rule>
-
-	<rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
-		<properties>
-			<property name="ignoredNamespaces" type="array">
-				<element value="Fundrik\WordPress\Infrastructure\Migrations\Files"/>
-				<element value="Fundrik\WordPress\Tests\Fixtures"/>
+			<property name="excludedParentClasses" type="array">
+				<element value="Fundrik\WordPress\Infrastructure\WordPress\PostTypes\PostTypeInterface"/>
 			</property>
 		</properties>
 	</rule>

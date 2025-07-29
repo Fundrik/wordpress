@@ -6,13 +6,13 @@ namespace Fundrik\WordPress\Tests\Infrastructure;
 
 use Brain\Monkey\Functions;
 use Fundrik\Core\Infrastructure\Interfaces\ContainerInterface;
+use Fundrik\WordPress\Infrastructure\AllowedBlockTypesFilter;
 use Fundrik\WordPress\Infrastructure\Container\ContainerRegistry;
 use Fundrik\WordPress\Infrastructure\DependencyProvider;
-use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
-use Fundrik\WordPress\Infrastructure\Migrations\MigrationManager;
-use Fundrik\WordPress\Infrastructure\AllowedBlockTypesFilter;
 use Fundrik\WordPress\Infrastructure\Interfaces\ListenerInterface;
 use Fundrik\WordPress\Infrastructure\Interfaces\PostTypeInterface;
+use Fundrik\WordPress\Infrastructure\Migrations\Interfaces\MigrationReferenceFactoryInterface;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationManager;
 use Fundrik\WordPress\Infrastructure\WordPressPlatform;
 use Fundrik\WordPress\Support\Path;
 use Fundrik\WordPress\Tests\FundrikTestCase;

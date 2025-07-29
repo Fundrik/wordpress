@@ -2,4 +2,4 @@
 
 declare(strict_types=1);
 
-define( 'FUNDRIK_PATH', dirname( __DIR__ ) . '/' );
+require_once 'fundrik.php';

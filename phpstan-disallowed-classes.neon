@@ -1,0 +1,40 @@
+parameters:
+	disallowedClasses:
+		# App
+		-
+			class: 'Illuminate\Container\Container'
+			message: 'use Illuminate\Contracts\Container\Container instead.'
+			allowIn:
+				- src/php/App.php
+		-
+			class: 'Fundrik\WordPress\Infrastructure\Container\Container'
+			message: 'use Fundrik\WordPress\Infrastructure\Container\ContainerInterface instead.'
+			allowIn:
+				- src/php/App.php
+
+		# ServiceBindings
+		-
+			class: 'Fundrik\WordPress\Components\Campaigns\Application\CampaignService'
+			message: 'use Fundrik\WordPress\Components\Campaigns\Application\Ports\In\CampaignServicePortInterface instead.'
+			allowIn:
+				- src/php/Infrastructure/Container/ServiceBindings.php
+		-
+			class: 'Illuminate\Events\Dispatcher'
+			message: 'use Illuminate\Contracts\Events\Dispatcher instead.'
+			allowIn:
+				- src/php/Infrastructure/Container/ServiceBindings.php
+		-
+			class: 'Fundrik\WordPress\Infrastructure\EventDispatcher\EventDispatcher'
+			message: 'use Fundrik\WordPress\Infrastructure\EventDispatcher\EventDispatcherInterface instead.'
+			allowIn:
+				- src/php/Infrastructure/Container/ServiceBindings.php
+		-
+			class: 'Fundrik\WordPress\Infrastructure\Migrations\MigrationRunner'
+			message: 'use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunnerInterface instead.'
+			allowIn:
+				- src/php/Infrastructure/Container/ServiceBindings.php
+		-
+			class: 'Fundrik\WordPress\Infrastructure\WordPress\WpdbDatabase'
+			message: 'use Fundrik\WordPress\Infrastructure\DatabaseInterface instead.'
+			allowIn:
+				- src/php/Infrastructure/Container/ServiceBindings.php
