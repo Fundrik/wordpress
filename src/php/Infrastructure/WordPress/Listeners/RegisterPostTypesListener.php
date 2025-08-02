@@ -44,7 +44,7 @@ final readonly class RegisterPostTypesListener {
 	) {}
 
 	/**
-	 * Handler.
+	 * Handles the given event.
 	 *
 	 * @since 1.0.0
 	 *

@@ -1,16 +1,16 @@
 parameters:
 	disallowedClasses:
-		# App
+		# Application
 		-
 			class: 'Illuminate\Container\Container'
 			message: 'use Illuminate\Contracts\Container\Container instead.'
 			allowIn:
-				- src/php/App.php
+				- src/php/Application.php
 		-
 			class: 'Fundrik\WordPress\Infrastructure\Container\Container'
 			message: 'use Fundrik\WordPress\Infrastructure\Container\ContainerInterface instead.'
 			allowIn:
-				- src/php/App.php
+				- src/php/Application.php
 
 		# ServiceBindings
 		-
@@ -36,5 +36,15 @@ parameters:
 		-
 			class: 'Fundrik\WordPress\Infrastructure\WordPress\WpdbDatabase'
 			message: 'use Fundrik\WordPress\Infrastructure\DatabaseInterface instead.'
+			allowIn:
+				- src/php/Infrastructure/Container/ServiceBindings.php
+		-
+			class: 'Fundrik\WordPress\Infrastructure\WordPress\HookMappers\HookMapperRegistrar'
+			message: 'use Fundrik\WordPress\Infrastructure\WordPress\HookMappers\HookMapperRegistrarInterface instead.'
+			allowIn:
+				- src/php/Infrastructure/Container/ServiceBindings.php
+		-
+			class: 'Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrar'
+			message: 'use Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrarInterface instead.'
 			allowIn:
 				- src/php/Infrastructure/Container/ServiceBindings.php

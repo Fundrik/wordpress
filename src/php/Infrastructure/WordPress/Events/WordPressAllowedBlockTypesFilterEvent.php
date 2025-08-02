@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\WordPress\Events;
 
-use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext;
+use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContext;
 use WP_Block_Editor_Context;
 
 /**

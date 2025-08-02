@@ -43,7 +43,7 @@ final class FilterAllowedBlocksByPostTypeListener {
 	) {}
 
 	/**
-	 * Handler.
+	 * Handles the given event.
 	 *
 	 * @since 1.0.0
 	 *
@@ -65,10 +65,10 @@ final class FilterAllowedBlocksByPostTypeListener {
 		}
 
 		if ( $allowed === true ) {
-			$allowed = array_keys( $event->context->get_block_types() );
+			$allowed = array_keys( $event->context->get_registered_block_types() );
 		}
 
-		$this->set_block_allowed_post_types( $event->context->plugin->get_post_types() );
+		$this->set_block_allowed_post_types( $event->context->get_declared_post_types() );
 
 		$filtered = array_filter(
 			$allowed,

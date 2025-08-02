@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\WordPress\Listeners;
 
-use Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressInitEvent;
+use Fundrik\WordPress\Application;
 
 /**
  * Registers all custom blocks.
@@ -16,17 +16,26 @@ use Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressInitEvent;
 final readonly class RegisterBlocksListener {
 
 	/**
-	 * Handler.
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WordPressInitEvent $event Represents the 'init' WordPress action as a Fundrik event.
+	 * @param Application $application Provides access to plugin-level paths and configuration.
 	 */
-	public function handle( WordPressInitEvent $event ): void {
+	public function __construct(
+		private Application $application,
+	) {}
+
+	/**
+	 * Handles the given event.
+	 *
+	 * @since 1.0.0
+	 */
+	public function handle(): void {
 
 		wp_register_block_types_from_metadata_collection(
-			$event->context->plugin->get_blocks_path(),
-			$event->context->plugin->get_blocks_manifest_path(),
+			$this->application->get_blocks_path(),
+			$this->application->get_blocks_manifest_path(),
 		);
 	}
 }

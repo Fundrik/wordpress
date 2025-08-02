@@ -45,6 +45,9 @@ final readonly class EventDispatcher implements EventDispatcherInterface {
 	 *
 	 * @param string $event_class The class name of the event to listen for.
 	 * @param string $listener_class The class name of the listener that handles the event.
+	 *
+	 * @phpstan-param class-string $event_class
+	 * @phpstan-param class-string $listener_class
 	 */
 	public function listen( string $event_class, string $listener_class ): void {
 

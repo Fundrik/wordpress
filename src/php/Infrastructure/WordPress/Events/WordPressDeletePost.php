@@ -5,24 +5,29 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Infrastructure\WordPress\Events;
 
 use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContext;
+use WP_Post;
 
 /**
- * Represents the 'init' WordPress action as a Fundrik event.
+ * Represents the 'delete_post' WordPress action as a Fundrik event.
  *
  * @since 1.0.0
  *
  * @internal
  */
-final readonly class WordPressInitEvent {
+final readonly class WordPressDeletePost {
 
 	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param int $post_id Post ID.
+	 * @param WP_Post $post Post object.
 	 * @param WordPressContext $context The WordPress-specific plugin context.
 	 */
 	public function __construct(
-		public WordPressContext $context,
+		public int $post_id,
+		public WP_Post $post,
+		public readonly WordPressContext $context,
 	) {}
 }

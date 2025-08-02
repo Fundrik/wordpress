@@ -37,6 +37,12 @@ final class Container implements ContainerInterface {
 	 *
 	 * @param string $id The class or interface name to resolve.
 	 *
+	 * @template T of object
+	 *
+	 * @phpstan-param class-string<T> $id
+	 *
+	 * @phpstan-return T
+	 *
 	 * @return object The resolved instance matching the given identifier.
 	 */
 	public function get( string $id ): object {
@@ -48,14 +54,14 @@ final class Container implements ContainerInterface {
 			throw new RuntimeException(
 				sprintf(
 					'Container returned instance of %s, but expected implementation of %s.',
-					is_object( $instance ) ? get_debug_type( $instance ) : gettype( $instance ),
+					get_debug_type( $instance ),
 					$id,
 				),
 			);
 		}
 
-		// phpcs:disable SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.MissingVariable, Generic.Commenting.DocComment.MissingShort
-		/** @var object $instance */
+		// phpcs:ignore SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.MissingVariable, Generic.Commenting.DocComment.MissingShort
+		/** @var T $instance */
 		return $instance;
 	}
 
@@ -68,6 +74,12 @@ final class Container implements ContainerInterface {
 	 *
 	 * @param string $id The class or interface name to instantiate.
 	 * @param array<string, mixed> $parameters Optional constructor parameters.
+	 *
+	 * @template T of object
+	 *
+	 * @phpstan-param class-string<T> $id
+	 *
+	 * @phpstan-return T
 	 *
 	 * @return object The newly created instance matching the expected type.
 	 *
@@ -82,14 +94,14 @@ final class Container implements ContainerInterface {
 			throw new RuntimeException(
 				sprintf(
 					'Container made instance of %s, but expected implementation of %s.',
-					is_object( $instance ) ? get_debug_type( $instance ) : gettype( $instance ),
+					get_debug_type( $instance ),
 					$id,
 				),
 			);
 		}
 
-		// phpcs:disable SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.MissingVariable, Generic.Commenting.DocComment.MissingShort
-		/** @var object $instance */
+		// phpcs:ignore SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.MissingVariable, Generic.Commenting.DocComment.MissingShort
+		/** @var T $instance */
 		return $instance;
 	}
 
@@ -99,6 +111,8 @@ final class Container implements ContainerInterface {
 	 * @since 1.0.0
 	 *
 	 * @param string $id The class or interface name to check.
+	 *
+	 * @phpstan-param class-string $id
 	 *
 	 * @return bool True if the binding exists in the container, false otherwise.
 	 */
@@ -118,6 +132,9 @@ final class Container implements ContainerInterface {
 	 *
 	 * @param string $abstract The class or interface name to bind.
 	 * @param Closure|string|null $concrete The implementation or factory to bind, or null to use the abstract.
+	 *
+	 * @phpstan-param class-string $abstract
+	 * @phpstan-param Closure|class-string|null $concrete
 	 */
 	public function singleton(
 		// phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.abstractFound

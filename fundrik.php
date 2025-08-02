@@ -26,7 +26,7 @@
 
 declare(strict_types=1);
 
-use Fundrik\WordPress\App;
+use Fundrik\WordPress\Application;
 
 defined( 'ABSPATH' ) || die;
 
@@ -44,7 +44,7 @@ require_once FUNDRIK_PATH . 'vendor/autoload.php';
  */
 function fundrik_init(): void {
 
-	App::bootstrap()->run();
+	Application::bootstrap()->run();
 }
 
 add_action( 'plugins_loaded', fundrik_init( ... ) );

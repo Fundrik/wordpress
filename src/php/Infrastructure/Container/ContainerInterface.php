@@ -22,13 +22,13 @@ interface ContainerInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $id The class or interface name to resolve.
-	 *
 	 * @template T of object
 	 *
 	 * @phpstan-param class-string<T> $id
 	 *
 	 * @phpstan-return T
+	 *
+	 * @param string $id The class or interface name to resolve.
 	 *
 	 * @return object The resolved instance matching the given identifier.
 	 */
@@ -41,10 +41,14 @@ interface ContainerInterface {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @template T of object
+	 *
+	 * @phpstan-param class-string<T> $id
+	 *
+	 * @phpstan-return T
+	 *
 	 * @param string $id The class or interface name to instantiate.
 	 * @param array<string, mixed> $parameters Optional constructor parameters.
-	 *
-	 * @phpstan-param class-string $id
 	 *
 	 * @return object The newly created instance matching the expected type.
 	 *
@@ -57,9 +61,9 @@ interface ContainerInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $id The class or interface name to check.
-	 *
 	 * @phpstan-param class-string $id
+	 *
+	 * @param string $id The class or interface name to check.
 	 *
 	 * @return bool True if the binding exists in the container, false otherwise.
 	 */
@@ -74,10 +78,11 @@ interface ContainerInterface {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @phpstan-param class-string $abstract
+	 * @phpstan-param Closure|class-string|null $concrete
+	 *
 	 * @param string $abstract The class or interface name to bind.
 	 * @param Closure|string|null $concrete The implementation or factory to bind, or null to use the abstract.
-	 *
-	 * @phpstan-param class-string<object> $abstract
 	 */
 	public function singleton(
 		// phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.abstractFound
