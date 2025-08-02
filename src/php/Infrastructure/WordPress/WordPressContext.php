@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Infrastructure\WordPress;
 
 use Fundrik\WordPress\Infrastructure\FundrikContext;
+use Fundrik\WordPress\Infrastructure\WordPress\PostTypes\CampaignPostType;
 use WP_Block_Type_Registry;
 
 /**
@@ -26,6 +27,22 @@ final readonly class WordPressContext {
 	public function __construct(
 		public FundrikContext $plugin,
 	) {}
+
+	/**
+	 * Returns the list of declared post type class names.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array<string> The list of post type class names.
+	 *
+	 * @phpstan-return list<class-string<\Fundrik\WordPress\Infrastructure\WordPress\PostTypes\PostTypeInterface>>
+	 */
+	public function get_declared_post_types(): array {
+
+		return [
+			CampaignPostType::class,
+		];
+	}
 
 	/**
 	 * Retrieves the registered WordPress post types.

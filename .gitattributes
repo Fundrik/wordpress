@@ -3,5 +3,10 @@ tests export-ignore
 .gitattributes export-ignore
 .gitignore export-ignore
 composer.lock export-ignore
+deptrac.yaml export-ignore
+package-lock.json export-ignore
+package.json export-ignore
 phpcs.xml export-ignore
+phpstan-disallowed-classes.neon export-ignore
+phpstan.neon export-ignore
 phpunit.xml export-ignore

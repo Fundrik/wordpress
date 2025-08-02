@@ -52,7 +52,7 @@ final readonly class RegisterPostTypesListener {
 	 */
 	public function handle( WordPressInitEvent $event ): void {
 
-		foreach ( $event->context->plugin->get_post_types() as $post_type ) {
+		foreach ( $event->context->get_declared_post_types() as $post_type ) {
 
 			$this->register_post_type( $post_type );
 		}

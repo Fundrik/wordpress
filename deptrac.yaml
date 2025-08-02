@@ -1,0 +1,100 @@
+deptrac:
+  paths:
+    - ./src/php
+  layers:
+    - name: Bindings
+      collectors:
+        - type: class
+          value: Fundrik\\WordPress\\Infrastructure\\Container\\ServiceBindings
+
+    - name: Laravel
+      collectors:
+        - type: classLike
+          value: Illuminate\\.*
+
+    - name: WordPressExternal
+      collectors:
+        - type: classLike
+          value: ^wpdb$
+        - type: classLike
+          value: ^WP_.+$
+
+    - name: Support
+      collectors:
+        - type: classLike
+          value: Fundrik\\(Core|WordPress)\\Support\\.*
+
+    - name: CoreDomain
+      collectors:
+        - type: classLike
+          value: Fundrik\\Core\\.*\\Domain\\.*
+
+    - name: CoreApplication
+      collectors:
+        - type: classLike
+          value: Fundrik\\Core\\.*\\Application\\.*
+
+    - name: Domain
+      collectors:
+        - type: classLike
+          value: Fundrik\\WordPress\\.*\\Domain\\.*
+
+    - name: Application
+      collectors:
+        - type: classLike
+          value: Fundrik\\WordPress\\.*\\Application\\.*
+
+    - name: Infrastructure
+      collectors:
+      - type: bool
+        must:
+          - type: classLike
+            value: Fundrik\\WordPress\\Infrastructure\\(?!WordPress\\).*
+        must_not:
+          - type: class
+            value: .*ServiceBindings.*
+
+    - name: WordPressInfrastructure
+      collectors:
+        - type: classLike
+          value: Fundrik\\WordPress\\Infrastructure\\WordPress\\.*
+
+  ruleset:
+    Bindings:
+      - Laravel
+      - CoreDomain
+      - CoreApplication
+      - Domain
+      - Application
+      - Infrastructure
+      - WordPressInfrastructure
+
+    CoreDomain:
+      - Support
+
+    CoreApplication:
+      - Support
+      - CoreDomain
+
+    Domain:
+      - Support
+      - CoreDomain
+
+    Application:
+      - Support
+      - Domain
+      - CoreApplication
+      - CoreDomain
+
+    Infrastructure:
+      - Laravel
+      - Support
+      - Application
+      - CoreApplication
+
+    WordPressInfrastructure:
+      - WordPressExternal
+      - Support
+      - Application
+      - CoreApplication
+      - Infrastructure
