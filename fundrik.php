@@ -27,6 +27,15 @@
 declare(strict_types=1);
 
 use Fundrik\WordPress\Application;
+use Fundrik\WordPress\Infrastructure\Container\Container;
+use Fundrik\WordPress\Infrastructure\Container\ContainerInterface;
+use Fundrik\WordPress\Infrastructure\Container\ServiceBindings;
+use Illuminate\Container\Container as LaravelContainer;
+use Illuminate\Contracts\Container\Container as LaravelContainerInterface;
+use Monolog\Handler\StreamHandler as MonologStreamHandler;
+use Monolog\Level as MonologLevel;
+use Monolog\Logger as MonologLogger;
+use Psr\Log\LoggerInterface;
 
 defined( 'ABSPATH' ) || die;
 
@@ -37,17 +46,44 @@ define( 'FUNDRIK_VERSION', '1.0.0' );
 
 require_once FUNDRIK_PATH . 'vendor/autoload.php';
 
-/**
- * Initializes the Fundrik plugin.
- *
- * @since 1.0.0
- */
-function fundrik_init(): void {
+if ( ! function_exists( 'fundrik_init' ) ) {
 
-	Application::bootstrap()->run();
+	/**
+	 * Initializes the Fundrik plugin.
+	 *
+	 * @since 1.0.0
+	 */
+	function fundrik_init(): void {
+
+		$laravel_container = new LaravelContainer();
+		$container = new Container( $laravel_container );
+
+		$container->instance( ContainerInterface::class, $container );
+		$container->instance( LaravelContainerInterface::class, $laravel_container );
+
+		$container->singleton( ServiceBindings::class );
+		$container->get( ServiceBindings::class )->register_bindings_into_container( $container );
+
+		$container->singleton(
+			LoggerInterface::class,
+			static function (): LoggerInterface {
+
+				$logger = new MonologLogger( 'fundrik' );
+
+				$log_path = FUNDRIK_PATH . '/fundrik.log';
+				$handler = new MonologStreamHandler( $log_path, MonologLevel::Debug );
+
+				$logger->pushHandler( $handler );
+
+				return $logger;
+			},
+		);
+
+		Application::bootstrap( $container )->run();
+	}
 }
 
-add_action( 'plugins_loaded', fundrik_init( ... ) );
+add_action( 'plugins_loaded', 'fundrik_init' );
 
 /**
  * Temporarily logs a message until a proper logging system is implemented.

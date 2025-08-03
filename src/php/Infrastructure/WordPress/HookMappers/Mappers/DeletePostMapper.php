@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Infrastructure\WordPress\HookMappers\Mappers;
 
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventDispatcherInterface;
+use Fundrik\WordPress\Infrastructure\Helpers\LoggerFormatter;
 use Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressDeletePost;
 use Fundrik\WordPress\Infrastructure\WordPress\HookMappers\HookToEventMapperInterface;
+use Fundrik\WordPress\Infrastructure\WordPress\HookMappers\Mappers\Exceptions\InvalidMapperArgumentException;
 use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContextFactory;
-use InvalidArgumentException;
+use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContextInterface;
+use Psr\Log\LoggerInterface;
 use WP_Post;
 
 /**
@@ -22,6 +25,8 @@ use WP_Post;
  */
 final readonly class DeletePostMapper implements HookToEventMapperInterface {
 
+	private const HOOK_NAME = 'delete_post';
+
 	/**
 	 * Constructor.
 	 *
@@ -29,15 +34,18 @@ final readonly class DeletePostMapper implements HookToEventMapperInterface {
 	 *
 	 * @param WordPressContextFactory $context_factory Creates WordPressContext instances on demand.
 	 * @param EventDispatcherInterface $dispatcher Dispatches the mapped event.
+	 * @param LoggerInterface $logger Logs validation errors and mapping-related warnings.
 	 */
 	public function __construct(
 		private WordPressContextFactory $context_factory,
 		private EventDispatcherInterface $dispatcher,
+		private LoggerInterface $logger,
 	) {}
 
-	// phpcs:disable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
 	/**
-	 * Registers the WordPress hook and maps it to the internal event.
+	 * Registers the 'delete_post' WordPress action and maps it to the internal event.
+	 *
+	 * Validates the hook arguments and dispatches an event if they are valid; otherwise, skips processing.
 	 *
 	 * @since 1.0.0
 	 */
@@ -46,30 +54,45 @@ final readonly class DeletePostMapper implements HookToEventMapperInterface {
 		$context = $this->context_factory->make();
 
 		add_action(
-			'delete_post',
-			function ( $post_id, $post ) use ( $context ): void {
-
-				try {
-					$valid_post_id = $this->validate_post_id( $post_id );
-					$valid_post = $this->validate_post( $post );
-				} catch ( InvalidArgumentException $e ) {
-					fundrik_log( $e->getMessage() );
-					return;
-				}
-
-				$this->dispatcher->dispatch(
-					new WordPressDeletePost(
-						post_id: $valid_post_id,
-						post: $valid_post,
-						context: $context,
-					),
-				);
-			},
+			self::HOOK_NAME,
+			fn ( $post_id, $post ) => $this->handle_hook( $post_id, $post, $context ),
 			10,
 			2,
 		);
 	}
-	// phpcs:enable
+
+	/**
+	 * Handles the 'delete_post' action logic.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param mixed $post_id Post ID.
+	 * @param mixed $post Post object.
+	 * @param WordPressContextInterface $context The WordPress-specific plugin context.
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
+	 */
+	private function handle_hook( mixed $post_id, mixed $post, WordPressContextInterface $context ): void {
+
+		try {
+			$valid_post_id = $this->validate_post_id( $post_id );
+			$valid_post = $this->validate_post( $post );
+		} catch ( InvalidMapperArgumentException $e ) {
+			$this->logger->warning(
+				$e->getMessage(),
+				LoggerFormatter::hook_mapper_context( hook: self::HOOK_NAME, mapper: self::class ),
+			);
+			return;
+		}
+
+		$this->dispatcher->dispatch(
+			new WordPressDeletePost(
+				post_id: $valid_post_id,
+				post: $valid_post,
+				context: $context,
+			),
+		);
+	}
 
 	/**
 	 * Validates the 'post_id' argument.
@@ -85,7 +108,7 @@ final readonly class DeletePostMapper implements HookToEventMapperInterface {
 	private function validate_post_id( mixed $post_id ): int {
 
 		if ( ! is_int( $post_id ) ) {
-			throw new InvalidArgumentException( "Invalid \$post_id argument in 'delete_post' action." );
+			throw InvalidMapperArgumentException::create( argument: 'post_id', hook: self::HOOK_NAME );
 		}
 
 		return $post_id;
@@ -105,7 +128,7 @@ final readonly class DeletePostMapper implements HookToEventMapperInterface {
 	private function validate_post( mixed $post ): WP_Post {
 
 		if ( ! $post instanceof WP_Post ) {
-			throw new InvalidArgumentException( "Invalid \$post argument in 'delete_post' action." );
+			throw InvalidMapperArgumentException::create( argument: 'post', hook: self::HOOK_NAME );
 		}
 
 		return $post;

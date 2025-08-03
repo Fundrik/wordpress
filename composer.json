@@ -27,6 +27,8 @@
 	"require": {
 		"php": "^8.2",
 		"fundrik/core": "dev-main",
+		"psr/log": "^3.0",
+		"monolog/monolog": "^3.9",
 		"illuminate/container": "^12.19",
 		"illuminate/events": "^12.19",
 		"symfony/validator": "^7.2"
@@ -40,6 +42,7 @@
 		"slevomat/coding-standard": "^8.19",
 		"phpunit/phpunit": "^11.5",
 		"brain/monkey": "^2.6",
+		"mockery/mockery": "^1.6",
 		"phpstan/phpstan": "^2.1",
 		"phpstan/extension-installer": "^1.4",
 		"phpstan/phpstan-strict-rules": "^2.0",
@@ -48,7 +51,8 @@
 		"spaze/phpstan-disallowed-calls": "^4.6",
 		"szepeviktor/phpstan-wordpress": "^2.0",
 		"johnbillion/wp-compat": "^1.2",
-		"deptrac/deptrac": "^3.0"
+		"deptrac/deptrac": "^3.0",
+		"infection/infection": "^0.31.1"
 	},
 	"autoload": {
 		"psr-4": {
@@ -66,12 +70,14 @@
 		"test": "vendor/bin/phpunit",
 		"test:coverage": "php -d xdebug.mode=coverage vendor/bin/phpunit --coverage-html=.phpunit.cache/report-coverage",
 		"phpstan": "vendor/bin/phpstan analyze --memory-limit=2048M",
-		"deptrac": "vendor/bin/deptrac analyze --report-uncovered"
+		"deptrac": "vendor/bin/deptrac analyze --report-uncovered",
+		"infection": "vendor/bin/infection --show-mutations "
 	},
 	"config": {
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true,
-			"phpstan/extension-installer": true
+			"phpstan/extension-installer": true,
+			"infection/extension-installer": true
 		}
 	},
 	"minimum-stability": "dev",

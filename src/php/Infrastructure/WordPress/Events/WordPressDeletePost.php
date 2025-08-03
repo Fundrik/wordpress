@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\WordPress\Events;
 
-use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContext;
+use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContextInterface;
 use WP_Post;
 
 /**
@@ -23,11 +23,11 @@ final readonly class WordPressDeletePost {
 	 *
 	 * @param int $post_id Post ID.
 	 * @param WP_Post $post Post object.
-	 * @param WordPressContext $context The WordPress-specific plugin context.
+	 * @param WordPressContextInterface $context The WordPress-specific plugin context.
 	 */
 	public function __construct(
 		public int $post_id,
 		public WP_Post $post,
-		public readonly WordPressContext $context,
+		public readonly WordPressContextInterface $context,
 	) {}
 }

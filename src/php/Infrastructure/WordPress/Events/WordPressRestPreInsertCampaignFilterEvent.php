@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\WordPress\Events;
 
-use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContext;
+use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContextInterface;
 use stdClass;
 use WP_REST_Request;
 
@@ -25,7 +25,7 @@ final class WordPressRestPreInsertCampaignFilterEvent {
 	 * // phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong, SlevomatCodingStandard.Commenting.DocCommentSpacing.IncorrectLinesCountBetweenDifferentAnnotationsTypes
 	 * @param stdClass $prepared_post An object representing a single post prepared for inserting or updating the database.
 	 * @param WP_REST_Request $request Request object.
-	 * @param WordPressContext $context The WordPress-specific plugin context.
+	 * @param WordPressContextInterface $context The WordPress-specific plugin context.
 	 *
 	 * @phpstan-param WP_REST_Request<array<string, mixed>> $request
 	 *
@@ -34,6 +34,6 @@ final class WordPressRestPreInsertCampaignFilterEvent {
 	public function __construct(
 		public stdClass $prepared_post,
 		public readonly WP_REST_Request $request,
-		public readonly WordPressContext $context,
+		public readonly WordPressContextInterface $context,
 	) {}
 }

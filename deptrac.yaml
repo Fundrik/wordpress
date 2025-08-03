@@ -22,6 +22,11 @@ deptrac:
         - type: classLike
           value: Illuminate\\.*
 
+    - name: PsrLogger
+      collectors:
+        - type: classLike
+          value: Psr\\Log\\.*
+
     - name: WordPressExternal
       collectors:
         - type: classLike
@@ -110,10 +115,12 @@ deptrac:
 
     Infrastructure:
       - Laravel
+      - PsrLogger
       - Support
       - Application
 
     WordPressInfrastructure:
+      - PsrLogger
       - PluginBootstrap
       - WordPressExternal
       - Support

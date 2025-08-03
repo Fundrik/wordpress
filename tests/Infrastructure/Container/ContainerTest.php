@@ -5,26 +5,26 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure\Container;
 
 use Fundrik\WordPress\Infrastructure\Container\Container;
-use Illuminate\Container\Container as IlluminateContainer;
+use Fundrik\WordPress\Tests\MockeryTestCase;
+use Illuminate\Contracts\Container\Container as LaravelContainerInterface;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
 
 #[CoversClass( Container::class )]
-final class ContainerTest extends TestCase {
+final class ContainerTest extends MockeryTestCase {
 
 	private Container $container;
-	private IlluminateContainer&MockInterface $inner;
+	private LaravelContainerInterface&MockInterface $inner;
 
 	protected function setUp(): void {
 
 		parent::setUp();
 
-		$this->inner = Mockery::mock( IlluminateContainer::class );
+		$this->inner = Mockery::mock( LaravelContainerInterface::class );
 		$this->container = new Container( $this->inner );
 	}
 
@@ -36,16 +36,16 @@ final class ContainerTest extends TestCase {
 		$this->inner
 			->shouldReceive( 'get' )
 			->once()
-			->with( 'MyClass' )
+			->with( $this->identicalTo( $instance::class ) )
 			->andReturn( $instance );
 
-		$result = $this->container->get( 'MyClass' );
+		$result = $this->container->get( $instance::class );
 
 		$this->assertSame( $instance, $result );
 	}
 
 	#[Test]
-	public function get_throws_if_inner_returns_non_object(): void {
+	public function get_throws_if_resolved_instance_does_not_implement_expected_type(): void {
 
 		$this->inner
 			->shouldReceive( 'get' )
@@ -54,7 +54,7 @@ final class ContainerTest extends TestCase {
 			->andReturn( 'not_an_object' );
 
 		$this->expectException( RuntimeException::class );
-		$this->expectExceptionMessage( 'Container returned a non-object for id MyClass: string' );
+		$this->expectExceptionMessage( 'Container returned instance of string, but expected implementation of MyClass.' );
 
 		$this->container->get( 'MyClass' );
 	}
@@ -66,7 +66,7 @@ final class ContainerTest extends TestCase {
 			->shouldReceive( 'has' )
 			->once()
 			->with( 'MyClass' )
-			->andReturnTrue();
+			->andReturn( true );
 
 		$result = $this->container->has( 'MyClass' );
 
@@ -87,8 +87,6 @@ final class ContainerTest extends TestCase {
 			);
 
 		$this->container->singleton( 'MyService', $closure );
-
-		$this->addToAssertionCount( 1 );
 	}
 
 	#[Test]
@@ -100,8 +98,6 @@ final class ContainerTest extends TestCase {
 			->with( 'MyService', 'MyImplementation' );
 
 		$this->container->singleton( 'MyService', 'MyImplementation' );
-
-		$this->addToAssertionCount( 1 );
 	}
 
 	#[Test]
@@ -113,8 +109,6 @@ final class ContainerTest extends TestCase {
 			->with( 'MyService', null );
 
 		$this->container->singleton( 'MyService' );
-
-		$this->addToAssertionCount( 1 );
 	}
 
 	#[Test]
@@ -123,12 +117,15 @@ final class ContainerTest extends TestCase {
 		$instance = new stdClass();
 
 		$this->inner
-			->shouldReceive( 'make' )
+		->shouldReceive( 'make' )
 			->once()
-			->with( 'MyClass', [] )
+			->with(
+				$this->identicalTo( $instance::class ),
+				[],
+			)
 			->andReturn( $instance );
 
-		$result = $this->container->make( 'MyClass' );
+		$result = $this->container->make( $instance::class );
 
 		$this->assertSame( $instance, $result );
 	}
@@ -144,18 +141,21 @@ final class ContainerTest extends TestCase {
 		];
 
 		$this->inner
-			->shouldReceive( 'make' )
+		->shouldReceive( 'make' )
 			->once()
-			->with( 'MyClass', $this->identicalTo( $params ) )
+			->with(
+				$this->identicalTo( $instance::class ),
+				$this->identicalTo( $params ),
+			)
 			->andReturn( $instance );
 
-		$result = $this->container->make( 'MyClass', $params );
+		$result = $this->container->make( $instance::class, $params );
 
 		$this->assertSame( $instance, $result );
 	}
 
 	#[Test]
-	public function make_throws_if_inner_returns_non_object(): void {
+	public function make_throws_if_created_instance_does_not_implement_expected_type(): void {
 
 		$this->inner
 			->shouldReceive( 'make' )
@@ -164,7 +164,7 @@ final class ContainerTest extends TestCase {
 			->andReturn( 42 );
 
 		$this->expectException( RuntimeException::class );
-		$this->expectExceptionMessage( 'Container made a non-object for id MyClass: integer' );
+		$this->expectExceptionMessage( 'Container made instance of int, but expected implementation of MyClass.' );
 
 		$this->container->make( 'MyClass' );
 	}

@@ -17,6 +17,7 @@ use Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrarInter
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationRegistry;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunner;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunnerInterface;
+use Fundrik\WordPress\Infrastructure\StorageInterface;
 use Fundrik\WordPress\Infrastructure\WordPress\HookMappers\HookMapperRegistrar;
 use Fundrik\WordPress\Infrastructure\WordPress\HookMappers\HookMapperRegistrarInterface;
 use Fundrik\WordPress\Infrastructure\WordPress\HookMappers\HookMapperRegistry;
@@ -26,9 +27,10 @@ use Fundrik\WordPress\Infrastructure\WordPress\PostTypes\Attributes\PostTypeMeta
 use Fundrik\WordPress\Infrastructure\WordPress\PostTypes\Attributes\PostTypeSlugReader;
 use Fundrik\WordPress\Infrastructure\WordPress\PostTypes\Attributes\PostTypeSpecificBlockReader;
 use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContextFactory;
+use Fundrik\WordPress\Infrastructure\WordPress\WordPressOptionsStorage;
 use Fundrik\WordPress\Infrastructure\WordPress\WpdbDatabase;
-use Illuminate\Contracts\Events\Dispatcher as IlluminateEventsDispatcherInterface;
-use Illuminate\Events\Dispatcher as IlluminateEventsDispatcher;
+use Illuminate\Contracts\Events\Dispatcher as LaravelEventsDispatcherInterface;
+use Illuminate\Events\Dispatcher as LaravelEventsDispatcher;
 
 /**
  * Provides default service bindings for the WordPress container.
@@ -39,6 +41,7 @@ use Illuminate\Events\Dispatcher as IlluminateEventsDispatcher;
  */
 class ServiceBindings {
 
+	// phpcs:disable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
 	/**
 	 * Returns the list of abstract-to-concrete bindings for the container.
 	 *
@@ -61,7 +64,7 @@ class ServiceBindings {
 			CampaignServicePortInterface::class => CampaignService::class,
 
 			// Events Dispatcher.
-			IlluminateEventsDispatcherInterface::class => IlluminateEventsDispatcher::class,
+			LaravelEventsDispatcherInterface::class => LaravelEventsDispatcher::class,
 			EventDispatcherInterface::class => EventDispatcher::class,
 			EventListenerRegistrarInterface::class => EventListenerRegistrar::class,
 			HookMapperRegistrarInterface::class => HookMapperRegistrar::class,
@@ -71,8 +74,9 @@ class ServiceBindings {
 			MigrationRegistry::class,
 			MigrationRunnerInterface::class => MigrationRunner::class,
 
-			// Database.
+			// Storage.
 			DatabaseInterface::class => WpdbDatabase::class,
+			StorageInterface::class => WordPressOptionsStorage::class,
 
 			// Post type attribute readers.
 			PostTypeBlockTemplateReader::class,
@@ -84,5 +88,25 @@ class ServiceBindings {
 			// Context.
 			WordPressContextFactory::class,
 		];
+	}
+	// phpcs:enable
+
+	/**
+	 * Registers all default service bindings into the given container.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ContainerInterface $container Receives the service bindings for resolution at runtime.
+	 */
+	public function register_bindings_into_container( ContainerInterface $container ): void {
+
+		foreach ( $this->get_bindings() as $abstract => $concrete ) {
+
+			if ( is_int( $abstract ) ) {
+				$abstract = $concrete;
+			}
+
+			$container->singleton( $abstract, $concrete );
+		}
 	}
 }

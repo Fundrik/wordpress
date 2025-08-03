@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Infrastructure\Container;
 
 use Closure;
-use Illuminate\Contracts\Container\Container as IlluminateContainerInterface;
+use Illuminate\Contracts\Container\Container as LaravelContainerInterface;
 use RuntimeException;
 
 /**
@@ -22,10 +22,10 @@ final class Container implements ContainerInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param IlluminateContainerInterface $inner Resolves and binds dependencies using Laravel's container.
+	 * @param LaravelContainerInterface $inner Resolves and binds dependencies using Laravel's container.
 	 */
 	public function __construct(
-		private IlluminateContainerInterface $inner,
+		private LaravelContainerInterface $inner,
 	) {}
 
 	/**
@@ -143,5 +143,22 @@ final class Container implements ContainerInterface {
 	): void {
 
 		$this->inner->singleton( $abstract, $concrete );
+	}
+
+	/**
+	 * Registers an existing instance as a singleton binding.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $abstract The class or interface name to bind.
+	 * @param object $instance The already constructed instance.
+	 */
+	public function instance(
+		// phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.abstractFound
+		string $abstract,
+		object $instance,
+	): void {
+
+		$this->inner->instance( $abstract, $instance );
 	}
 }

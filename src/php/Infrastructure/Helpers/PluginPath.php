@@ -42,10 +42,7 @@ enum PluginPath: string {
 	 */
 	public function get_full_path( string $suffix = '' ): string {
 
-		$base = str_starts_with( $this->value, 'assets' ) ? self::BASE : self::PHP_BASE;
-		$target = $this->value;
-
-		$path = "{$base}{$target}";
+		$path = self::BASE . $this->value;
 
 		if ( $suffix !== '' ) {
 			$path .= $suffix;

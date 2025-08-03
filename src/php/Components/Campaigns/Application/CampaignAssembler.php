@@ -65,7 +65,7 @@ final readonly class CampaignAssembler {
 		} catch ( CoreCampaignDtoFactoryException | CoreCampaignAssemblerException | InvalidCampaignSlugException $e ) {
 
 			throw new CampaignAssemblerException(
-				'Failed to assemble Campaign: ' . $e->getMessage(),
+				'Failed to assemble Campaign from DTO: ' . $e->getMessage(),
 				previous: $e,
 			);
 		}

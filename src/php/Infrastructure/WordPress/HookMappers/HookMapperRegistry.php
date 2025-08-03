@@ -17,7 +17,7 @@ use Fundrik\WordPress\Infrastructure\WordPress\HookMappers\Mappers\WpAfterInsert
  *
  * @internal
  */
-final class HookMapperRegistry {
+class HookMapperRegistry {
 
 	/**
 	 * Returns the list of mapper class names.

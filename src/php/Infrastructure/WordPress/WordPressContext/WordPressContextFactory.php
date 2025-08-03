@@ -18,9 +18,9 @@ final readonly class WordPressContextFactory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return WordPressContext The current WordPress execution context.
+	 * @return WordPressContextInterface The current WordPress execution context.
 	 */
-	public function make(): WordPressContext {
+	public function make(): WordPressContextInterface {
 
 		return new WordPressContext();
 	}

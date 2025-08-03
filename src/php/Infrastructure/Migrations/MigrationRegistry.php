@@ -15,7 +15,7 @@ use Fundrik\WordPress\Infrastructure\Migrations\Files\CreateFundrikCampaignsTabl
  */
 class MigrationRegistry {
 
-	public const DB_VERSION = '2025_06_15_00';
+	private const TARGET_VERSION = '2025_06_15_00';
 
 	/**
 	 * Returns the list of migration class names.
@@ -31,5 +31,17 @@ class MigrationRegistry {
 		return [
 			CreateFundrikCampaignsTable::class,
 		];
+	}
+
+	/**
+	 * Returns the latest expected database version after applying all migrations.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string The target database schema version.
+	 */
+	public function get_target_db_version(): string {
+
+		return self::TARGET_VERSION;
 	}
 }

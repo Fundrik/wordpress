@@ -10,6 +10,7 @@
 	<arg name="colors"/>
 	<arg name="extensions" value="php"/>
 	<arg name="parallel" value="8"/>
+	<arg value="q"/>
 
 	<config name="testVersion" value="8.2-"/>
 
@@ -31,9 +32,8 @@
 			</property>
 			<property name="excludedClasses" type="array">
 				<element value="Fundrik\WordPress\Infrastructure\Container\Container"/>
-				<element value="Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressAllowedBlockTypesFilterEvent"/>
+				<element value="Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressAllowedBlockTypesAllFilterEvent"/>
 				<element value="Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressRestPreInsertCampaignFilterEvent"/>
-				<element value="Fundrik\WordPress\Infrastructure\WordPress\HookMappers\HookMapperRegistry"/>
 				<element value="Fundrik\WordPress\Infrastructure\WordPress\HookMappers\Mappers\RestPreInsertCampaignMapper"/>
 				<element value="Fundrik\WordPress\Infrastructure\WordPress\Listeners\FilterAllowedBlocksByPostTypeListener"/>
 				<element value="Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContext"/>
@@ -54,7 +54,7 @@
 			<property name="excludedClasses" type="array">
 				<element value="Fundrik\WordPress\Infrastructure\Container\ServiceBindings" />
 				<element value="Fundrik\WordPress\Infrastructure\Migrations\MigrationRegistry" />
-				<element value="Fundrik\WordPress\Infrastructure\Migrations\HookMapperRegistry" />
+				<element value="Fundrik\WordPress\Infrastructure\WordPress\HookMappers\HookMapperRegistry"/>
 			</property>
 			<property name="excludedParentClasses" type="array">
 				<element value="Fundrik\WordPress\Infrastructure\WordPress\PostTypes\PostTypeInterface"/>
@@ -86,6 +86,10 @@
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
+	<rule ref="FundrikStandard.Classes.AbstractClassMustBeReadonly">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
 	<rule ref="FundrikStandard.Commenting.SinceTagRequired">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
@@ -110,11 +114,11 @@
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
-	<rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification">
+	<rule ref="SlevomatCodingStandard.TypeHints">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
-	<rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
+	<rule ref="Universal.NamingConventions.NoReservedKeywordParameterNames">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 </ruleset>

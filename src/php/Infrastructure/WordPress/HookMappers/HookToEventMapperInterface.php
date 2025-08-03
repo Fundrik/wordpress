@@ -16,6 +16,8 @@ interface HookToEventMapperInterface {
 	/**
 	 * Registers a WordPress hook and maps it to an internal event.
 	 *
+	 * Skips event dispatching if input is invalid.
+	 *
 	 * @since 1.0.0
 	 */
 	public function register(): void;

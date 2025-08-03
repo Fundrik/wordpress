@@ -56,7 +56,7 @@ final readonly class CampaignDtoFactory {
 		} catch ( ArrayExtractionException $e ) {
 
 			throw new CampaignDtoFactoryException(
-				'Failed to build CampaignDto: ' . $e->getMessage(),
+				'Failed to create CampaignDto from array: ' . $e->getMessage(),
 				previous: $e,
 			);
 		}

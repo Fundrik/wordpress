@@ -18,6 +18,8 @@ use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContext
  */
 final readonly class InitMapper implements HookToEventMapperInterface {
 
+	private const HOOK_NAME = 'init';
+
 	/**
 	 * Constructor.
 	 *
@@ -32,7 +34,7 @@ final readonly class InitMapper implements HookToEventMapperInterface {
 	) {}
 
 	/**
-	 * Registers the WordPress 'init' action and maps it to WordPressInitEvent.
+	 * Registers the 'init' WordPress action and maps it to the internal event.
 	 *
 	 * @since 1.0.0
 	 */
@@ -41,7 +43,7 @@ final readonly class InitMapper implements HookToEventMapperInterface {
 		$context = $this->context_factory->make();
 
 		add_action(
-			'init',
+			self::HOOK_NAME,
 			fn () => $this->dispatcher->dispatch(
 				new WordPressInitEvent( $context ),
 			),

@@ -8,13 +8,13 @@ use Fundrik\WordPress\Infrastructure\WordPress\PostTypes\CampaignPostType;
 use WP_Block_Type_Registry;
 
 /**
- * Provides WordPress-specific context for the Fundrik plugin.
+ * Provides assess to WordPress-specific plugin context.
  *
  * @since 1.0.0
  *
  * @internal
  */
-final class WordPressContext {
+final class WordPressContext implements WordPressContextInterface {
 
 	/**
 	 * Caches the result of get_post_types() to avoid repeated queries to WordPress core.

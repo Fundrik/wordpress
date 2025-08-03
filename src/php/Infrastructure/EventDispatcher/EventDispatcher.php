@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\EventDispatcher;
 
-use Illuminate\Contracts\Events\Dispatcher as IlluminateDispatcher;
+use Illuminate\Contracts\Events\Dispatcher as LaravelDispatcherInterface;
 
 /**
  * Dispatches events and registers listeners.
@@ -20,10 +20,10 @@ final readonly class EventDispatcher implements EventDispatcherInterface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param IlluminateDispatcher $inner Dispatches events using Laravel's event system.
+	 * @param LaravelDispatcherInterface $inner Dispatches events using Laravel's event system.
 	 */
 	public function __construct(
-		private IlluminateDispatcher $inner,
+		private LaravelDispatcherInterface $inner,
 	) {}
 
 	/**

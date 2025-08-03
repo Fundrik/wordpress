@@ -37,6 +37,19 @@ final readonly class MigrationVersionReader {
 			throw new RuntimeException( "Migration class '$class_name' is missing #[MigrationVersion] attribute." );
 		}
 
-		return $attributes[0]->newInstance()->value;
+		$value = $attributes[0]->newInstance()->value;
+
+		if ( trim( $value ) === '' ) {
+			throw new RuntimeException( "Migration class '$class_name' has an empty #[MigrationVersion] value." );
+		}
+
+		if ( preg_match( '/^\d{4}_\d{2}_\d{2}_\d{2}$/', $value ) !== 1 ) {
+			throw new RuntimeException(
+				// phpcs:disable SlevomatCodingStandard.Files.LineLength.LineTooLong
+				"Migration class '$class_name' has an invalid #[MigrationVersion] format: '$value'. Expected format is 'YYYY_MM_DD_NN'.",
+			);
+		}
+
+		return $value;
 	}
 }

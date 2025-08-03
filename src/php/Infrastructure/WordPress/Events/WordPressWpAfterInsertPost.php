@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\WordPress\Events;
 
-use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContext;
+use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContextInterface;
 use WP_Post;
 
 /**
@@ -26,13 +26,13 @@ final readonly class WordPressWpAfterInsertPost {
 	 * @param bool $update Whether this is an existing post being updated.
 	 * @param WP_Post|null $post_before Null for new posts, the WP_Post object prior
 	 *                                  to the update for updated posts.
-	 * @param WordPressContext $context The WordPress-specific plugin context.
+	 * @param WordPressContextInterface $context The WordPress-specific plugin context.
 	 */
 	public function __construct(
 		public int $post_id,
 		public WP_Post $post,
 		public bool $update,
 		public WP_Post|null $post_before,
-		public readonly WordPressContext $context,
+		public readonly WordPressContextInterface $context,
 	) {}
 }

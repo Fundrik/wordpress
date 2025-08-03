@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Tests;
 
-use Brain\Monkey;
+use Fundrik\Core\Components\Campaigns\Domain\Campaign as CoreCampaign;
+use Fundrik\Core\Components\Campaigns\Domain\CampaignTarget;
+use Fundrik\Core\Components\Campaigns\Domain\CampaignTitle;
+use Fundrik\Core\Components\Shared\Domain\EntityId;
+use Fundrik\WordPress\Components\Campaigns\Application\CampaignDto;
+use Fundrik\WordPress\Components\Campaigns\Domain\Campaign;
+use Fundrik\WordPress\Components\Campaigns\Domain\CampaignSlug;
 use InvalidArgumentException;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use ReflectionClass;
@@ -14,23 +19,58 @@ use ReflectionProperty;
 
 abstract class FundrikTestCase extends PHPUnitTestCase {
 
-	use MockeryPHPUnitIntegration;
+	protected function assert_campaign_equals_dto( Campaign $campaign, CampaignDto $dto ): void {
 
-	protected function setUp(): void {
-
-		parent::setUp();
-
-		Monkey\setUp();
-
-		Monkey\Functions\stubEscapeFunctions();
-		Monkey\Functions\stubTranslationFunctions();
+		$this->assertSame( $campaign->get_id(), $dto->id );
+		$this->assertSame( $campaign->get_title(), $dto->title );
+		$this->assertSame( $campaign->get_slug(), $dto->slug );
+		$this->assertSame( $campaign->is_active(), $dto->is_active );
+		$this->assertSame( $campaign->is_open(), $dto->is_open );
+		$this->assertSame( $campaign->has_target(), $dto->has_target );
+		$this->assertSame( $campaign->get_target_amount(), $dto->target_amount );
 	}
 
-	protected function tearDown(): void {
+	/**
+	 * Returns a valid CampaignDto for use in tests.
+	 * Allows overriding fields to simulate variations.
+	 */
+	protected function make_campaign_dto(
+		int|string $id = 1,
+		string $title = 'Test Campaign',
+		string $slug = 'test-campaign',
+		bool $is_active = true,
+		bool $is_open = true,
+		bool $has_target = true,
+		int $target_amount = 100,
+	): CampaignDto {
 
-		Monkey\tearDown();
+		return new CampaignDto( $id, $title, $slug, $is_active, $is_open, $has_target, $target_amount );
+	}
 
-		parent::tearDown();
+	/**
+	 * Returns a valid Campaign for use in tests.
+	 * Allows overriding fields to simulate variations.
+	 */
+	protected function make_campaign(
+		int|string $id = 1,
+		string $title = 'Test Campaign',
+		string $slug = 'test-campaign',
+		bool $is_active = true,
+		bool $is_open = true,
+		bool $has_target = true,
+		int $target_amount = 100,
+	): Campaign {
+
+		return new Campaign(
+			core_campaign: new CoreCampaign(
+				id: EntityId::create( $id ),
+				title: CampaignTitle::create( $title ),
+				is_active: $is_active,
+				is_open: $is_open,
+				target: CampaignTarget::create( $has_target, $target_amount ),
+			),
+			slug: CampaignSlug::create( $slug ),
+		);
 	}
 
 	protected function assert_has_attribute_instance_of(

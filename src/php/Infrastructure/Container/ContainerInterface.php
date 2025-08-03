@@ -89,4 +89,20 @@ interface ContainerInterface {
 		string $abstract,
 		Closure|string|null $concrete = null,
 	): void;
+
+	/**
+	 * Registers an existing instance as a singleton binding.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @phpstan-param class-string $abstract
+	 *
+	 * @param string $abstract The class or interface name to bind.
+	 * @param object $instance The already constructed instance.
+	 */
+	public function instance(
+		// phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.abstractFound
+		string $abstract,
+		object $instance,
+	): void;
 }

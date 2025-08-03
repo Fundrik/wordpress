@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\EventDispatcher;
 
-use Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressAllowedBlockTypesFilterEvent;
+use Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressAllowedBlockTypesAllFilterEvent;
 use Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressInitEvent;
 use Fundrik\WordPress\Infrastructure\WordPress\Listeners\FilterAllowedBlocksByPostTypeListener;
 use Fundrik\WordPress\Infrastructure\WordPress\Listeners\RegisterBlocksListener;
@@ -41,7 +41,7 @@ final readonly class EventListenerRegistrar implements EventListenerRegistrarInt
 		$this->dispatcher->listen( WordPressInitEvent::class, RegisterBlocksListener::class );
 
 		$this->dispatcher->listen(
-			WordPressAllowedBlockTypesFilterEvent::class,
+			WordPressAllowedBlockTypesAllFilterEvent::class,
 			FilterAllowedBlocksByPostTypeListener::class,
 		);
 	}

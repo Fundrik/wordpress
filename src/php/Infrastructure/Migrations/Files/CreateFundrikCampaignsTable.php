@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Infrastructure\Migrations\Files;
 
 use Fundrik\WordPress\Infrastructure\Migrations\AbstractMigration;
+use Fundrik\WordPress\Infrastructure\Migrations\Files\Exceptions\MigrationException;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationVersion;
 
 /**
@@ -13,8 +14,6 @@ use Fundrik\WordPress\Infrastructure\Migrations\MigrationVersion;
  * @since 1.0.0
  *
  * @internal
- *
- * @codeCoverageIgnore
  */
 #[MigrationVersion( '2025_06_15_00' )]
 final readonly class CreateFundrikCampaignsTable extends AbstractMigration {
@@ -28,7 +27,7 @@ final readonly class CreateFundrikCampaignsTable extends AbstractMigration {
 	 */
 	public function apply( string $charset_collate ): void {
 
-		$this->database->query(
+		$result = $this->database->query(
 			"CREATE TABLE IF NOT EXISTS `fundrik_campaigns` (
 			`id` bigint unsigned NOT NULL,
 			`title` text NOT NULL,
@@ -41,5 +40,9 @@ final readonly class CreateFundrikCampaignsTable extends AbstractMigration {
 			KEY `slug` (`slug`(191))
 			) ENGINE=InnoDB {$charset_collate};",
 		);
+
+		if ( ! $result ) {
+			throw new MigrationException( 'Failed to create fundrik_campaigns table.' );
+		}
 	}
 }
