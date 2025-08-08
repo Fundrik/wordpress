@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\EventDispatcher;
 
-use Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressAllowedBlockTypesAllFilterEvent;
-use Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressInitEvent;
-use Fundrik\WordPress\Infrastructure\WordPress\Listeners\FilterAllowedBlocksByPostTypeListener;
-use Fundrik\WordPress\Infrastructure\WordPress\Listeners\RegisterBlocksListener;
-use Fundrik\WordPress\Infrastructure\WordPress\Listeners\RegisterPostTypesListener;
+use Fundrik\WordPress\Infrastructure\Integration\Events\WordPressAllowedBlockTypesAllFilterEvent;
+use Fundrik\WordPress\Infrastructure\Integration\Events\WordPressInitEvent;
+use Fundrik\WordPress\Infrastructure\Integration\Listeners\FilterAllowedBlocksByPostTypeListener;
+use Fundrik\WordPress\Infrastructure\Integration\Listeners\RegisterBlocksListener;
+use Fundrik\WordPress\Infrastructure\Integration\Listeners\RegisterPostTypesListener;
 
 /**
  * Registers all event listeners.

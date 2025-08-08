@@ -64,22 +64,22 @@ deptrac:
       - type: bool
         must:
           - type: classLike
-            value: Fundrik\\WordPress\\Infrastructure\\(?!WordPress\\).*
+            value: Fundrik\\WordPress\\Infrastructure\\(?!Integration\\).*
         must_not:
           - type: class
             value: .*(ServiceBindings|EventListenerRegistrar).*
 
-    - name: WordPressInfrastructure
+    - name: WordPressIntegration
       collectors:
         - type: classLike
-          value: Fundrik\\WordPress\\Infrastructure\\WordPress\\.*
+          value: Fundrik\\WordPress\\Infrastructure\\Integration\\.*
 
   ruleset:
     PluginBootstrap:
       - ContainerBindings
       - Laravel
       - Infrastructure
-      - WordPressInfrastructure
+      - WordPressIntegration
 
     ContainerBindings:
       - PluginBootstrap
@@ -90,11 +90,11 @@ deptrac:
       - Domain
       - Application
       - Infrastructure
-      - WordPressInfrastructure
+      - WordPressIntegration
 
     EventBindings:
       - Infrastructure
-      - WordPressInfrastructure
+      - WordPressIntegration
 
     CoreDomain:
       - Support
@@ -119,7 +119,7 @@ deptrac:
       - Support
       - Application
 
-    WordPressInfrastructure:
+    WordPressIntegration:
       - PsrLogger
       - PluginBootstrap
       - WordPressExternal

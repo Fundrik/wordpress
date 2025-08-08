@@ -32,11 +32,11 @@
 			</property>
 			<property name="excludedClasses" type="array">
 				<element value="Fundrik\WordPress\Infrastructure\Container\Container"/>
-				<element value="Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressAllowedBlockTypesAllFilterEvent"/>
-				<element value="Fundrik\WordPress\Infrastructure\WordPress\Events\WordPressRestPreInsertCampaignFilterEvent"/>
-				<element value="Fundrik\WordPress\Infrastructure\WordPress\HookMappers\Mappers\RestPreInsertCampaignMapper"/>
-				<element value="Fundrik\WordPress\Infrastructure\WordPress\Listeners\FilterAllowedBlocksByPostTypeListener"/>
-				<element value="Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContext"/>
+				<element value="Fundrik\WordPress\Infrastructure\Integration\Events\WordPressAllowedBlockTypesAllFilterEvent"/>
+				<element value="Fundrik\WordPress\Infrastructure\Integration\Events\WordPressRestPreInsertCampaignFilterEvent"/>
+				<element value="Fundrik\WordPress\Infrastructure\Integration\HookMappers\Mappers\RestPreInsertCampaignMapper"/>
+				<element value="Fundrik\WordPress\Infrastructure\Integration\Listeners\FilterAllowedBlocksByPostTypeListener"/>
+				<element value="Fundrik\WordPress\Infrastructure\Integration\WordPressContext\WordPressContext"/>
 			</property>
 		</properties>
 	</rule>
@@ -54,10 +54,10 @@
 			<property name="excludedClasses" type="array">
 				<element value="Fundrik\WordPress\Infrastructure\Container\ServiceBindings" />
 				<element value="Fundrik\WordPress\Infrastructure\Migrations\MigrationRegistry" />
-				<element value="Fundrik\WordPress\Infrastructure\WordPress\HookMappers\HookMapperRegistry"/>
+				<element value="Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistry"/>
 			</property>
 			<property name="excludedParentClasses" type="array">
-				<element value="Fundrik\WordPress\Infrastructure\WordPress\PostTypes\PostTypeInterface"/>
+				<element value="Fundrik\WordPress\Infrastructure\Integration\PostTypes\PostTypeInterface"/>
 			</property>
 		</properties>
 	</rule>

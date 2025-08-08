@@ -8,7 +8,7 @@ use Fundrik\WordPress\Infrastructure\Container\ContainerInterface;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrarInterface;
 use Fundrik\WordPress\Infrastructure\Helpers\PluginPath;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunnerInterface;
-use Fundrik\WordPress\Infrastructure\WordPress\HookMappers\HookMapperRegistrarInterface;
+use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistrarInterface;
 
 /**
  * Bootstraps the Fundrik plugin.

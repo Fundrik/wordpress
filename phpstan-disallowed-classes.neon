@@ -23,8 +23,8 @@ parameters:
 			allowIn:
 				- src/php/Infrastructure/Container/ServiceBindings.php
 		-
-			class: 'Fundrik\WordPress\Infrastructure\WordPress\HookMappers\HookMapperRegistrar'
-			message: 'use Fundrik\WordPress\Infrastructure\WordPress\HookMappers\HookMapperRegistrarInterface instead.'
+			class: 'Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistrar'
+			message: 'use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistrarInterface instead.'
 			allowIn:
 				- src/php/Infrastructure/Container/ServiceBindings.php
 		-
@@ -33,20 +33,20 @@ parameters:
 			allowIn:
 				- src/php/Infrastructure/Container/ServiceBindings.php
 		-
-			class: 'Fundrik\WordPress\Infrastructure\WordPress\WpdbDatabase'
+			class: 'Fundrik\WordPress\Infrastructure\Integration\WpdbDatabase'
 			message: 'use Fundrik\WordPress\Infrastructure\DatabaseInterface instead.'
 			allowIn:
 				- src/php/Infrastructure/Container/ServiceBindings.php
 		-
-			class: 'Fundrik\WordPress\Infrastructure\WordPress\WordPressOptionsStorage'
+			class: 'Fundrik\WordPress\Infrastructure\Integration\WordPressOptionsStorage'
 			message: 'use Fundrik\WordPress\Infrastructure\StorageInterface instead.'
 			allowIn:
 				- src/php/Infrastructure/Container/ServiceBindings.php
 
 		# WordPressContextFactory
 		-
-			class: 'Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContext'
-			message: 'use Fundrik\WordPress\Infrastructure\WordPress\WordPressContext\WordPressContextInterface instead.'
+			class: 'Fundrik\WordPress\Infrastructure\Integration\WordPressContext\WordPressContext'
+			message: 'use Fundrik\WordPress\Infrastructure\Integration\WordPressContext\WordPressContextInterface instead.'
 			allowIn:
 				- src/php/Infrastructure/WordPress/WordPressContext/WordPressContextFactory.php
 
