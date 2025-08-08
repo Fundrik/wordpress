@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Integration\WordPressContext;
 
+use Fundrik\WordPress\Infrastructure\Container\ContainerInterface;
+
 /**
  * Creates WordPressContext instances on demand.
  *
@@ -14,6 +16,17 @@ namespace Fundrik\WordPress\Infrastructure\Integration\WordPressContext;
 final readonly class WordPressContextFactory {
 
 	/**
+	 * Constructor.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ContainerInterface $container Resolves the WordPressContextInterface from the DI container.
+	 */
+	public function __construct(
+		private ContainerInterface $container,
+	) {}
+
+	/**
 	 * Builds a fresh WordPressContext instance.
 	 *
 	 * @since 1.0.0
@@ -22,6 +35,6 @@ final readonly class WordPressContextFactory {
 	 */
 	public function make(): WordPressContextInterface {
 
-		return new WordPressContext();
+		return $this->container->get( WordPressContextInterface::class );
 	}
 }

@@ -14,10 +14,6 @@ use Fundrik\WordPress\Infrastructure\EventDispatcher\EventDispatcher;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventDispatcherInterface;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrar;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrarInterface;
-use Fundrik\WordPress\Infrastructure\Migrations\MigrationRegistry;
-use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunner;
-use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunnerInterface;
-use Fundrik\WordPress\Infrastructure\StorageInterface;
 use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistrar;
 use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistrarInterface;
 use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistry;
@@ -26,9 +22,15 @@ use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeId
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeMetaFieldReader;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeSlugReader;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeSpecificBlockReader;
+use Fundrik\WordPress\Infrastructure\Integration\WordPressContext\WordPressContext;
 use Fundrik\WordPress\Infrastructure\Integration\WordPressContext\WordPressContextFactory;
+use Fundrik\WordPress\Infrastructure\Integration\WordPressContext\WordPressContextInterface;
 use Fundrik\WordPress\Infrastructure\Integration\WordPressOptionsStorage;
 use Fundrik\WordPress\Infrastructure\Integration\WpdbDatabase;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationRegistry;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunner;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunnerInterface;
+use Fundrik\WordPress\Infrastructure\StorageInterface;
 use Illuminate\Contracts\Events\Dispatcher as LaravelEventsDispatcherInterface;
 use Illuminate\Events\Dispatcher as LaravelEventsDispatcher;
 
@@ -87,6 +89,8 @@ class ServiceBindings {
 
 			// Context.
 			WordPressContextFactory::class,
+			// @todo Register as bind instead of singleton
+			WordPressContextInterface::class => WordPressContext::class,
 		];
 	}
 	// phpcs:enable
