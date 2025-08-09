@@ -6,8 +6,9 @@ namespace Fundrik\WordPress\Tests\Infrastructure\EventDispatcher;
 
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventDispatcherInterface;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrar;
-use Fundrik\WordPress\Infrastructure\Integration\Events\WordPressAllowedBlockTypesAllFilterEvent;
-use Fundrik\WordPress\Infrastructure\Integration\Events\WordPressInitEvent;
+use Fundrik\WordPress\Infrastructure\Integration\Events\FilterAllowedBlockTypesEvent;
+use Fundrik\WordPress\Infrastructure\Integration\Events\RegisterBlocksEvent;
+use Fundrik\WordPress\Infrastructure\Integration\Events\RegisterPostTypesEvent;
 use Fundrik\WordPress\Infrastructure\Integration\Listeners\FilterAllowedBlocksByPostTypeListener;
 use Fundrik\WordPress\Infrastructure\Integration\Listeners\RegisterBlocksListener;
 use Fundrik\WordPress\Infrastructure\Integration\Listeners\RegisterPostTypesListener;
@@ -37,17 +38,17 @@ final class EventListenerRegistrarTest extends MockeryTestCase {
 		$this->dispatcher
 			->shouldReceive( 'listen' )
 			->once()
-			->with( WordPressInitEvent::class, RegisterPostTypesListener::class );
+			->with( RegisterPostTypesEvent::class, RegisterPostTypesListener::class );
 
 		$this->dispatcher
 			->shouldReceive( 'listen' )
 			->once()
-			->with( WordPressInitEvent::class, RegisterBlocksListener::class );
+			->with( RegisterBlocksEvent::class, RegisterBlocksListener::class );
 
 		$this->dispatcher
 			->shouldReceive( 'listen' )
 			->once()
-			->with( WordPressAllowedBlockTypesAllFilterEvent::class, FilterAllowedBlocksByPostTypeListener::class );
+			->with( FilterAllowedBlockTypesEvent::class, FilterAllowedBlocksByPostTypeListener::class );
 
 		$this->registrar->register_all();
 	}

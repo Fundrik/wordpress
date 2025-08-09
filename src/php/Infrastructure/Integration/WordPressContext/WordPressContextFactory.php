@@ -27,13 +27,13 @@ final readonly class WordPressContextFactory {
 	) {}
 
 	/**
-	 * Builds a fresh WordPressContext instance.
+	 * Creates a fresh WordPressContext instance.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return WordPressContextInterface The current WordPress execution context.
 	 */
-	public function make(): WordPressContextInterface {
+	public function create(): WordPressContextInterface {
 
 		return $this->container->get( WordPressContextInterface::class );
 	}

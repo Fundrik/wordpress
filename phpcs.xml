@@ -32,9 +32,9 @@
 			</property>
 			<property name="excludedClasses" type="array">
 				<element value="Fundrik\WordPress\Infrastructure\Container\Container"/>
-				<element value="Fundrik\WordPress\Infrastructure\Integration\Events\WordPressAllowedBlockTypesAllFilterEvent"/>
-				<element value="Fundrik\WordPress\Infrastructure\Integration\Events\WordPressRestPreInsertCampaignFilterEvent"/>
-				<element value="Fundrik\WordPress\Infrastructure\Integration\HookMappers\Mappers\RestPreInsertCampaignMapper"/>
+				<element value="Fundrik\WordPress\Infrastructure\Integration\Events\FilterAllowedBlockTypesEvent"/>
+				<element value="Fundrik\WordPress\Infrastructure\Integration\Events\FilterBeforeRestInsertCampaignEvent"/>
+				<element value="Fundrik\WordPress\Infrastructure\Integration\HookBridges\Bridges\RestPreInsertCampaignFilterBridge"/>
 				<element value="Fundrik\WordPress\Infrastructure\Integration\Listeners\FilterAllowedBlocksByPostTypeListener"/>
 				<element value="Fundrik\WordPress\Infrastructure\Integration\WordPressContext\WordPressContext"/>
 			</property>
@@ -54,7 +54,7 @@
 			<property name="excludedClasses" type="array">
 				<element value="Fundrik\WordPress\Infrastructure\Container\ServiceBindings" />
 				<element value="Fundrik\WordPress\Infrastructure\Migrations\MigrationRegistry" />
-				<element value="Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistry"/>
+				<element value="Fundrik\WordPress\Infrastructure\Integration\HookBridges\HookBridgeRegistry"/>
 			</property>
 			<property name="excludedParentClasses" type="array">
 				<element value="Fundrik\WordPress\Infrastructure\Integration\PostTypes\PostTypeInterface"/>
@@ -71,11 +71,11 @@
 	</rule>
 
 	<rule ref="SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces.MultipleEmptyLinesAfterOpeningBrace">
-		<exclude-pattern>*/Exceptions/*</exclude-pattern>
+		<exclude-pattern>*Exception.php</exclude-pattern>
 	</rule>
 
 	<rule ref="SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces.IncorrectEmptyLinesBeforeClosingBrace">
-		<exclude-pattern>*/Exceptions/*</exclude-pattern>
+		<exclude-pattern>*Exception.php</exclude-pattern>
 	</rule>
 
 	<rule ref="Squiz.Commenting">

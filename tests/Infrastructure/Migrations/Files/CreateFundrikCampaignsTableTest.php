@@ -6,7 +6,7 @@ namespace Fundrik\WordPress\Tests\Infrastructure\Migrations\Files;
 
 use Fundrik\WordPress\Infrastructure\DatabaseInterface;
 use Fundrik\WordPress\Infrastructure\Migrations\Files\CreateFundrikCampaignsTable;
-use Fundrik\WordPress\Infrastructure\Migrations\Files\Exceptions\MigrationException;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationException;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationVersion;
 use Fundrik\WordPress\Tests\MockeryTestCase;
 use Mockery;

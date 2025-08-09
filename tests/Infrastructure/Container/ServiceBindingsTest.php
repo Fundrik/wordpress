@@ -16,21 +16,23 @@ use Fundrik\WordPress\Infrastructure\EventDispatcher\EventDispatcher;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventDispatcherInterface;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrar;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrarInterface;
-use Fundrik\WordPress\Infrastructure\Migrations\MigrationRegistry;
-use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunner;
-use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunnerInterface;
-use Fundrik\WordPress\Infrastructure\StorageInterface;
-use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistrar;
-use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistrarInterface;
-use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistry;
+use Fundrik\WordPress\Infrastructure\Integration\HookBridges\HookBridgeRegistrar;
+use Fundrik\WordPress\Infrastructure\Integration\HookBridges\HookBridgeRegistrarInterface;
+use Fundrik\WordPress\Infrastructure\Integration\HookBridges\HookBridgeRegistry;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeBlockTemplateReader;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeIdReader;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeMetaFieldReader;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeSlugReader;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeSpecificBlockReader;
+use Fundrik\WordPress\Infrastructure\Integration\WordPressContext\WordPressContext;
 use Fundrik\WordPress\Infrastructure\Integration\WordPressContext\WordPressContextFactory;
+use Fundrik\WordPress\Infrastructure\Integration\WordPressContext\WordPressContextInterface;
 use Fundrik\WordPress\Infrastructure\Integration\WordPressOptionsStorage;
 use Fundrik\WordPress\Infrastructure\Integration\WpdbDatabase;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationRegistry;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunner;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunnerInterface;
+use Fundrik\WordPress\Infrastructure\StorageInterface;
 use Fundrik\WordPress\Tests\MockeryTestCase;
 use Illuminate\Contracts\Events\Dispatcher as LaravelEventsDispatcherInterface;
 use Illuminate\Events\Dispatcher as LaravelEventsDispatcher;
@@ -58,10 +60,11 @@ final class ServiceBindingsTest extends MockeryTestCase {
 		yield [ LaravelEventsDispatcherInterface::class, LaravelEventsDispatcher::class ];
 		yield [ EventDispatcherInterface::class, EventDispatcher::class ];
 		yield [ EventListenerRegistrarInterface::class, EventListenerRegistrar::class ];
-		yield [ HookMapperRegistrarInterface::class, HookMapperRegistrar::class ];
+		yield [ HookBridgeRegistrarInterface::class, HookBridgeRegistrar::class ];
 		yield [ MigrationRunnerInterface::class, MigrationRunner::class ];
 		yield [ DatabaseInterface::class, WpdbDatabase::class ];
 		yield [ StorageInterface::class, WordPressOptionsStorage::class ];
+		yield [ WordPressContextInterface::class, WordPressContext::class ];
 	}
 
 	#[Test]
@@ -78,7 +81,7 @@ final class ServiceBindingsTest extends MockeryTestCase {
 		yield [ Application::class ];
 		yield [ CampaignAssembler::class ];
 		yield [ CampaignDtoFactory::class ];
-		yield [ HookMapperRegistry::class ];
+		yield [ HookBridgeRegistry::class ];
 		yield [ MigrationRegistry::class ];
 		yield [ PostTypeBlockTemplateReader::class ];
 		yield [ PostTypeIdReader::class ];

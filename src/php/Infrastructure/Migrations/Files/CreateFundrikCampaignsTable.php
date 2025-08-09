@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Infrastructure\Migrations\Files;
 
 use Fundrik\WordPress\Infrastructure\Migrations\AbstractMigration;
-use Fundrik\WordPress\Infrastructure\Migrations\Files\Exceptions\MigrationException;
+use Fundrik\WordPress\Infrastructure\Migrations\MigrationException;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationVersion;
 
 /**

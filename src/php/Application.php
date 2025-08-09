@@ -7,8 +7,8 @@ namespace Fundrik\WordPress;
 use Fundrik\WordPress\Infrastructure\Container\ContainerInterface;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrarInterface;
 use Fundrik\WordPress\Infrastructure\Helpers\PluginPath;
+use Fundrik\WordPress\Infrastructure\Integration\HookBridges\HookBridgeRegistrarInterface;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunnerInterface;
-use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistrarInterface;
 
 /**
  * Bootstraps the Fundrik plugin.
@@ -26,12 +26,12 @@ final readonly class Application {
 	 *
 	 * @param EventListenerRegistrarInterface $event_listener_registrar Registers application event listeners.
 	 * @param MigrationRunnerInterface $migration_runner Applies database schema migrations.
-	 * @param HookMapperRegistrarInterface $hook_mapper_registrar Registers WordPress hook-to-event mappers.
+	 * @param HookBridgeRegistrarInterface $hook_bridge_registrar Registers WordPress hook-to-event bridges.
 	 */
 	public function __construct(
 		private EventListenerRegistrarInterface $event_listener_registrar,
 		private MigrationRunnerInterface $migration_runner,
-		private HookMapperRegistrarInterface $hook_mapper_registrar,
+		private HookBridgeRegistrarInterface $hook_bridge_registrar,
 	) {}
 
 	/**
@@ -86,7 +86,7 @@ final readonly class Application {
 		return new self(
 			$container->get( EventListenerRegistrarInterface::class ),
 			$container->get( MigrationRunnerInterface::class ),
-			$container->get( HookMapperRegistrarInterface::class ),
+			$container->get( HookBridgeRegistrarInterface::class ),
 		);
 	}
 
@@ -97,6 +97,6 @@ final readonly class Application {
 	 */
 	private function run_wordpress(): void {
 
-		$this->hook_mapper_registrar->register_all();
+		$this->hook_bridge_registrar->register_all();
 	}
 }

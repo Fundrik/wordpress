@@ -14,9 +14,9 @@ use Fundrik\WordPress\Infrastructure\EventDispatcher\EventDispatcher;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventDispatcherInterface;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrar;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrarInterface;
-use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistrar;
-use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistrarInterface;
-use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistry;
+use Fundrik\WordPress\Infrastructure\Integration\HookBridges\HookBridgeRegistrar;
+use Fundrik\WordPress\Infrastructure\Integration\HookBridges\HookBridgeRegistrarInterface;
+use Fundrik\WordPress\Infrastructure\Integration\HookBridges\HookBridgeRegistry;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeBlockTemplateReader;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeIdReader;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeMetaFieldReader;
@@ -69,8 +69,8 @@ class ServiceBindings {
 			LaravelEventsDispatcherInterface::class => LaravelEventsDispatcher::class,
 			EventDispatcherInterface::class => EventDispatcher::class,
 			EventListenerRegistrarInterface::class => EventListenerRegistrar::class,
-			HookMapperRegistrarInterface::class => HookMapperRegistrar::class,
-			HookMapperRegistry::class,
+			HookBridgeRegistrarInterface::class => HookBridgeRegistrar::class,
+			HookBridgeRegistry::class,
 
 			// Migrations.
 			MigrationRegistry::class,

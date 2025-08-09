@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fundrik\WordPress\Infrastructure\Integration\Listeners;
 
-use Fundrik\WordPress\Infrastructure\Integration\Events\WordPressAllowedBlockTypesAllFilterEvent;
+use Fundrik\WordPress\Infrastructure\Integration\Events\FilterAllowedBlockTypesEvent;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeIdReader;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeSpecificBlockReader;
 
@@ -48,9 +48,9 @@ final class FilterAllowedBlocksByPostTypeListener {
 	 * @since 1.0.0
 	 *
 	 * // phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong, SlevomatCodingStandard.Commenting.DocCommentSpacing.IncorrectLinesCountBetweenDifferentAnnotationsTypes
-	 * @param WordPressAllowedBlockTypesAllFilterEvent $event Represents the 'allowed_block_types_all' WordPress filter as a Fundrik event.
+	 * @param FilterAllowedBlockTypesEvent $event Carries the allowed block types list, editor context, and plugin context.
 	 */
-	public function handle( WordPressAllowedBlockTypesAllFilterEvent $event ): void {
+	public function handle( FilterAllowedBlockTypesEvent $event ): void {
 
 		$allowed = $event->allowed;
 

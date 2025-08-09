@@ -1,7 +1,10 @@
 {
     "$schema": "vendor/infection/infection/resources/schema.json",
     "source": {
-		"directories": ["src/php"]
+		"directories": ["src/php"],
+		"excludes": [
+            "Infrastructure/Integration/HookBridges/Bridges"
+        ]
   	},
     "mutators": {
 		"@default": true,

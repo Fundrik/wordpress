@@ -12,20 +12,20 @@ namespace Fundrik\WordPress\Infrastructure\Helpers;
 final readonly class LoggerFormatter {
 
 	/**
-	 * Returns the structured context for a hook mapper-related log message.
+	 * Returns the structured context for a hook bridge-related log message.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $hook The name of the WordPress hook being mapped.
-	 * @param string $mapper The fully qualified class name of the mapper.
+	 * @param string $hook The name of the WordPress hook being bridged.
+	 * @param string $bridge The fully qualified class name of the bridge.
 	 *
 	 * @return array<string, string> The context array for structured logging.
 	 */
-	public static function hook_mapper_context( string $hook, string $mapper ): array {
+	public static function hook_bridge_context( string $hook, string $bridge ): array {
 
 		return [
 			'wordpress_hook_name' => $hook,
-			'hook_mapper_class' => $mapper,
+			'hook_bridge_class' => $bridge,
 		];
 	}
 

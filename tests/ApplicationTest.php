@@ -8,8 +8,8 @@ use Fundrik\WordPress\Application;
 use Fundrik\WordPress\Infrastructure\Container\ContainerInterface;
 use Fundrik\WordPress\Infrastructure\EventDispatcher\EventListenerRegistrarInterface;
 use Fundrik\WordPress\Infrastructure\Helpers\PluginPath;
+use Fundrik\WordPress\Infrastructure\Integration\HookBridges\HookBridgeRegistrarInterface;
 use Fundrik\WordPress\Infrastructure\Migrations\MigrationRunnerInterface;
-use Fundrik\WordPress\Infrastructure\Integration\HookMappers\HookMapperRegistrarInterface;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -22,7 +22,7 @@ final class ApplicationTest extends MockeryTestCase {
 
 	private EventListenerRegistrarInterface&MockInterface $event_listener_registrar;
 	private MigrationRunnerInterface&MockInterface $migration_runner;
-	private HookMapperRegistrarInterface&MockInterface $hook_mapper_registrar;
+	private HookBridgeRegistrarInterface&MockInterface $hook_bridge_registrar;
 	private Application $app;
 
 	protected function setUp(): void {
@@ -31,12 +31,12 @@ final class ApplicationTest extends MockeryTestCase {
 
 		$this->event_listener_registrar = Mockery::mock( EventListenerRegistrarInterface::class );
 		$this->migration_runner = Mockery::mock( MigrationRunnerInterface::class );
-		$this->hook_mapper_registrar = Mockery::mock( HookMapperRegistrarInterface::class );
+		$this->hook_bridge_registrar = Mockery::mock( HookBridgeRegistrarInterface::class );
 
 		$this->app = new Application(
 			$this->event_listener_registrar,
 			$this->migration_runner,
-			$this->hook_mapper_registrar,
+			$this->hook_bridge_registrar,
 		);
 	}
 
@@ -51,7 +51,7 @@ final class ApplicationTest extends MockeryTestCase {
 			->shouldReceive( 'register_all' )
 			->once();
 
-		$this->hook_mapper_registrar
+		$this->hook_bridge_registrar
 			->shouldReceive( 'register_all' )
 			->once();
 
@@ -77,29 +77,25 @@ final class ApplicationTest extends MockeryTestCase {
 	#[Test]
 	public function it_bootstraps_application_with_container(): void {
 
-		$event_listener = Mockery::mock( EventListenerRegistrarInterface::class );
-		$migration_runner = Mockery::mock( MigrationRunnerInterface::class );
-		$hook_mapper = Mockery::mock( HookMapperRegistrarInterface::class );
-
 		$container = Mockery::mock( ContainerInterface::class );
 
 		$container
 			->shouldReceive( 'get' )
 			->once()
 			->with( EventListenerRegistrarInterface::class )
-			->andReturn( $event_listener );
+			->andReturn( $this->event_listener_registrar );
 
 		$container
 			->shouldReceive( 'get' )
 			->once()
 			->with( MigrationRunnerInterface::class )
-			->andReturn( $migration_runner );
+			->andReturn( $this->migration_runner );
 
 		$container
 			->shouldReceive( 'get' )
 			->once()
-			->with( HookMapperRegistrarInterface::class )
-			->andReturn( $hook_mapper );
+			->with( HookBridgeRegistrarInterface::class )
+			->andReturn( $this->hook_bridge_registrar );
 
 		$app = Application::bootstrap( $container );
 

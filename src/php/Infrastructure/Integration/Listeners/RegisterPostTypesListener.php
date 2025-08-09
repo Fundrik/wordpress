@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Infrastructure\Integration\Listeners;
 
 use Fundrik\WordPress\Infrastructure\Container\ContainerInterface;
-use Fundrik\WordPress\Infrastructure\Integration\Events\WordPressInitEvent;
+use Fundrik\WordPress\Infrastructure\Integration\Events\RegisterPostTypesEvent;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeBlockTemplateReader;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeIdReader;
 use Fundrik\WordPress\Infrastructure\Integration\PostTypes\Attributes\PostTypeMetaFieldReader;
@@ -48,9 +48,10 @@ final readonly class RegisterPostTypesListener {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WordPressInitEvent $event Represents the 'init' WordPress action as a Fundrik event.
+	 * // phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong, SlevomatCodingStandard.Commenting.DocCommentSpacing.IncorrectLinesCountBetweenDifferentAnnotationsTypes
+	 * @param RegisterPostTypesEvent $event Carries the plugin context containing the list of declared post type classes.
 	 */
-	public function handle( WordPressInitEvent $event ): void {
+	public function handle( RegisterPostTypesEvent $event ): void {
 
 		foreach ( $event->context->get_declared_post_types() as $post_type ) {
 
