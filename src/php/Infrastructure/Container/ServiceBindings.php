@@ -45,7 +45,7 @@ class ServiceBindings {
 
 	// phpcs:disable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
 	/**
-	 * Returns the list of abstract-to-concrete bindings for the container.
+	 * Returns the list of abstract-to-concrete singleton bindings.
 	 *
 	 * @since 1.0.0
 	 *
@@ -53,7 +53,7 @@ class ServiceBindings {
 	 *
 	 * @phpstan-return array<class-string|int, class-string>
 	 */
-	public function get_bindings(): array {
+	public function get_singletons(): array {
 
 		// phpcs:disable SlevomatCodingStandard.Arrays.DisallowPartiallyKeyed.DisallowedPartiallyKeyed
 		return [
@@ -89,11 +89,25 @@ class ServiceBindings {
 
 			// Context.
 			WordPressContextFactory::class,
-			// @todo Register as bind instead of singleton
-			WordPressContextInterface::class => WordPressContext::class,
 		];
 	}
 	// phpcs:enable
+
+	/**
+	 * Returns the list of abstract-to-concrete transient bindings.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array<string, string> The array of [abstract => concrete] bindings.
+	 *
+	 * @phpstan-return array<class-string, class-string>
+	 */
+	public function get_bindings(): array {
+
+		return [
+			WordPressContextInterface::class => WordPressContext::class,
+		];
+	}
 
 	/**
 	 * Registers all default service bindings into the given container.
@@ -104,13 +118,18 @@ class ServiceBindings {
 	 */
 	public function register_bindings_into_container( ContainerInterface $container ): void {
 
-		foreach ( $this->get_bindings() as $abstract => $concrete ) {
+		foreach ( $this->get_singletons() as $abstract => $concrete ) {
 
 			if ( is_int( $abstract ) ) {
 				$abstract = $concrete;
 			}
 
 			$container->singleton( $abstract, $concrete );
+		}
+
+		foreach ( $this->get_bindings() as $abstract => $concrete ) {
+
+			$container->bind( $abstract, $concrete );
 		}
 	}
 }

@@ -44,17 +44,163 @@ use PHPUnit\Framework\Attributes\Test;
 #[CoversClass( ServiceBindings::class )]
 final class ServiceBindingsTest extends MockeryTestCase {
 
-	#[Test]
-	#[DataProvider( 'interface_bindings' )]
-	public function it_maps_interface_to_expected_implementation( string $interface, string $implementation ): void {
+	private ServiceBindings $service_bindings;
 
-		$bindings = ( new ServiceBindings() )->get_bindings();
+	private array $singletons;
+	private array $bindings;
 
-		$this->assertArrayHasKey( $interface, $bindings );
-		$this->assertSame( $implementation, $bindings[ $interface ] );
+	protected function setUp(): void {
+
+		parent::setUp();
+
+		$this->service_bindings = new ServiceBindings();
+
+		$this->singletons = $this->service_bindings->get_singletons();
+		$this->bindings = $this->service_bindings->get_bindings();
 	}
 
-	public static function interface_bindings(): iterable {
+	// Singletons
+	// ---------------------------------------------------------------------
+
+	#[Test]
+	#[DataProvider( 'interface_singletons' )]
+	public function it_maps_interfaces_to_expected_singleton_implementations(
+		string $interface,
+		string $implementation,
+	): void {
+
+		$this->assertArrayHasKey( $interface, $this->singletons );
+		$this->assertSame( $implementation, $this->singletons[ $interface ] );
+	}
+
+	#[Test]
+	#[DataProvider( 'singleton_self_bindings' )]
+	public function it_includes_singletons_as_self_binding( string $class ): void {
+
+		$this->assertContains( $class, $this->singletons );
+	}
+
+	#[Test]
+	public function get_singletons_returns_expected_array(): void {
+
+		$this->assertIsArray( $this->singletons );
+		$this->assertNotEmpty( $this->singletons );
+
+		foreach ( $this->singletons as $abstract => $concrete ) {
+
+			if ( ! is_int( $abstract ) ) {
+				$this->assertIsString( $abstract );
+				$this->assertTrue(
+					interface_exists( $abstract ) || class_exists( $abstract ),
+					"$abstract does not exist",
+				);
+			}
+
+			$this->assertIsString( $concrete );
+			$this->assertTrue( class_exists( $concrete ), "$concrete does not exist" );
+		}
+	}
+
+	// Transients (non-singleton bindings)
+	// ---------------------------------------------------------------------
+
+	#[Test]
+	#[DataProvider( 'interface_bindings' )]
+	public function it_maps_interfaces_to_expected_bind_implementations( string $interface, string $implementation ): void {
+
+		$this->assertArrayHasKey( $interface, $this->bindings );
+		$this->assertSame( $implementation, $this->bindings [ $interface ] );
+	}
+
+	#[Test]
+	public function get_bindings_returns_expected_array(): void {
+
+		$this->assertIsArray( $this->bindings );
+		$this->assertNotEmpty( $this->bindings );
+
+		foreach ( $this->bindings as $abstract => $concrete ) {
+
+			$this->assertIsString( $abstract );
+			$this->assertTrue( interface_exists( $abstract ) || class_exists( $abstract ), "$abstract does not exist" );
+
+			$this->assertIsString( $concrete );
+			$this->assertTrue( class_exists( $concrete ), "$concrete does not exist" );
+		}
+	}
+
+	// Coverage checks
+	// ---------------------------------------------------------------------
+
+
+	#[Test]
+	public function all_bindings_are_covered_by_tests(): void {
+
+		$expected_singletons = array_merge(
+			array_map( static fn ( array $e ) => $e[0], iterator_to_array( self::interface_singletons() ) ),
+			array_map( static fn ( array $e ) => $e[0], iterator_to_array( self::singleton_self_bindings() ) ),
+		);
+
+		$expected_bindings = array_map(
+			static fn ( array $e ) => $e[0],
+			iterator_to_array( self::interface_bindings() ),
+		);
+
+		foreach ( $this->singletons as $abstract => $concrete ) {
+
+			$class = is_int( $abstract ) ? $concrete : $abstract;
+			$this->assertContains(
+				$class,
+				$expected_singletons,
+				"Singleton for `$class` is present but not covered by tests.",
+			);
+		}
+
+		// phpcs:disable SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		foreach ( $this->bindings as $abstract => $concrete ) {
+
+			$this->assertContains(
+				$abstract,
+				$expected_bindings,
+				"Binding for `$abstract` is present but not covered by tests.",
+			);
+		}
+	}
+
+	// Registration into container
+	// ---------------------------------------------------------------------
+
+	#[Test]
+	public function it_registers_all_bindings_into_the_container(): void {
+
+		$container = Mockery::mock( ContainerInterface::class );
+
+		foreach ( $this->singletons as $abstract => $concrete ) {
+
+			if ( is_int( $abstract ) ) {
+				$abstract = $concrete;
+			}
+
+			$container
+				->shouldReceive( 'singleton' )
+				->once()
+				->with( $abstract, $concrete );
+		}
+
+		foreach ( $this->bindings as $abstract => $concrete ) {
+
+			$container
+				->shouldReceive( 'bind' )
+				->once()
+				->with( $abstract, $concrete );
+		}
+
+		$this->service_bindings->register_bindings_into_container( $container );
+	}
+
+	// Providers
+	// ---------------------------------------------------------------------
+
+	public static function interface_singletons(): iterable {
 
 		yield [ CampaignServicePortInterface::class, CampaignService::class ];
 		yield [ LaravelEventsDispatcherInterface::class, LaravelEventsDispatcher::class ];
@@ -64,19 +210,14 @@ final class ServiceBindingsTest extends MockeryTestCase {
 		yield [ MigrationRunnerInterface::class, MigrationRunner::class ];
 		yield [ DatabaseInterface::class, WpdbDatabase::class ];
 		yield [ StorageInterface::class, WordPressOptionsStorage::class ];
+	}
+
+	public static function interface_bindings(): iterable {
+
 		yield [ WordPressContextInterface::class, WordPressContext::class ];
 	}
 
-	#[Test]
-	#[DataProvider( 'singleton_bindings' )]
-	public function it_includes_singletons_as_self_binding( string $class ): void {
-
-		$bindings = ( new ServiceBindings() )->get_bindings();
-
-		$this->assertContains( $class, $bindings );
-	}
-
-	public static function singleton_bindings(): iterable {
+	public static function singleton_self_bindings(): iterable {
 
 		yield [ Application::class ];
 		yield [ CampaignAssembler::class ];
@@ -89,79 +230,5 @@ final class ServiceBindingsTest extends MockeryTestCase {
 		yield [ PostTypeSlugReader::class ];
 		yield [ PostTypeSpecificBlockReader::class ];
 		yield [ WordPressContextFactory::class ];
-	}
-
-	#[Test]
-	public function all_bindings_are_covered_by_tests(): void {
-
-		$bindings = ( new ServiceBindings() )->get_bindings();
-
-		$expected = array_merge(
-			array_map(
-				static fn ( array $entry ) => $entry[0],
-				iterator_to_array( self::interface_bindings() ),
-			),
-			array_map(
-				static fn ( array $entry ) => $entry[0],
-				iterator_to_array( self::singleton_bindings() ),
-			),
-		);
-
-		foreach ( $bindings as $abstract => $concrete ) {
-
-			$class = is_int( $abstract ) ? $concrete : $abstract;
-
-			$this->assertContains( $class, $expected, "Binding for `$class` is present but not covered by tests." );
-		}
-	}
-
-	#[Test]
-	public function it_registers_all_bindings_into_the_container(): void {
-
-		$bindings = ( new ServiceBindings() )->get_bindings();
-		$expected_calls = [];
-
-		foreach ( $bindings as $abstract => $concrete ) {
-
-			if ( is_int( $abstract ) ) {
-				$abstract = $concrete;
-			}
-
-			$expected_calls[] = [ $abstract, $concrete ];
-		}
-
-		$container = Mockery::mock( ContainerInterface::class );
-
-		foreach ( $bindings as $abstract => $concrete ) {
-
-			if ( is_int( $abstract ) ) {
-				$abstract = $concrete;
-			}
-
-			$container->shouldReceive( 'singleton' )
-				->once()
-				->with( $abstract, $concrete );
-		}
-
-		( new ServiceBindings() )->register_bindings_into_container( $container );
-	}
-
-	#[Test]
-	public function get_bindings_returns_expected_array(): void {
-
-		$bindings = ( new ServiceBindings() )->get_bindings();
-
-		$this->assertIsArray( $bindings );
-		$this->assertNotEmpty( $bindings );
-
-		foreach ( $bindings as $abstract => $concrete ) {
-
-			if ( ! is_int( $abstract ) ) {
-				$this->assertIsString( $abstract );
-			}
-
-			$this->assertIsString( $concrete );
-			$this->assertTrue( class_exists( $concrete ), "$concrete does not exist" );
-		}
 	}
 }

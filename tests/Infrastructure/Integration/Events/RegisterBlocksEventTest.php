@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Fundrik\WordPress\Tests\Infrastructure\Integration\Events;
 
 use Fundrik\WordPress\Infrastructure\Integration\Events\RegisterBlocksEvent;
-use Fundrik\WordPress\Infrastructure\Integration\Events\RegisterPostTypesEvent;
 use Fundrik\WordPress\Infrastructure\Integration\WordPressContext\WordPressContextInterface;
 use Fundrik\WordPress\Tests\MockeryTestCase;
 use Mockery;
@@ -28,7 +27,7 @@ final class RegisterBlocksEventTest extends MockeryTestCase {
 	#[Test]
 	public function it_exposes_the_context(): void {
 
-		$event = new RegisterPostTypesEvent( $this->context );
+		$event = new RegisterBlocksEvent( $this->context );
 
 		$this->assertSame( $this->context, $event->context );
 	}

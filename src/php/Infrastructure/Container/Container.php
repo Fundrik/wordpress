@@ -122,6 +122,30 @@ final class Container implements ContainerInterface {
 	}
 
 	/**
+	 * Registers a binding into the container that is resolved fresh each time it is requested.
+	 *
+	 * - If $concrete is `null`, the container instantiates `$abstract` directly.
+	 * - If $concrete is a `string`, the container resolves it when `$abstract` is requested.
+	 * - If $concrete is a `Closure`, the container executes it to produce a new instance.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $abstract The class or interface name to bind.
+	 * @param Closure|string|null $concrete The implementation or factory to bind, or null to use the abstract.
+	 *
+	 * @phpstan-param class-string $abstract
+	 * @phpstan-param Closure|class-string|null $concrete
+	 */
+	public function bind(
+		// phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.abstractFound
+		string $abstract,
+		Closure|string|null $concrete = null,
+	): void {
+
+		$this->inner->bind( $abstract, $concrete );
+	}
+
+	/**
 	 * Registers a singleton binding into the container.
 	 *
 	 * - If $concrete is `null`, the container instantiates `$abstract` directly.
@@ -152,6 +176,8 @@ final class Container implements ContainerInterface {
 	 *
 	 * @param string $abstract The class or interface name to bind.
 	 * @param object $instance The already constructed instance.
+	 * 
+	 * @phpstan-param class-string $abstract
 	 */
 	public function instance(
 		// phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.abstractFound

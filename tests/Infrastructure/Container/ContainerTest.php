@@ -28,6 +28,9 @@ final class ContainerTest extends MockeryTestCase {
 		$this->container = new Container( $this->inner );
 	}
 
+	// get()
+	// ---------------------------------------------------------------------
+
 	#[Test]
 	public function get_delegates_to_inner_container(): void {
 
@@ -59,6 +62,9 @@ final class ContainerTest extends MockeryTestCase {
 		$this->container->get( 'MyClass' );
 	}
 
+	// has()
+	// ---------------------------------------------------------------------
+
 	#[Test]
 	public function has_delegates_to_inner_container(): void {
 
@@ -72,6 +78,111 @@ final class ContainerTest extends MockeryTestCase {
 
 		$this->assertTrue( $result );
 	}
+
+	// make()
+	// ---------------------------------------------------------------------
+
+	#[Test]
+	public function make_delegates_to_inner_container_without_parameters(): void {
+
+		$instance = new stdClass();
+
+		$this->inner
+			->shouldReceive( 'make' )
+			->once()
+			->with(
+				$this->identicalTo( $instance::class ),
+				[],
+			)
+			->andReturn( $instance );
+
+		$result = $this->container->make( $instance::class );
+
+		$this->assertSame( $instance, $result );
+	}
+
+	#[Test]
+	public function make_delegates_to_inner_container_with_parameters(): void {
+
+		$instance = new stdClass();
+
+		$params = [
+			'id' => 123,
+			'name' => 'Test',
+		];
+
+		$this->inner
+			->shouldReceive( 'make' )
+			->once()
+			->with(
+				$this->identicalTo( $instance::class ),
+				$this->identicalTo( $params ),
+			)
+			->andReturn( $instance );
+
+		$result = $this->container->make( $instance::class, $params );
+
+		$this->assertSame( $instance, $result );
+	}
+
+	#[Test]
+	public function make_throws_if_created_instance_does_not_implement_expected_type(): void {
+
+		$this->inner
+			->shouldReceive( 'make' )
+			->once()
+			->with( 'MyClass', [] )
+			->andReturn( 42 );
+
+		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage( 'Container made instance of int, but expected implementation of MyClass.' );
+
+		$this->container->make( 'MyClass' );
+	}
+
+	// bind()
+	// ---------------------------------------------------------------------
+
+	#[Test]
+	public function bind_registers_closure_binding(): void {
+
+		$closure = static fn () => new stdClass();
+
+		$this->inner
+			->shouldReceive( 'bind' )
+			->once()
+			->with(
+				'MyService',
+				$this->identicalTo( $closure ),
+			);
+
+		$this->container->bind( 'MyService', $closure );
+	}
+
+	#[Test]
+	public function bind_registers_string_binding(): void {
+
+		$this->inner
+			->shouldReceive( 'bind' )
+			->once()
+			->with( 'MyService', 'MyImplementation' );
+
+		$this->container->bind( 'MyService', 'MyImplementation' );
+	}
+
+	#[Test]
+	public function bind_registers_self_binding_when_null(): void {
+
+		$this->inner
+			->shouldReceive( 'bind' )
+			->once()
+			->with( 'MyService', null );
+
+		$this->container->bind( 'MyService' );
+	}
+
+	// singleton()
+	// ---------------------------------------------------------------------
 
 	#[Test]
 	public function singleton_registers_closure_binding(): void {
@@ -111,61 +222,19 @@ final class ContainerTest extends MockeryTestCase {
 		$this->container->singleton( 'MyService' );
 	}
 
+	// instance()
+	// ---------------------------------------------------------------------
+
 	#[Test]
-	public function make_delegates_to_inner_container_without_parameters(): void {
+	public function instance_registers_existing_instance(): void {
 
 		$instance = new stdClass();
 
 		$this->inner
-		->shouldReceive( 'make' )
+			->shouldReceive( 'instance' )
 			->once()
-			->with(
-				$this->identicalTo( $instance::class ),
-				[],
-			)
-			->andReturn( $instance );
+			->with( 'MyService', $this->identicalTo( $instance ) );
 
-		$result = $this->container->make( $instance::class );
-
-		$this->assertSame( $instance, $result );
-	}
-
-	#[Test]
-	public function make_delegates_to_inner_container_with_parameters(): void {
-
-		$instance = new stdClass();
-
-		$params = [
-			'id' => 123,
-			'name' => 'Test',
-		];
-
-		$this->inner
-		->shouldReceive( 'make' )
-			->once()
-			->with(
-				$this->identicalTo( $instance::class ),
-				$this->identicalTo( $params ),
-			)
-			->andReturn( $instance );
-
-		$result = $this->container->make( $instance::class, $params );
-
-		$this->assertSame( $instance, $result );
-	}
-
-	#[Test]
-	public function make_throws_if_created_instance_does_not_implement_expected_type(): void {
-
-		$this->inner
-			->shouldReceive( 'make' )
-			->once()
-			->with( 'MyClass', [] )
-			->andReturn( 42 );
-
-		$this->expectException( RuntimeException::class );
-		$this->expectExceptionMessage( 'Container made instance of int, but expected implementation of MyClass.' );
-
-		$this->container->make( 'MyClass' );
+		$this->container->instance( 'MyService', $instance );
 	}
 }
